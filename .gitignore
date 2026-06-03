@@ -1,0 +1,45 @@
+# Build artifacts — .NET
+bin/
+obj/
+*.user
+*.suo
+*.dll
+*.pdb
+
+# Build artifacts — Node / frontend
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+*.tsbuildinfo
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.vs/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Test output
+coverage/
+.nyc_output/
+
+# Database (local dev)
+*.db
+*.sqlite
+*.sqlite3
