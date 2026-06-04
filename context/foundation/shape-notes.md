@@ -11,7 +11,7 @@ timeline_budget:
   hard_deadline: 2026-07-05
   after_hours_only: true
 created: 2026-05-24
-updated: 2026-06-02
+updated: 2026-06-04
 checkpoint:
   current_phase: 8
   phases_completed: [1, 2, 3, 4, 5, 6, 7]
@@ -50,6 +50,8 @@ checkpoint:
       decision: "product_type=web-app, target_scale.users=small (qps=low, data_volume=small), hard_deadline=2026-07-05 (1st cert deadline; submission feedback by 07-19, 2nd window 08-10 for revisions), after_hours_only=true"
     - topic: non-goals scope
       decision: "15 non-goals locked — 11 functional + 4 non-functional, all reflecting prior phase decisions; voice/notifications/images/gamification/native/social/admin/email-infra/oauth/multi-device/configurable-pomodoro plus AA/GDPR/realtime/i18n"
+    - topic: tech-stack selection (m1l2 / 10x-tech-stack-selector)
+      decision: "10x-astro-starter (Astro 6 + React 19 + TypeScript + Tailwind 4 + Supabase + Cloudflare Pages/Workers); standard path; deploy cloudflare-pages; CI github-actions auto-deploy-on-merge; project_name pomo-stretch; full-stack opinionated single-repo replacing the originally-volunteered .NET backend + separate React frontend split; locked at context/foundation/tech-stack.md"
   frs_drafted: 22
   quality_check_status: accepted
 ---
@@ -266,16 +268,25 @@ Persistence boundaries decided in Phase 3:
 
 This split keeps the T1 backend at ~3 endpoints (sign-up, sign-in, GET catalog), which is consistent with `mvp-ideas.md`'s "thin backend" intent. The pain-extraction endpoint (T2+) makes the backend ~4–5.
 
-## Forward: tech-stack (informational — not part of PRD schema)
+## Forward: tech-stack (RESOLVED — see `tech-stack.md`)
 
-Author-volunteered stack-shaped notes from `mvp-ideas.md`, to revisit in `/10x-tech-stack-selector` after PRD lands. Not part of the PRD schema; downstream chain steps consume this block.
+> **Status: resolved on 2026-06-04 via `/10x-tech-stack-selector`.** Selection locked at `context/foundation/tech-stack.md` (`starter_id: 10x-astro-starter`, deploy: `cloudflare-pages`, CI: `github-actions` auto-deploy-on-merge). The author-volunteered candidates below are kept for historical context only — they reflect the initial preference space, not the locked decision.
 
-- **Backend candidate:** ASP.NET Core 9 Minimal API + EF Core; SQLite (dev) / Postgres (prod)
-- **Frontend candidate:** React + Vite + TypeScript + TailwindCSS + shadcn/ui; framer-motion deferred to polish phase
-- **Auth implementation candidates:** ASP.NET Core Identity (default), Clerk free tier, Auth0 free tier — Identity preferred but Socrates may revisit
-- **Pain-extraction service candidate (T2+):** OpenAI SDK for .NET, structured output / JSON mode; invoked only when the user submits free-text break input
-- **Hosting candidates:** Azure App Service (backend), Vercel / Netlify (frontend), Supabase free tier (Postgres)
-- **T2+ candidates:** Resend or SendGrid (transactional email), Google OAuth via OIDC
+**Locked stack (from `tech-stack.md`):**
+- **Starter:** `10x-astro-starter` — Astro 6 + React 19 islands + TypeScript + Tailwind 4 + Supabase (Postgres + Auth + storage) + Cloudflare Pages/Workers/KV. Single full-stack repo.
+- **Deployment:** `cloudflare-pages` (edge runtime, free tier, gives `*.pages.dev` subdomain by default; custom domain optional).
+- **CI/CD:** GitHub Actions auto-deploy-on-merge to `main`. PR previews on Cloudflare per-PR free.
+- **Auth:** Supabase Auth (email + password, email verification + password reset available out-of-box for T2+).
+- **DB:** Supabase Postgres (catalog server-side, user-state in `localStorage` per Phase 3 architecture).
+- **Pain-extraction service candidate (T2+):** OpenAI via fetch from a Cloudflare Worker (Astro API route). System prompt server-side; LLM security backlog applies on landing.
+
+**Originally considered (now superseded):**
+
+- **Backend candidate:** ASP.NET Core 9 Minimal API + EF Core; SQLite (dev) / Postgres (prod) — *dropped: would have required a second repo + separate frontend bootstrapping + manual auth wiring; +8–12h zero-to-one overhead vs the locked full-stack starter, against a 15–20h T1 budget.*
+- **Frontend candidate:** React + Vite + TypeScript + TailwindCSS + shadcn/ui — *folded into Astro: React + TS + Tailwind survive verbatim as React islands inside Astro pages; only the Vite-as-build-tool layer was replaced by Astro's build pipeline.*
+- **Auth implementation candidates:** ASP.NET Core Identity, Clerk, Auth0 — *dropped: Supabase Auth in the starter covers the same surface (email + password, OAuth-ready, hash management) without separate setup.*
+- **Hosting candidates:** Azure App Service, Vercel, Netlify, Supabase free tier — *Supabase kept for DB + Auth, Vercel listed as alternative deployment target in the starter card; Cloudflare Pages preferred for edge-runtime latency profile and free tier.*
+- **T2+ candidates:** Resend / SendGrid (transactional email), Google OAuth via OIDC — *unchanged: still T2+, now arrive via Supabase Auth providers (Google OAuth is a one-config-line add) and a Cloudflare-Workers-compatible email provider when transactional email lands.*
 
 ## Forward: pain-extraction security backlog (informational — applied when endpoint lands in T2+)
 
