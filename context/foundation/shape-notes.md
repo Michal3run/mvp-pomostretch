@@ -40,6 +40,9 @@ checkpoint:
       decision: "aim for above-baseline — certification minimum (auth + DB CRUD + business logic + PRD + ≥1 user-flow test + CI/CD) plus one polish element plus clean demo plus working public deploy; not a moonshot"
     - topic: localStorage-as-primary user-state acceptability
       decision: "DB CRUD via auth + exercise catalog satisfies course requirement #2 (data management); localStorage is additional device-local cache, not the only persistence; requirement met"
+      superseded_by: "topic: course-CRUD gap reopened (2026-06-08)"
+    - topic: course-CRUD gap reopened (2026-06-08)
+      decision: "Re-reading the official rubric (auth sign-up is not domain CRUD; read-only catalog is R-only) confirms the prior decision was a stretch interpretation. Closed by `context/changes/session-history-crud/` — promotes break-session record from localStorage to a Supabase Postgres table with full 4-verb user-owned CRUD + RLS. Business logic (rule engine) untouched; only persistence moves. Adds FR-023..FR-027 and NFR-10 to PRD on landing."
     - topic: socrates round on FRs
       decision: "all 22 FRs kept as written; two new open questions surfaced (hide-countdown toggle T3+, exercise intensity dimension T2+)"
     - topic: business logic shape
@@ -252,6 +255,8 @@ When the user starts a break, the app selects 1–3 exercises from a tagged cata
 | Preserved behavior | **n/a** (greenfield) |
 
 **Result:** all 5 applicable elements present, brownfield-only check skipped. `quality_check_status: accepted` — no gaps to surface to `/10x-prd`'s Open Questions.
+
+> **Update 2026-06-08 — CRUD line revisited.** The original cross-check did not separately verify *user-owned* CRUD; it conflated auth sign-up + read-only catalog with course requirement #2. Re-evaluation against the rubric showed the gap. Closure is in flight via `context/changes/session-history-crud/` (promote break-session to a Supabase table with all 4 verbs + RLS). Treat this `Quality cross-check` table as **conditionally accepted** — fully accepted once the change lands and FR-023..FR-027 + NFR-10 are merged into PRD.
 
 ## Data Architecture (informational)
 
