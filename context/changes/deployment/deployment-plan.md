@@ -1,6 +1,14 @@
+---
+status: complete
+executed_date: 2026-06-09
+production_url: https://pomo-stretch.michal3run.workers.dev
+supabase_project: cloud (operational, auth.users table exists)
+auto_deploy: active (Cloudflare Workers Builds on main branch)
+---
+
 # Deployment Plan — PomoStretch on Cloudflare Workers
 
-> **Mode:** Plan only. Nothing here has been executed. Each phase is gated on your approval; irreversible / account-touching actions are flagged 🔴 and require a human (you) to run or confirm them. Source decision: `@context/foundation/infrastructure.md`. Stack: `@context/foundation/tech-stack.md`.
+> **Status:** ✅ Complete (executed 2026-06-09). Each phase below shows what was done. Source decision: `@context/foundation/infrastructure.md`. Stack: `@context/foundation/tech-stack.md`.
 
 **Target:** Cloudflare Workers (not Pages — Pages is deprecated for new projects as of April 2025).
 **Auto-deploy model:** Cloudflare **Workers Builds** (platform-native Git integration). **No external CI/CD deploy step** — GitHub Actions stays lint+build only.
