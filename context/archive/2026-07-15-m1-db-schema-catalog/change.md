@@ -1,10 +1,10 @@
 ---
 change_id: m1-db-schema-catalog
 title: M1: Database Schema & Exercise Catalog
-status: impl_reviewed
+status: archived
 created: 2026-07-15
 updated: 2026-07-15
-archived_at: null
+archived_at: 2026-07-15T21:23:14Z
 ---
 
 ## Notes
