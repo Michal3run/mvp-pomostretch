@@ -140,21 +140,21 @@ Write `20260715120100_create_break_session_table.sql` defining `break_session` D
 
 #### Automated
 
-- [x] 1.1 Migration syntax valid and applies cleanly via `npx supabase db reset`
-- [x] 1.2 `SELECT COUNT(*) FROM exercise;` returns 15
-- [x] 1.3 `SELECT unnest(body_areas) AS area, COUNT(*) FROM exercise GROUP BY area;` shows ≥2 for each area
+- [x] 1.1 Migration syntax valid and applies cleanly via `npx supabase db reset` — 5f194c4
+- [x] 1.2 `SELECT COUNT(*) FROM exercise;` returns 15 — 5f194c4
+- [x] 1.3 `SELECT unnest(body_areas) AS area, COUNT(*) FROM exercise GROUP BY area;` shows ≥2 for each area — 5f194c4
 
 #### Manual
 
-- [x] 1.4 Inspect seed descriptions for quality and correct ergonomic advice
+- [x] 1.4 Inspect seed descriptions for quality and correct ergonomic advice — 5f194c4
 
 ### Phase 2: Break Session Table Schema & RLS Policies
 
 #### Automated
 
-- [ ] 2.1 Migration applies cleanly (`npx supabase db reset`)
-- [ ] 2.2 Table structure verified (`\d break_session` shows columns, FK, check constraints, index, RLS enabled)
+- [x] 2.1 Migration applies cleanly (`npx supabase db reset`)
+- [x] 2.2 Table structure verified (`\d break_session` shows columns, FK, check constraints, index, RLS enabled)
 
 #### Manual
 
-- [ ] 2.3 Test RLS isolation using two mock auth users (`auth.uid() = user_A` vs `auth.uid() = user_B`)
+- [x] 2.3 Test RLS isolation using two mock auth users (`auth.uid() = user_A` vs `auth.uid() = user_B`)
