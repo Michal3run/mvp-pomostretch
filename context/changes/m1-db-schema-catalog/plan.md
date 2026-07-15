@@ -152,9 +152,9 @@ Write `20260715120100_create_break_session_table.sql` defining `break_session` D
 
 #### Automated
 
-- [x] 2.1 Migration applies cleanly (`npx supabase db reset`)
-- [x] 2.2 Table structure verified (`\d break_session` shows columns, FK, check constraints, index, RLS enabled)
+- [x] 2.1 Migration applies cleanly (`npx supabase db reset`) — 8c8ea19
+- [x] 2.2 Table structure verified (`\d break_session` shows columns, FK, check constraints, index, RLS enabled) — 8c8ea19
 
 #### Manual
 
-- [x] 2.3 Test RLS isolation using two mock auth users (`auth.uid() = user_A` vs `auth.uid() = user_B`)
+- [x] 2.3 Test RLS isolation using two mock auth users (`auth.uid() = user_A` vs `auth.uid() = user_B`) — 8c8ea19
