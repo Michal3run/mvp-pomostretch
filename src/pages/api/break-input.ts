@@ -4,16 +4,21 @@ export const prerender = false;
 
 import { z } from "zod";
 
-const formSchema = z.object({
-  quickPick: z.string().nullable().optional(),
-  freeText: z.string().nullable().optional(),
-}).refine(data => {
-  const qp = data.quickPick?.trim();
-  const ft = data.freeText?.trim();
-  return (qp && qp.length > 0) || (ft && ft.length > 0);
-}, {
-  message: "Wybierz opcję lub wpisz własną",
-});
+const formSchema = z
+  .object({
+    quickPick: z.string().nullable().optional(),
+    freeText: z.string().nullable().optional(),
+  })
+  .refine(
+    (data) => {
+      const qp = data.quickPick?.trim();
+      const ft = data.freeText?.trim();
+      return Boolean(qp?.length) || Boolean(ft?.length);
+    },
+    {
+      message: "Wybierz opcję lub wpisz własną",
+    },
+  );
 
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
@@ -24,9 +29,7 @@ export const POST: APIRoute = async (context) => {
   });
 
   if (!parseResult.success) {
-    return context.redirect(
-      `/break-input?error=${encodeURIComponent(parseResult.error.errors[0].message)}`
-    );
+    return context.redirect(`/break-input?error=${encodeURIComponent(parseResult.error.issues[0].message)}`);
   }
 
   const quickPick = parseResult.data.quickPick;
