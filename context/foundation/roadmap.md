@@ -103,15 +103,15 @@ This checklist is the single source of truth for "are we done?"
 
 Six milestones, ordered by dependency and risk:
 
-| ID     | Name                               | Type                 | Unlocks          | Estimated Effort |
-| ------ | ---------------------------------- | -------------------- | ---------------- | ---------------- |
-| **M0** | Auth Foundation                    | Vertical (done)      | M2, M5           | ✅ Complete      |
-| **M1** | Database Schema & Exercise Catalog | Horizontal (done)    | M4, M5           | ✅ Complete      |
-| **M2** | Pomodoro Timer                     | Vertical (done)      | M3               | ✅ Complete      |
-| **M3** | Break Input & Keyword Matching     | Vertical (done)      | M4               | ✅ Complete      |
-| **M4** | Exercise Selection & Sequence      | Vertical             | US-01 complete   | 5-6h             |
-| **M5** | Break History CRUD                 | Vertical             | Certification    | 6-8h             |
-| **M6** | Testing & Certification            | Cross-cutting        | Production-ready | 6-8h             |
+| ID     | Name                               | Type              | Unlocks          | Estimated Effort |
+| ------ | ---------------------------------- | ----------------- | ---------------- | ---------------- |
+| **M0** | Auth Foundation                    | Vertical (done)   | M2, M5           | ✅ Complete      |
+| **M1** | Database Schema & Exercise Catalog | Horizontal (done) | M4, M5           | ✅ Complete      |
+| **M2** | Pomodoro Timer                     | Vertical (done)   | M3               | ✅ Complete      |
+| **M3** | Break Input & Keyword Matching     | Vertical (done)   | M4               | ✅ Complete      |
+| **M4** | Exercise Selection & Sequence      | Vertical          | US-01 complete   | 5-6h             |
+| **M5** | Break History CRUD                 | Vertical          | Certification    | 6-8h             |
+| **M6** | Testing & Certification            | Cross-cutting     | Production-ready | 6-8h             |
 
 **Total estimated effort**: 27-35 hours (milestone-level coding) + **5-7 hours integration buffer** (handoff friction, cross-milestone debugging, refactoring) = **32-42 hours realistic total** (within 3-week after-hours budget of ~36-45h at 12-15h/week).
 
