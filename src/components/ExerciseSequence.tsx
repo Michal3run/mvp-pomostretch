@@ -27,11 +27,9 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [status, setStatus] = useState<"active" | "completed">(() =>
-    exercises.length > 0 ? "active" : "completed"
-  );
+  const [status, setStatus] = useState<"active" | "completed">(() => (exercises.length > 0 ? "active" : "completed"));
   const [secondsRemaining, setSecondsRemaining] = useState<number>(() =>
-    exercises.length > 0 ? exercises[0].duration_seconds : 0
+    exercises.length > 0 ? exercises[0].duration_seconds : 0,
   );
 
   // M5 preparation stats
@@ -76,7 +74,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         finishSequence(exercises);
       }
     },
-    [currentIndex, exercises, finishSequence]
+    [currentIndex, exercises, finishSequence],
   );
 
   const handleDone = useCallback(() => {
