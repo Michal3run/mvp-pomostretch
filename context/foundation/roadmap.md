@@ -27,23 +27,19 @@ The roadmap prioritizes **vertical slices** — user-visible outcomes that cross
 
 ## Baseline State
 
-**What exists** (bootstrap artifacts from Module 1):
+**What exists** (end of M3):
 
-- Auth foundation (90% complete): sign-up/sign-in/sign-out forms at `src/pages/auth/`, API endpoints at `src/pages/api/auth/`, middleware gating at `src/middleware.ts`, Supabase client wired, user session available via `Astro.locals.user`
-- Dashboard placeholder at `src/pages/dashboard.astro` (displays user email + sign-out button, no timer UI)
-- Astro 6 SSR on Cloudflare Workers, React 19 islands, Tailwind 4, shadcn/ui components
-- CI pipeline (`.github/workflows/ci.yml`) runs lint + build on push to `main`
-- Supabase `config.toml` exists but `supabase/migrations/` is empty — no database schema deployed
+- Auth foundation (sign-up/sign-in/sign-out, Supabase)
+- Database schema: `exercise` and `break_session` tables created, 12 seed exercises (M1)
+- Pomodoro timer: functional timer at dashboard with local storage persistence (M2)
+- Break input page: quick-pick buttons + keyword matching, saves to cookie (M3)
+- CI pipeline + Cloudflare workers deployment
 
 **What's missing** (gaps preventing US-01 demo):
 
-- Pomodoro timer UI and state management (FR-005 through FR-009)
-- Break-input page with 4 quick-picks + free-text field (FR-010 through FR-013)
-- Exercise sequence page with Done/Skip (FR-014 through FR-018)
-- Exercise catalog: `exercise` table + 12-15 seed rows covering 4 body-areas (FR-020 through FR-022)
-- Rule engine: keyword matcher + tag match + no-repeat + 1-3 selection logic (FR-019, FR-021, FR-022)
-- Break history CRUD: `break_session` table + 5 API endpoints + history page (FR-023 through FR-027)
-- Any tests (test-plan.md exists, no test code written yet)
+- Exercise sequence page with Done/Skip and Rule Engine (M4 - FR-014 through FR-019)
+- Break history CRUD: 5 API endpoints + history page (M5 - FR-023 through FR-027)
+- Any tests (M6 - test-plan.md exists, no test code written yet)
 
 **Status of existing change folders**:
 
@@ -56,11 +52,11 @@ The roadmap prioritizes **vertical slices** — user-visible outcomes that cross
 - ✅ User can register, sign in, sign out (FR-001 through FR-003)
 - ✅ Unauthenticated user redirected to sign-in (FR-004)
 - ✅ Production deployment live at https://pomo-stretch.michal3run.workers.dev
-- ✅ Supabase project configured, `auth.users` table operational
-- ✅ Auto-deploy on `main` via Cloudflare Workers Builds active
-- ❌ No pomodoro cycle yet
-- ❌ No exercise recommendation yet
-- ❌ No break history yet
+- ✅ Database deployed with exercise seed data (M1)
+- ✅ Pomodoro Timer works and persists state (FR-005 through FR-009, M2)
+- ✅ Break Input matches keywords and saves tags to cookie (FR-010 through FR-013, M3)
+- ❌ No exercise recommendation sequence yet (M4)
+- ❌ No break history yet (M5)
 
 ## Success Criteria for Roadmap Completion
 
@@ -90,12 +86,12 @@ The roadmap prioritizes **vertical slices** — user-visible outcomes that cross
 
 The roadmap is complete when **all** of the following are green:
 
-- [ ] **M0-M5 shipped**: All six milestones marked done, acceptance criteria met
+- [ ] **M0-M5 shipped**: M0, M1, M2, M3 done. M4, M5 pending.
 - [ ] **US-01 demoable**: Full pomodoro cycle (sign-in → timer → break → exercises → resume) works end-to-end on production
 - [ ] **CRUD certified**: Break history page accessible, user can view/edit/delete their own sessions, RLS tested with two users
 - [ ] **Tests green in CI**: E2E (R-03), integration (R-01, R-02, R-04, R-05, R-13), all passing
 - [ ] **Guardrails validated**: G1/G2/G3 measured and confirmed (see M6 measurement protocols)
-- [ ] **Production deployed**: ~~Cloudflare Worker live~~ ✅, ~~Supabase project created~~ ✅, ~~secrets configured~~ ✅, **M1 migrations applied**, smoke test passed
+- [ ] **Production deployed**: ~~Cloudflare Worker live~~ ✅, ~~Supabase project created~~ ✅, ~~secrets configured~~ ✅, ~~M1 migrations applied~~ ✅, smoke test passed
 - [ ] **Documentation current**: README updated with production URL (https://pomo-stretch.michal3run.workers.dev), setup instructions, test commands
 - [ ] **No P0/P1 bugs**: All High-impact risks from Risk Register resolved or accepted with documented mitigation
 
@@ -110,9 +106,9 @@ Six milestones, ordered by dependency and risk:
 | ID     | Name                               | Type                 | Unlocks          | Estimated Effort |
 | ------ | ---------------------------------- | -------------------- | ---------------- | ---------------- |
 | **M0** | Auth Foundation                    | Vertical (done)      | M2, M5           | ✅ Complete      |
-| **M1** | Database Schema & Exercise Catalog | Horizontal (bounded) | M4, M5           | 3-4h             |
-| **M2** | Pomodoro Timer                     | Vertical             | M3               | 4-5h             |
-| **M3** | Break Input & Keyword Matching     | Vertical             | M4               | 3-4h             |
+| **M1** | Database Schema & Exercise Catalog | Horizontal (done)    | M4, M5           | ✅ Complete      |
+| **M2** | Pomodoro Timer                     | Vertical (done)      | M3               | ✅ Complete      |
+| **M3** | Break Input & Keyword Matching     | Vertical (done)      | M4               | ✅ Complete      |
 | **M4** | Exercise Selection & Sequence      | Vertical             | US-01 complete   | 5-6h             |
 | **M5** | Break History CRUD                 | Vertical             | Certification    | 6-8h             |
 | **M6** | Testing & Certification            | Cross-cutting        | Production-ready | 6-8h             |
