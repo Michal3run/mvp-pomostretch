@@ -1,14 +1,16 @@
 # Plan: Session History CRUD
 
 ## Goal
+
 Implement robust, Zod-validated CRUD API endpoints for managing user break sessions (Session History), adhering to Astro SSR and project-specific RLS conventions.
 
 ## Implementation Phases
 
 ### Phase 1: Setup Session History List Endpoint (GET)
+
 - **File**: `src/pages/api/session-history/index.ts`
 - **Rules**: Export `const prerender = false`.
-- **Implementation**: 
+- **Implementation**:
   - Export an async `GET` function.
   - Verify `context.locals.user` exists. If not, return JSON `{ error: "Unauthorized" }` with status 401 (preventing HTML redirects from middleware).
   - Instantiate the Supabase client: `const supabase = createClient(context.request.headers, context.cookies)` to ensure cookies/headers are passed for RLS.
@@ -17,6 +19,7 @@ Implement robust, Zod-validated CRUD API endpoints for managing user break sessi
   - Return the results as a JSON response.
 
 ### Phase 2: Setup Session Management Endpoints (PATCH & DELETE)
+
 - **File**: `src/pages/api/session-history/[id].ts`
 - **Rules**: Export `const prerender = false`.
 - **Implementation**:
@@ -32,5 +35,6 @@ Implement robust, Zod-validated CRUD API endpoints for managing user break sessi
   - **Data Boundaries**: Rely on Supabase RLS policies (`auth.uid() = user_id`) to enforce data boundaries.
 
 ### Phase 3: Route Protection & Testing Validation
+
 - Ensure API endpoints strictly return 401 JSON errors (not HTML redirects) when unauthenticated.
 - Test endpoints to confirm they return the expected JSON structures and HTTP status codes (200, 400, 401, 404, 500).
