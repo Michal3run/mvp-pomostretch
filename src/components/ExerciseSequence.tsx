@@ -4,7 +4,7 @@ import { selectExercises } from "@/lib/rule-engine";
 import { saveStoredTimer } from "@/lib/timer-storage";
 import { getLastSessionIds, saveLastSessionIds } from "@/lib/session-storage";
 import { Button } from "@/components/ui/button";
-import { Check, SkipForward, Play, Home, Clock, Sparkles } from "lucide-react";
+import { Check, SkipForward, Play, Home, Clock, Sparkles, AlertCircle, RotateCcw } from "lucide-react";
 
 interface ExerciseSequenceProps {
   breakInput: BreakInputCookie;
@@ -140,6 +140,40 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     const s = sec % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
+
+  if (exercises.length === 0) {
+    return (
+      <div className="bg-card text-card-foreground mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-xl border p-8 text-center shadow-lg">
+        <div className="bg-destructive/10 text-destructive flex h-16 w-16 items-center justify-center rounded-full">
+          <AlertCircle size={32} />
+        </div>
+
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold tracking-tight">Brak dostępnych ćwiczeń</h2>
+          <p className="text-muted-foreground text-sm">
+            Nie udało się przygotować ćwiczeń. Wybierz ponownie rodzaj przerwy lub wróć do dashboardu.
+          </p>
+        </div>
+
+        <div className="flex w-full flex-col gap-3 pt-2">
+          <Button
+            onClick={() => {
+              window.location.assign("/break-input");
+            }}
+            size="lg"
+            className="w-full gap-2 text-base"
+          >
+            <RotateCcw size={18} />
+            Wybierz inną przerwę
+          </Button>
+          <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
+            <Home size={18} />
+            Wróć do dashboardu
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const currentExercise = exercises[currentIndex] as Exercise | undefined;
 
