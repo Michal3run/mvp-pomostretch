@@ -199,18 +199,18 @@ Mount the React island into the user dashboard.
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npm run typecheck`
-- [ ] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npm run typecheck`
+- [x] 3.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Component renders in Storybook/isolated test or local environment without errors
+- [x] 3.3 Component renders in Storybook/isolated test or local environment without errors
 
 ### Phase 4: Dashboard Integration
 
 #### Automated
 
-- [ ] 4.1 Build succeeds: `npm run build`
+- [x] 4.1 Build succeeds: `npm run build`
 
 #### Manual
 
