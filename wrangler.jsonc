@@ -12,4 +12,9 @@
   "observability": {
     "enabled": true,
   },
+  "env": {
+    "dev": {
+      "name": "pomo-stretch-dev",
+    },
+  },
 }
