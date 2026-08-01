@@ -2,17 +2,37 @@ import type { APIRoute } from "astro";
 
 export const prerender = false;
 
+import { z } from "zod";
+
+const formSchema = z.object({
+  quickPick: z.string().nullable().optional(),
+  freeText: z.string().nullable().optional(),
+}).refine(data => {
+  const qp = data.quickPick?.trim();
+  const ft = data.freeText?.trim();
+  return (qp && qp.length > 0) || (ft && ft.length > 0);
+}, {
+  message: "Wybierz opcję lub wpisz własną",
+});
+
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
 
-  const quickPick = form.get("quickPick") as string | null;
-  const rawFreeText = form.get("freeText") as string | null;
+  const parseResult = formSchema.safeParse({
+    quickPick: form.get("quickPick"),
+    freeText: form.get("freeText"),
+  });
+
+  if (!parseResult.success) {
+    return context.redirect(
+      `/break-input?error=${encodeURIComponent(parseResult.error.errors[0].message)}`
+    );
+  }
+
+  const quickPick = parseResult.data.quickPick;
+  const rawFreeText = parseResult.data.freeText;
   const trimmedText = rawFreeText?.trim();
   const freeText = trimmedText && trimmedText.length > 0 ? trimmedText : null;
-
-  if (!quickPick && !freeText) {
-    return context.redirect("/break-input?error=Wybierz opcję lub wpisz własną");
-  }
 
   let kind: "quick-pick" | "free-text" = "quick-pick";
   let value = "";
