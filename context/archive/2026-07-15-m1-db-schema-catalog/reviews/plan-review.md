@@ -1,4 +1,5 @@
 <!-- PLAN-REVIEW-REPORT -->
+
 # Plan Review: M1: Database Schema & Exercise Catalog Implementation Plan
 
 - **Plan**: `context/changes/m1-db-schema-catalog/plan.md`
@@ -9,15 +10,16 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|---|---|
-| End-State Alignment | PASS |
-| Lean Execution | PASS |
-| Architectural Fitness | PASS |
-| Blind Spots | WARNING |
-| Plan Completeness | PASS |
+| Dimension             | Verdict |
+| --------------------- | ------- |
+| End-State Alignment   | PASS    |
+| Lean Execution        | PASS    |
+| Architectural Fitness | PASS    |
+| Blind Spots           | WARNING |
+| Plan Completeness     | PASS    |
 
 ## Grounding
+
 Grounding: 5/5 paths ✓, 3/3 symbols ✓, brief↔plan ✓
 
 ## Findings

@@ -3,6 +3,7 @@
 ## Kontekst
 
 Mam gotową roadmapę MVP projektu PomoStretch w pliku `context/foundation/roadmap.md`. Zawiera ona 6 milestones (M0-M6) z pełnymi specyfikacjami:
+
 - M0: Auth Foundation (✅ gotowe)
 - M1: Database Schema & Exercise Catalog
 - M2: Pomodoro Timer
@@ -12,6 +13,7 @@ Mam gotową roadmapę MVP projektu PomoStretch w pliku `context/foundation/roadm
 - M6: Testing & Certification
 
 Każdy milestone ma:
+
 - **Outcome** (co zostanie dostarczone)
 - **Acceptance Criteria** (lista checkboxów definiująca "done")
 - **Dependencies** (od czego zależy, co blokuje)
@@ -32,27 +34,35 @@ Dla każdego milestone'a (M1 przez M6) utwórz issue z:
 **Tytuł**: Skopiuj z nagłówka milestone'a (np. "M1: Database Schema & Exercise Catalog")
 
 **Opis** powinien zawierać:
+
 ```markdown
 ## Outcome
+
 [Tekst z sekcji ### Outcome danego milestone'a]
 
 ## PRD References
+
 [Wyciągnij z sekcji "PRD coverage:" w metadanych milestone'a, np. "FR-005 through FR-009"]
 
 ## Dependencies
+
 **Depends on**: [lista milestone'ów które muszą być zakończone przed tym]
 **Blocks**: [lista milestone'ów które to blokuje]
 
 ## Acceptance Criteria
+
 [Skopiuj listę checkboxów z sekcji ### Acceptance Criteria]
 
 ## Risks
+
 [Skopiuj tabelę z sekcji ### Risks, jeśli istnieje]
 
 ## Estimated Effort
+
 [Wartość z kolumny "Estimated Effort" z Milestone Overview]
 
 ---
+
 📋 Full spec: `context/foundation/roadmap.md` section `## M[N]: [Name]`
 ```
 
@@ -79,12 +89,15 @@ Dodatkowo dla wszystkich (poza M0): `mvp`
 ### 4. Dependency Tracking
 
 GitHub nie ma wbudowanego dependency graphu, ale można to zaznaczyć:
+
 - W opisie każdego issue dodaj linki do zależności: "Depends on #[numer] #[numer]"
 - Gdy utworzysz issue, zapisz sobie numery, żeby móc je wstawić do kolejnych
 
 Alternatywnie: użyj task lists w body do trackowania zależności:
+
 ```markdown
 ## Prerequisites
+
 - [ ] #[numer] M1: Database Schema (jeśli zależy od M1)
 ```
 
@@ -115,12 +128,14 @@ gh issue create \
 ### 6. Co zrobić z M0?
 
 M0 (Auth Foundation) jest już **complete**. Możesz:
+
 - Albo pominąć (nie tworzyć issue bo już zrobione)
 - Albo utworzyć i od razu zamknąć z `--label complete` dla kompletności backlogu
 
 ## Oczekiwany Rezultat
 
 Po wykonaniu powinieneś mieć:
+
 - 6 issues w repo (lub 7 jeśli dodasz M0)
 - Wszystkie przypisane do milestone'a "MVP v1"
 - Dependency chain widoczny w opisach lub task listach

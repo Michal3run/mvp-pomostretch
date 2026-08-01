@@ -32,12 +32,13 @@ These are live config bugs found during infra research. Both must be fixed befor
 
 How to configure the CLI for Cloudflare (prompt m1l5-3). All commands use `npx` so no global install is needed.
 
-- [x] **1.1 Confirm a Cloudflare account exists.** Free tier is sufficient (100k requests/day, scale-to-zero). If you don't have one, create it at dash.cloudflare.com (free, no card required for Workers free tier). 🔴 *manual, account-side* ✅ account: michal3run
-- [x] **1.2 Authenticate wrangler.** `npx wrangler login` — opens the browser once to link your account and grant the CLI an API token. This is the **only** required GUI step. 🔴 *interactive, opens browser* ✅
+- [x] **1.1 Confirm a Cloudflare account exists.** Free tier is sufficient (100k requests/day, scale-to-zero). If you don't have one, create it at dash.cloudflare.com (free, no card required for Workers free tier). 🔴 _manual, account-side_ ✅ account: michal3run
+- [x] **1.2 Authenticate wrangler.** `npx wrangler login` — opens the browser once to link your account and grant the CLI an API token. This is the **only** required GUI step. 🔴 _interactive, opens browser_ ✅
 - [x] **1.3 Verify auth.** `npx wrangler whoami` — should print your account email + account ID. Read-only check. ✅
 - [ ] **1.4 (Optional) Confirm no name collision.** `npx wrangler deployments list` against the `pomo-stretch` name will error if the Worker doesn't exist yet — that's expected on first run and confirms the name is free.
 
 **Notes for an unfamiliar user:**
+
 - `wrangler` = Cloudflare's CLI. It deploys, streams logs, manages secrets, and rolls back — all from the terminal.
 - `npx wrangler <cmd>` runs the version pinned in this repo; you never need a separate global install.
 - Local dev stays `npm run dev` — as of `@astrojs/cloudflare` v13 it already runs on the `workerd` runtime, so it faithfully mimics production. **Do not** add a separate `wrangler dev` step; it's redundant here.
@@ -50,10 +51,10 @@ How to configure the CLI for Cloudflare (prompt m1l5-3). All commands use `npx` 
 
 The app reads `SUPABASE_URL` / `SUPABASE_KEY` via `astro:env/server`. The env schema marks them `optional: true`, so a missing secret fails **silently** (empty auth sessions, not a crash) — set them deliberately.
 
-- [x] **2.1 Set the Supabase URL secret.** `npx wrangler secret put SUPABASE_URL` → paste the value when prompted. 🔴 *writes a production secret to Cloudflare* ✅
+- [x] **2.1 Set the Supabase URL secret.** `npx wrangler secret put SUPABASE_URL` → paste the value when prompted. 🔴 _writes a production secret to Cloudflare_ ✅
 - [x] **2.2 Set the Supabase key secret.** `npx wrangler secret put SUPABASE_KEY` → paste the value. 🔴 ✅
 - [x] **2.3 Verify.** `npx wrangler secret list` — should list both names (values are never shown). ✅
-- [x] **2.4 Decide Supabase region.** Pick (or confirm) a Supabase project region near your primary users to protect the < 1.5 s break-content budget (NFR-1). 🔴 *account-side decision* ✅ cloud Supabase project created
+- [x] **2.4 Decide Supabase region.** Pick (or confirm) a Supabase project region near your primary users to protect the < 1.5 s break-content budget (NFR-1). 🔴 _account-side decision_ ✅ cloud Supabase project created
 
 **Secret hygiene:** never paste secret values into chat or commit them. `.dev.vars` (local) is gitignored; production values live only in Cloudflare; CI build values live in GitHub repo secrets. Three locations — set each intentionally.
 
@@ -66,7 +67,7 @@ The app reads `SUPABASE_URL` / `SUPABASE_KEY` via `astro:env/server`. The env sc
 Deploy once by hand to confirm the whole chain works before automating it.
 
 - [x] **3.1 Build.** `npm run build` — produces `./dist` (the `assets` binding directory in `wrangler.jsonc`). ✅ (note: on Node 26 the build emits a harmless libuv `async.c` assertion on process exit — `dist/` is produced correctly; repo pins Node 22 in `.nvmrc`)
-- [x] **3.2 Deploy.** `npx wrangler deploy` — uploads the Worker + static assets, returns a `*.workers.dev` production URL. 🔴 *publishes to production — first irreversible-ish action; revertible via rollback* ✅ **Live: https://pomo-stretch.michal3run.workers.dev** (Version ID `7c8b10d0-2859-4b5a-9d47-32edb95af33e`, startup 26 ms)
+- [x] **3.2 Deploy.** `npx wrangler deploy` — uploads the Worker + static assets, returns a `*.workers.dev` production URL. 🔴 _publishes to production — first irreversible-ish action; revertible via rollback_ ✅ **Live: https://pomo-stretch.michal3run.workers.dev** (Version ID `7c8b10d0-2859-4b5a-9d47-32edb95af33e`, startup 26 ms)
 - [x] **3.3 Smoke test the live URL.** Load the home page, `/auth/signin`, and a protected route (`/dashboard` should redirect when unauthenticated). Confirm auth round-trips to Supabase. ✅ home + signin `200`; `/dashboard` redirects when unauthenticated; signup→signin→dashboard verified end-to-end against Supabase
 - [ ] **3.4 Check logs.** `npx wrangler tail` — stream live runtime logs; confirm no `nodejs_compat` / runtime errors. Watch especially for any Node-API errors (relevant once the post-MVP LLM layer lands).
 
@@ -82,13 +83,14 @@ Deploy once by hand to confirm the whole chain works before automating it.
 
 Auto-deploy on the main branch handled by **Cloudflare Workers Builds**, not an external CI/CD system (prompt m1l5-2). The GitHub Actions workflow stays a quality gate (lint + build); it does **not** call `wrangler deploy`.
 
-- [x] **4.1 Connect the repo.** Cloudflare dashboard → Workers & Pages → the `pomo-stretch` Worker → **Builds** → Connect GitHub → select `Michal3run/mvp-pomostretch`. 🔴 *grants Cloudflare read access to the repo* ✅
+- [x] **4.1 Connect the repo.** Cloudflare dashboard → Workers & Pages → the `pomo-stretch` Worker → **Builds** → Connect GitHub → select `Michal3run/mvp-pomostretch`. 🔴 _grants Cloudflare read access to the repo_ ✅
 - [x] **4.2 Configure the build.** Production branch = `main`; build command = `npm run build`; deploy command = `npx wrangler deploy` (Cloudflare runs it on its side); output handled by the adapter. ✅
 - [x] **4.3 Set build-time vars on Cloudflare's side** if the build needs them (the Worker runtime secrets from Phase 2 are separate from build-time vars). For this app the build doesn't require Supabase creds, but confirm the build is green in the Cloudflare Builds log. ✅ build does not require Supabase creds
 - [x] **4.4 Verify the loop.** Push a trivial commit to `main` → confirm Cloudflare Builds triggers, builds, and deploys automatically; confirm GitHub Actions runs lint+build in parallel **without** deploying. ✅ verified via the docs-only commit that recorded this very line
 - [ ] **4.5 Preview deploys (optional).** Enable non-production branch builds in Workers Builds for per-PR preview URLs.
 
 **Division of labor (important):**
+
 - **GitHub Actions** (`ci.yml`): lint + build on every push/PR to `main`. Quality gate. Never deploys.
 - **Cloudflare Workers Builds**: builds + deploys on push to `main`. The only thing that publishes to production.
 

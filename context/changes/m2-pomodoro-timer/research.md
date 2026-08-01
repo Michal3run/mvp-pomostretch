@@ -60,9 +60,9 @@ To meet NFR-2 ("timer survives page refresh within ~30s") and Guardrail G3 witho
 - **State Schema (`roadmap.md:L298-L303`)**:
   ```typescript
   export interface TimerState {
-    startedAt: number;        // Date.now() when session began
-    durationMs: number;       // 25 * 60 * 1000 (1,500,000 ms)
-    extendedMs: number;       // accumulated +5min extensions (N * 300,000 ms)
+    startedAt: number; // Date.now() when session began
+    durationMs: number; // 25 * 60 * 1000 (1,500,000 ms)
+    extendedMs: number; // accumulated +5min extensions (N * 300,000 ms)
   }
   ```
 - **Storage Key**: `'pomostretch.timer'` (`roadmap.md:L305`).

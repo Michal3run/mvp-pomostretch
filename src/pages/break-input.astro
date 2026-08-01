@@ -16,19 +16,23 @@ const error = url.searchParams.get("error");
         <h1 class="text-3xl font-bold tracking-tight">Czas na przerwę!</h1>
         <p class="text-muted-foreground mt-4">Wybierz na czym chcesz się skupić lub wpisz własne potrzeby.</p>
       </div>
-      
-      {error && (
-        <div class="bg-destructive/15 text-destructive p-3 rounded-md text-sm text-center">
-          {error}
-        </div>
-      )}
+
+      {error && <div class="bg-destructive/15 text-destructive rounded-md p-3 text-center text-sm">{error}</div>}
 
       <form method="POST" action="/api/break-input" class="space-y-6">
         <div class="grid grid-cols-2 gap-4">
-          <Button type="submit" name="quickPick" value="Tylko oczy" variant="outline" className="h-16 text-lg">Tylko oczy</Button>
-          <Button type="submit" name="quickPick" value="Tylko kark" variant="outline" className="h-16 text-lg">Tylko kark</Button>
-          <Button type="submit" name="quickPick" value="Ogólne" variant="outline" className="h-16 text-lg">Ogólne</Button>
-          <Button type="submit" name="quickPick" value="Zaskocz mnie" variant="outline" className="h-16 text-lg">Zaskocz mnie</Button>
+          <Button type="submit" name="quickPick" value="Tylko oczy" variant="outline" className="h-16 text-lg"
+            >Tylko oczy</Button
+          >
+          <Button type="submit" name="quickPick" value="Tylko kark" variant="outline" className="h-16 text-lg"
+            >Tylko kark</Button
+          >
+          <Button type="submit" name="quickPick" value="Ogólne" variant="outline" className="h-16 text-lg"
+            >Ogólne</Button
+          >
+          <Button type="submit" name="quickPick" value="Zaskocz mnie" variant="outline" className="h-16 text-lg"
+            >Zaskocz mnie</Button
+          >
         </div>
 
         <div class="relative flex items-center py-2">
@@ -38,17 +42,19 @@ const error = url.searchParams.get("error");
         </div>
 
         <div class="space-y-4">
-          <Textarea 
-            name="freeText" 
-            placeholder="Opisz jak się czujesz, np. 'bolą mnie plecy od siedzenia'" 
-            className="resize-none min-h-[100px]"
+          <Textarea
+            name="freeText"
+            placeholder="Opisz jak się czujesz, np. 'bolą mnie plecy od siedzenia'"
+            className="min-h-[100px] resize-none"
           />
-          <Button type="submit" className="w-full h-12 text-lg">Wygeneruj zestaw</Button>
+          <Button type="submit" className="h-12 w-full text-lg">Wygeneruj zestaw</Button>
         </div>
       </form>
 
-      <div class="text-center pt-4">
-        <a href="/dashboard" class="text-muted-foreground hover:text-primary text-sm underline">Pomiń przerwę i wróć do dashboardu</a>
+      <div class="pt-4 text-center">
+        <a href="/dashboard" class="text-muted-foreground hover:text-primary text-sm underline"
+          >Pomiń przerwę i wróć do dashboardu</a
+        >
       </div>
     </div>
   </div>

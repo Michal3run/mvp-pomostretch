@@ -42,10 +42,10 @@ Solo developer shipping PomoStretch — a pomodoro work-cycle with pain-aware mi
 
 ## Pre-scaffold verification
 
-| Signal      | Value                                                          | Severity | Notes                                                                                   |
-| ----------- | -------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| npm package | not run                                                        | n/a      | `cmd_template` starts with `git clone` — no npm-published CLI to query                  |
-| GitHub repo | przeprogramowani/10x-astro-starter last pushed 2026-05-17      | fresh    | from `card.docs_url`; queried via GitHub REST API (gh CLI unavailable, used Invoke-RestMethod fallback) |
+| Signal      | Value                                                     | Severity | Notes                                                                                                   |
+| ----------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| npm package | not run                                                   | n/a      | `cmd_template` starts with `git clone` — no npm-published CLI to query                                  |
+| GitHub repo | przeprogramowani/10x-astro-starter last pushed 2026-05-17 | fresh    | from `card.docs_url`; queried via GitHub REST API (gh CLI unavailable, used Invoke-RestMethod fallback) |
 
 ## Scaffold log
 
@@ -102,21 +102,21 @@ Most findings are transitive — pulled in by upstream packages (`wrangler`, `mi
 
 ## Hints recorded but not acted on
 
-| Hint                       | Value                  |
-| -------------------------- | ---------------------- |
-| bootstrapper_confidence    | first-class            |
-| quality_override           | false                  |
-| path_taken                 | standard               |
-| self_check_answers         | null                   |
-| team_size                  | solo                   |
-| deployment_target          | cloudflare-pages       |
-| ci_provider                | github-actions         |
-| ci_default_flow            | auto-deploy-on-merge   |
-| has_auth                   | true                   |
-| has_payments               | false                  |
-| has_realtime               | false                  |
-| has_ai                     | true                   |
-| has_background_jobs        | false                  |
+| Hint                    | Value                |
+| ----------------------- | -------------------- |
+| bootstrapper_confidence | first-class          |
+| quality_override        | false                |
+| path_taken              | standard             |
+| self_check_answers      | null                 |
+| team_size               | solo                 |
+| deployment_target       | cloudflare-pages     |
+| ci_provider             | github-actions       |
+| ci_default_flow         | auto-deploy-on-merge |
+| has_auth                | true                 |
+| has_payments            | false                |
+| has_realtime            | false                |
+| has_ai                  | true                 |
+| has_background_jobs     | false                |
 
 These fields were read into bootstrapper's working memory and copied here for audit-trail completeness. v1 surfaces but does not act on them; a future M1L4 ("Memory Architecture") skill is expected to consume them when generating agent context.
 
@@ -125,6 +125,7 @@ These fields were read into bootstrapper's working memory and copied here for au
 Next: a future skill will set up agent context (CLAUDE.md, AGENTS.md). For now, your project is scaffolded and verified — happy hacking.
 
 Useful manual steps in the meantime:
+
 - `git init` (if you have not already) to start your own repo history.
 - Review any `.scaffold` siblings the conflict policy created and decide which version of each file to keep. (This run: none created.)
 - Address audit findings per your project's risk tolerance — the full breakdown is above. Quick path: `npm audit fix` resolves the HIGH (`devalue`) and most MODERATEs without breaking changes; the `@astrojs/check` major bump suggested for the YAML toolchain chain is `--force` territory and worth eyeballing first.

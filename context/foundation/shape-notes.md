@@ -109,12 +109,15 @@ Single role (flat); every authenticated user has identical capabilities. No admi
 ### Authentication
 
 - FR-001: User can register with email + password from a sign-up form. Priority: must-have
+
   > Socrates: Counter-argument considered: "Single-user MVP doesn't need registration; a hardcoded admin user is enough." Resolution: kept; course requirement #1 (access control) is explicit, hardcoded would force config-edit per laptop and reads as anonymous demo to evaluators.
 
 - FR-002: User can sign in with email + password from a sign-in form. Priority: must-have
+
   > Socrates: Counter-argument considered: "Persistent JWT/cookie means the user signs in once and never again; second-time sign-in is dead capability." Resolution: kept; cookies expire (7–30 days standard) and FR-003 sign-out triggers re-authentication.
 
 - FR-003: User can sign out, invalidating the active session token on the server. Priority: must-have
+
   > Socrates: Counter-argument considered: "Solo app on personal laptop — sign-out is dead UX." Resolution: kept; multi-device safety (borrowed laptop, public browser, demo on someone else's machine), course evaluator expects.
 
 - FR-004: An unauthenticated request to any gated route redirects to the sign-in screen. Priority: must-have
@@ -123,15 +126,19 @@ Single role (flat); every authenticated user has identical capabilities. No admi
 ### Pomodoro Timer
 
 - FR-005: User can start a 25-minute work session from the dashboard. Priority: must-have
+
   > Socrates: Counter-argument considered: "Hardcoded 25 minutes ignores users with different work cadences (ADHD, deep flow, varied tasks)." Resolution: kept for T1; configurability deferred to T3+ per A4 scope-down, surfaced in `## Non-Goals`.
 
 - FR-006: User sees a live countdown of the remaining work-session time. Priority: must-have
+
   > Socrates: Counter-argument considered: "Live countdown generates anxiety / clock-watching, lowering productivity." Resolution: kept; visible progress is core to pomodoro psychology — without it, no sense of session arc. Hide-toggle is a T3+ option (see OQ3).
 
 - FR-007: User can extend the active work session by +5 minutes. Priority: must-have
+
   > Socrates: Counter-argument considered: "+5 min undermines pomodoro discipline; every extension is procrastination." Resolution: kept; serves as data input for T3+ adaptive-break business logic (3× +5min → suggest longer break) — without FR-007, that future feature has no signal. G2 user agency.
 
 - FR-008: User can manually end the work session early and proceed to the break-input screen ("Zaczynaj przerwę"). Priority: must-have
+
   > Socrates: Counter-argument considered: "Manual break-start is anti-pattern; pomodoro discipline says timer rules, not user mood." Resolution: kept; real-world interrupts (meetings, lunch, urgent ping) > 0%. Forced timer in those moments = abandoned app. G2 agency.
 
 - FR-009: When the work-session countdown reaches zero, the app automatically transitions to the break-input screen. Priority: must-have
@@ -140,12 +147,15 @@ Single role (flat); every authenticated user has identical capabilities. No admi
 ### Break-Input Flow
 
 - FR-010: User can submit one of 4 quick-pick selections (Tylko oczy / Tylko kark / Ogólne / Zaskocz mnie) on the break-input screen to proceed to the exercise sequence. Priority: must-have
+
   > Socrates: Counter-argument considered: "4 buttons is arbitrary middle — either 1 (Zaskocz mnie alone) or 8+ (full body-area enumeration)." Resolution: kept; 4 covers Pareto desk-pain categories from ergonomic research plus an escape (Zaskocz mnie). 1 removes personalization; 8+ re-introduces decision paralysis. Re-evaluate empirically T3+.
 
 - FR-011: User can submit free-text describing what hurts; in T1 the input is parsed by case-insensitive keyword substring matching against a curated Polish + English keyword list to derive body-area tags. Priority: must-have
+
   > Socrates: Counter-argument considered: "T1 has no LLM — free-text with keyword match is theatre; drop the input field, leave only buttons." Resolution: kept; field is the upgrade hook for T2 LLM swap-in. Removing it now adds UI rework + user confusion in T2.
 
 - FR-012: User who submits free-text that does not match any known keyword still receives an exercise sequence — system falls back to a "general" tag selection rather than returning empty / error. Priority: must-have
+
   > Socrates: Counter-argument considered: "Should show explicit 'didn't understand' error to teach the user the keyword vocabulary." Resolution: kept; error path penalizes users with imperfect spelling / slang — graceful degradation is preferable. T2 LLM resolves fully.
 
 - FR-013: User can skip the entire break and proceed directly to a new work session ("Skip break"). Priority: must-have
@@ -154,18 +164,23 @@ Single role (flat); every authenticated user has identical capabilities. No admi
 ### Exercise Sequence
 
 - FR-014: User receives a sequence of 1–3 exercises selected by the rule engine after submitting break input. Priority: must-have
+
   > Socrates: Counter-argument considered: "Variable count creates inconsistent UX; fix at always 3." Resolution: kept; variable adapts to break time budget, available tag matches, and T3+ adaptive-break behavior. Fixed 3 forces filler exercises when quality matches < 3.
 
 - FR-015: User sees each exercise displayed with name, short description, and a per-exercise countdown timer. Priority: must-have
+
   > Socrates: Counter-argument considered: "Per-exercise countdown is granular noise; a single 5-min break-timer is enough." Resolution: kept; bounded micro-targets (30s, 1m, 30s) drive higher compliance than amorphous 5-min blocks per behavioral-design research.
 
 - FR-016: User can mark the current exercise as Done to advance to the next exercise (or end the sequence if it's the last). Priority: must-have
+
   > Socrates: Counter-argument considered: "Auto-advance when countdown hits zero is enough; Done button is redundant tap." Resolution: kept; Done = "completed it" semantic distinct from Skip. T3+ analytics distinguishes compliance %. User may finish faster than countdown (5 reps in 20s) and tap Done.
 
 - FR-017: User can Skip the current exercise to advance to the next exercise (or end the sequence if it's the last). Priority: must-have
+
   > Socrates: Counter-argument considered: "Skip is functionally identical to Done in the state machine; drop one of them." Resolution: kept; semantically distinct (skip ≠ done). Critical input for T3+ pain-memory rule (skipped neck ≠ completed neck → biased recommendation later). G2 agency.
 
 - FR-018: After the last exercise (or after skipping all), user sees a "Resume work?" prompt and can confirm to start a new work session or dismiss to stay idle. Priority: must-have
+
   > Socrates: Counter-argument considered: "Auto-resume the work session — prompts add friction and contradict pomodoro flow." Resolution: kept; symmetry with FR-008 (manual end). User after break may need tea / water / bathroom — auto-resume = forced cycle, abandonable. Pomodoro contract is boundary discipline, not auto-loop.
 
 - FR-019: User who completes consecutive breaks does not see the same exercise twice in a row (no-repeat across adjacent breaks within the same browser session). Priority: must-have
@@ -174,9 +189,11 @@ Single role (flat); every authenticated user has identical capabilities. No admi
 ### Catalog & Rule Engine
 
 - FR-020: User receives 1–3 exercises drawn from a server-side seed catalog of 10–15 exercises, each tagged with body-area(s), duration in seconds, and instruction text. Priority: must-have
+
   > Socrates: Counter-argument considered: "10–15 is too few — 5+ body-areas × 2–3 intensities = 15+ minimum." Resolution: kept (10–15 floor) per A5 scope-down; 4 quick-pick paths × ≥2 exercises each = 8–12 minimum coverage. Extending to 20–25 is a T2+ quick win.
 
 - FR-021: User receives an exercise selection whose tags match the body-area tags derived from their input (quick-pick selection or keyword-matched free-text). Priority: must-have
+
   > Socrates: Counter-argument considered: "Pure body-area match ignores intensity; a chronic-pain user shouldn't get a high-intensity exercise for the painful area." Resolution: kept for T1; single-dimension (body-area) only. Intensity dimension is T2+ when LLM extracts intensity context (see OQ4).
 
 - FR-022: User receives a non-empty exercise sequence regardless of which input combination they submit — the catalog covers every quick-pick option and every recognized keyword tag. Priority: must-have
@@ -245,31 +262,31 @@ When the user starts a break, the app selects 1–3 exercises from a tagged cata
 
 ## Quality cross-check (Phase 7)
 
-| Element | Status |
-|---|---|
-| Access Control | **present** (`## Access Control` — email + password, flat single role, gated routes) |
-| Business Logic (one-sentence rule) | **present** (`## Business Logic` — declarative rule, not "TBD") |
-| Project artifacts | **present** (this `shape-notes.md` with valid frontmatter checkpoint) |
-| Timeline-cost ack | `mvp_weeks=3` ≤ 3 default — within tight-timeline budget; no separate acknowledgment block needed |
-| Non-Goals | **present** (15 items: 11 functional + 4 non-functional) |
-| Preserved behavior | **n/a** (greenfield) |
+| Element                            | Status                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Access Control                     | **present** (`## Access Control` — email + password, flat single role, gated routes)              |
+| Business Logic (one-sentence rule) | **present** (`## Business Logic` — declarative rule, not "TBD")                                   |
+| Project artifacts                  | **present** (this `shape-notes.md` with valid frontmatter checkpoint)                             |
+| Timeline-cost ack                  | `mvp_weeks=3` ≤ 3 default — within tight-timeline budget; no separate acknowledgment block needed |
+| Non-Goals                          | **present** (15 items: 11 functional + 4 non-functional)                                          |
+| Preserved behavior                 | **n/a** (greenfield)                                                                              |
 
 **Result:** all 5 applicable elements present, brownfield-only check skipped. `quality_check_status: accepted` — no gaps to surface to `/10x-prd`'s Open Questions.
 
-> **Update 2026-06-08 — CRUD line revisited.** The original cross-check did not separately verify *user-owned* CRUD; it conflated auth sign-up + read-only catalog with course requirement #2. Re-evaluation against the rubric showed the gap. Closure is in flight via `context/changes/session-history-crud/` (promote break-session to a Supabase table with all 4 verbs + RLS). Treat this `Quality cross-check` table as **conditionally accepted** — fully accepted once the change lands and FR-023..FR-027 + NFR-10 are merged into PRD.
+> **Update 2026-06-08 — CRUD line revisited.** The original cross-check did not separately verify _user-owned_ CRUD; it conflated auth sign-up + read-only catalog with course requirement #2. Re-evaluation against the rubric showed the gap. Closure is in flight via `context/changes/session-history-crud/` (promote break-session to a Supabase table with all 4 verbs + RLS). Treat this `Quality cross-check` table as **conditionally accepted** — fully accepted once the change lands and FR-023..FR-027 + NFR-10 are merged into PRD.
 
 ## Data Architecture (informational)
 
 Persistence boundaries decided in Phase 3:
 
-| Data | Storage | Rationale |
-|---|---|---|
-| Auth (email, password_hash) | Server-side DB | Hash never on client; login from any device |
-| Exercise catalog (seed of 10–15) | Server-side DB | Seeded once at deploy; client requests subset per break |
-| Pomodoro work-timer state | `localStorage` | G3 durability — survives refresh; per-device by design |
-| Break history (exercise IDs, timestamps, user input) | `localStorage` | Solo single-laptop workflow; pain-memory rule (T2) reads here |
-| Pain-memory bias data (T2+) | `localStorage` (computed) | Aggregation of recent break history; no separate store needed |
-| Server-side user-state backup / multi-device sync | **Deferred to T3+** | Not blocking single-user MVP; revisit only if multi-device sync becomes a real use case |
+| Data                                                 | Storage                   | Rationale                                                                               |
+| ---------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------- |
+| Auth (email, password_hash)                          | Server-side DB            | Hash never on client; login from any device                                             |
+| Exercise catalog (seed of 10–15)                     | Server-side DB            | Seeded once at deploy; client requests subset per break                                 |
+| Pomodoro work-timer state                            | `localStorage`            | G3 durability — survives refresh; per-device by design                                  |
+| Break history (exercise IDs, timestamps, user input) | `localStorage`            | Solo single-laptop workflow; pain-memory rule (T2) reads here                           |
+| Pain-memory bias data (T2+)                          | `localStorage` (computed) | Aggregation of recent break history; no separate store needed                           |
+| Server-side user-state backup / multi-device sync    | **Deferred to T3+**       | Not blocking single-user MVP; revisit only if multi-device sync becomes a real use case |
 
 This split keeps the T1 backend at ~3 endpoints (sign-up, sign-in, GET catalog), which is consistent with `mvp-ideas.md`'s "thin backend" intent. The pain-extraction endpoint (T2+) makes the backend ~4–5.
 
@@ -278,6 +295,7 @@ This split keeps the T1 backend at ~3 endpoints (sign-up, sign-in, GET catalog),
 > **Status: resolved on 2026-06-04 via `/10x-tech-stack-selector`.** Selection locked at `context/foundation/tech-stack.md` (`starter_id: 10x-astro-starter`, deploy: `cloudflare-pages`, CI: `github-actions` auto-deploy-on-merge). The author-volunteered candidates below are kept for historical context only — they reflect the initial preference space, not the locked decision.
 
 **Locked stack (from `tech-stack.md`):**
+
 - **Starter:** `10x-astro-starter` — Astro 6 + React 19 islands + TypeScript + Tailwind 4 + Supabase (Postgres + Auth + storage) + Cloudflare Pages/Workers/KV. Single full-stack repo.
 - **Deployment:** `cloudflare-pages` (edge runtime, free tier, gives `*.pages.dev` subdomain by default; custom domain optional).
 - **CI/CD:** GitHub Actions auto-deploy-on-merge to `main`. PR previews on Cloudflare per-PR free.
@@ -287,11 +305,11 @@ This split keeps the T1 backend at ~3 endpoints (sign-up, sign-in, GET catalog),
 
 **Originally considered (now superseded):**
 
-- **Backend candidate:** ASP.NET Core 9 Minimal API + EF Core; SQLite (dev) / Postgres (prod) — *dropped: would have required a second repo + separate frontend bootstrapping + manual auth wiring; +8–12h zero-to-one overhead vs the locked full-stack starter, against a 15–20h T1 budget.*
-- **Frontend candidate:** React + Vite + TypeScript + TailwindCSS + shadcn/ui — *folded into Astro: React + TS + Tailwind survive verbatim as React islands inside Astro pages; only the Vite-as-build-tool layer was replaced by Astro's build pipeline.*
-- **Auth implementation candidates:** ASP.NET Core Identity, Clerk, Auth0 — *dropped: Supabase Auth in the starter covers the same surface (email + password, OAuth-ready, hash management) without separate setup.*
-- **Hosting candidates:** Azure App Service, Vercel, Netlify, Supabase free tier — *Supabase kept for DB + Auth, Vercel listed as alternative deployment target in the starter card; Cloudflare Pages preferred for edge-runtime latency profile and free tier.*
-- **T2+ candidates:** Resend / SendGrid (transactional email), Google OAuth via OIDC — *unchanged: still T2+, now arrive via Supabase Auth providers (Google OAuth is a one-config-line add) and a Cloudflare-Workers-compatible email provider when transactional email lands.*
+- **Backend candidate:** ASP.NET Core 9 Minimal API + EF Core; SQLite (dev) / Postgres (prod) — _dropped: would have required a second repo + separate frontend bootstrapping + manual auth wiring; +8–12h zero-to-one overhead vs the locked full-stack starter, against a 15–20h T1 budget._
+- **Frontend candidate:** React + Vite + TypeScript + TailwindCSS + shadcn/ui — _folded into Astro: React + TS + Tailwind survive verbatim as React islands inside Astro pages; only the Vite-as-build-tool layer was replaced by Astro's build pipeline._
+- **Auth implementation candidates:** ASP.NET Core Identity, Clerk, Auth0 — _dropped: Supabase Auth in the starter covers the same surface (email + password, OAuth-ready, hash management) without separate setup._
+- **Hosting candidates:** Azure App Service, Vercel, Netlify, Supabase free tier — _Supabase kept for DB + Auth, Vercel listed as alternative deployment target in the starter card; Cloudflare Pages preferred for edge-runtime latency profile and free tier._
+- **T2+ candidates:** Resend / SendGrid (transactional email), Google OAuth via OIDC — _unchanged: still T2+, now arrive via Supabase Auth providers (Google OAuth is a one-config-line add) and a Cloudflare-Workers-compatible email provider when transactional email lands._
 
 ## Forward: pain-extraction security backlog (informational — applied when endpoint lands in T2+)
 
