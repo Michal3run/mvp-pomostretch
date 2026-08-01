@@ -14,6 +14,7 @@ We are implementing Milestone 1 (M1) from the project roadmap: creating the init
 ## Desired End State
 
 Two Supabase SQL migration files in `supabase/migrations/` that apply cleanly on local dev (`npx supabase db reset`) and staging:
+
 1. `exercise` table created with check constraints on `duration_seconds` ($30 \le \text{duration} \le 120$) and `body_areas` (`array_length > 0`), RLS enabled with a `SELECT` policy for `authenticated` users, and 15 original seed rows covering `eyes`, `neck`, `shoulders`, `lower_back`, and `general` ($\ge 2$ per area).
 2. `break_session` table created with a foreign key `user_id REFERENCES auth.users(id) ON DELETE CASCADE`, check constraints (`input_kind`, `selected_exercise_ids` length between 1 and 3, `note` length $\le 500$), an index `(user_id, created_at DESC)`, RLS enabled, and 4 granular policies (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) ensuring `user_id = auth.uid()`.
 
@@ -32,6 +33,7 @@ Two Supabase SQL migration files in `supabase/migrations/` that apply cleanly on
 ## Implementation Approach
 
 We will create the `supabase/migrations/` directory and write two timestamped SQL migrations in sequence:
+
 1. `YYYYMMDDHHmmss_create_exercise_table.sql` — creates the `exercise` table, enables RLS, grants `SELECT` to `authenticated`, and inserts 15 high-quality, original ergonomic exercises across the specified body areas.
 2. `YYYYMMDDHHmmss_create_break_session_table.sql` — creates the `break_session` table with all check constraints, composite index `(user_id, created_at DESC)`, enables RLS, and creates 4 per-operation per-role policies (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) for `user_id = auth.uid()`.
 

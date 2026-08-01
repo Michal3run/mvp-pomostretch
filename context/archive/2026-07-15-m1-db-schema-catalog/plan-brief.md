@@ -17,22 +17,24 @@ When complete, two timestamped SQL migrations (`exercise` and `break_session`) a
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Seed Data Location | Embed `INSERT` statements inside the SQL migration file | Keeps schema DDL and initial catalog data atomic, version-controlled, and deterministic across dev/staging | Roadmap |
-| Exercise Catalog Access | Public read (`SELECT`) for `authenticated` role via RLS | All logged-in users need to browse and receive recommendations from the shared catalog without per-user restrictions | Roadmap |
-| `break_session` Security | Granular RLS policies (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) checked against `auth.uid() = user_id` | Enforces zero-trust data isolation so users can only view or modify their own break records | Roadmap |
-| Cascade Deletion | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE` | Automatically cleans up break history rows when a user account is deleted, preventing orphaned data | Roadmap |
+| Decision                 | Choice                                                                                                | Why (1 sentence)                                                                                                     | Source  |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------- |
+| Seed Data Location       | Embed `INSERT` statements inside the SQL migration file                                               | Keeps schema DDL and initial catalog data atomic, version-controlled, and deterministic across dev/staging           | Roadmap |
+| Exercise Catalog Access  | Public read (`SELECT`) for `authenticated` role via RLS                                               | All logged-in users need to browse and receive recommendations from the shared catalog without per-user restrictions | Roadmap |
+| `break_session` Security | Granular RLS policies (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) checked against `auth.uid() = user_id` | Enforces zero-trust data isolation so users can only view or modify their own break records                          | Roadmap |
+| Cascade Deletion         | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE`                                   | Automatically cleans up break history rows when a user account is deleted, preventing orphaned data                  | Roadmap |
 
 ## Scope
 
 **In scope:**
+
 - Creating `supabase/migrations/` directory.
 - Writing `YYYYMMDDHHmmss_create_exercise_table.sql` with check constraints and 15 seed rows across 5 body areas.
 - Writing `YYYYMMDDHHmmss_create_break_session_table.sql` with check constraints, composite index, and 4 RLS policies.
 - Automated and manual verification of schema, seed counts, and RLS isolation.
 
 **Out of scope:**
+
 - API endpoints (`/api/break-input`, `/api/sessions`).
 - UI screens and pages (`/break-input`, `/exercise-sequence`, `/history`).
 - TypeScript rule engine (`src/lib/rule-engine.ts`).
@@ -43,10 +45,10 @@ We write two clean, idempotent SQL migrations. Migration 1 (`20260715120000_crea
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Exercise Table Schema & Seed Data | `exercise` table DDL, check constraints, RLS read access, and 15 seed exercises | Seed data fails to cover $\ge 2$ rows per body area (`eyes`, `neck`, `shoulders`, `lower_back`, `general`) |
-| 2. Break Session Table Schema & RLS Policies | `break_session` DDL, FK to `auth.users`, index `(user_id, created_at DESC)`, and 4 RLS policies | RLS policy gaps allowing cross-user reads or updates |
+| Phase                                        | What it delivers                                                                                | Key risk                                                                                                   |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1. Exercise Table Schema & Seed Data         | `exercise` table DDL, check constraints, RLS read access, and 15 seed exercises                 | Seed data fails to cover $\ge 2$ rows per body area (`eyes`, `neck`, `shoulders`, `lower_back`, `general`) |
+| 2. Break Session Table Schema & RLS Policies | `break_session` DDL, FK to `auth.users`, index `(user_id, created_at DESC)`, and 4 RLS policies | RLS policy gaps allowing cross-user reads or updates                                                       |
 
 **Prerequisites:** Local Supabase CLI installed (`npx supabase`) or local/remote Postgres instance accessible.
 **Estimated effort:** ~3-4 hours (2 implementation phases).

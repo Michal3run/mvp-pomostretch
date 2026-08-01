@@ -66,12 +66,15 @@ Catalog robustness — every quick-button selection always yields ≥1 exercise 
 ### Authentication
 
 - FR-001: User can register with email + password from a sign-up form. Priority: must-have
+
   > Socratic: Counter-argument considered: "Single-user MVP doesn't need registration; a hardcoded admin user is enough." Resolution: kept; access control is an explicit baseline requirement, hardcoded would force config-edit per laptop and reads as anonymous demo to evaluators.
 
 - FR-002: User can sign in with email + password from a sign-in form. Priority: must-have
+
   > Socratic: Counter-argument considered: "Persistent session means the user signs in once and never again; second-time sign-in is dead capability." Resolution: kept; session lifetimes are bounded (typical 7–30 days) and FR-003 sign-out triggers re-authentication.
 
 - FR-003: User can sign out, ending the active authenticated session. Priority: must-have
+
   > Socratic: Counter-argument considered: "Solo app on personal laptop — sign-out is dead UX." Resolution: kept; multi-device safety (borrowed laptop, public browser, demo on someone else's machine), evaluators expect this affordance.
 
 - FR-004: An unauthenticated request to any gated route redirects to the sign-in screen. Priority: must-have
@@ -80,15 +83,19 @@ Catalog robustness — every quick-button selection always yields ≥1 exercise 
 ### Pomodoro Timer
 
 - FR-005: User can start a 25-minute work session from the dashboard. Priority: must-have
+
   > Socratic: Counter-argument considered: "Hardcoded 25 minutes ignores users with different work cadences (ADHD, deep flow, varied tasks)." Resolution: kept for MVP; configurability deferred and surfaced in `## Non-Goals`.
 
 - FR-006: User sees a live countdown of the remaining work-session time. Priority: must-have
+
   > Socratic: Counter-argument considered: "Live countdown generates anxiety / clock-watching, lowering productivity." Resolution: kept; visible progress is core to pomodoro psychology — without it, no sense of session arc. Hide-toggle is a future option (see Open Questions).
 
 - FR-007: User can extend the active work session by +5 minutes. Priority: must-have
+
   > Socratic: Counter-argument considered: "+5 min undermines pomodoro discipline; every extension is procrastination." Resolution: kept; serves as data input for a future adaptive-break business rule (3× +5min → suggest longer break) — without FR-007, that future feature has no signal.
 
 - FR-008: User can manually end the work session early and proceed to the break-input screen ("Zaczynaj przerwę"). Priority: must-have
+
   > Socratic: Counter-argument considered: "Manual break-start is anti-pattern; pomodoro discipline says timer rules, not user mood." Resolution: kept; real-world interrupts (meetings, lunch, urgent ping) > 0%. Forced timer in those moments produces an abandoned app.
 
 - FR-009: When the work-session countdown reaches zero, the app automatically transitions to the break-input screen. Priority: must-have
@@ -97,12 +104,15 @@ Catalog robustness — every quick-button selection always yields ≥1 exercise 
 ### Break-Input Flow
 
 - FR-010: User can submit one of 4 quick-pick selections (Tylko oczy / Tylko kark / Ogólne / Zaskocz mnie) on the break-input screen to proceed to the exercise sequence. Priority: must-have
+
   > Socratic: Counter-argument considered: "4 buttons is arbitrary middle — either 1 (Zaskocz mnie alone) or 8+ (full body-area enumeration)." Resolution: kept; 4 covers Pareto desk-pain categories from ergonomic research plus an escape (Zaskocz mnie). 1 removes personalization; 8+ re-introduces decision paralysis.
 
 - FR-011: User can submit free-text describing what hurts; in the MVP the input is processed by case-insensitive keyword substring matching against a curated Polish + English keyword list to derive body-area tags. Priority: must-have
+
   > Socratic: Counter-argument considered: "MVP has no inference layer — free-text with keyword match is theatre; drop the input field, leave only buttons." Resolution: kept; field is the upgrade hook for a later extraction-service swap-in. Removing it now adds UI rework + user confusion later.
 
 - FR-012: User who submits free-text that does not match any known keyword still receives an exercise sequence — system falls back to a "general" tag selection rather than returning empty / error. Priority: must-have
+
   > Socratic: Counter-argument considered: "Should show explicit 'didn't understand' error to teach the user the keyword vocabulary." Resolution: kept; error path penalizes users with imperfect spelling / slang — graceful degradation is preferable.
 
 - FR-013: User can skip the entire break and proceed directly to a new work session ("Skip break"). Priority: must-have
@@ -111,18 +121,23 @@ Catalog robustness — every quick-button selection always yields ≥1 exercise 
 ### Exercise Sequence
 
 - FR-014: User receives a sequence of 1–3 exercises selected by the rule engine after submitting break input. Priority: must-have
+
   > Socratic: Counter-argument considered: "Variable count creates inconsistent UX; fix at always 3." Resolution: kept; variable adapts to break time budget, available tag matches, and future adaptive-break behavior. Fixed 3 forces filler exercises when quality matches < 3.
 
 - FR-015: User sees each exercise displayed with name, short description, and a per-exercise countdown timer. Priority: must-have
+
   > Socratic: Counter-argument considered: "Per-exercise countdown is granular noise; a single 5-min break-timer is enough." Resolution: kept; bounded micro-targets (30s, 1m, 30s) drive higher compliance than amorphous 5-min blocks per behavioral-design research.
 
 - FR-016: User can mark the current exercise as Done to advance to the next exercise (or end the sequence if it's the last). Priority: must-have
+
   > Socratic: Counter-argument considered: "Auto-advance when countdown hits zero is enough; Done button is redundant tap." Resolution: kept; Done = "completed it" semantic distinct from Skip. Future analytics distinguishes compliance %. User may finish faster than countdown (5 reps in 20s) and tap Done.
 
 - FR-017: User can Skip the current exercise to advance to the next exercise (or end the sequence if it's the last). Priority: must-have
+
   > Socratic: Counter-argument considered: "Skip is functionally identical to Done in the state machine; drop one of them." Resolution: kept; semantically distinct (skip ≠ done). Critical input for a future pain-memory rule (skipped neck ≠ completed neck → biased recommendation later).
 
 - FR-018: After the last exercise (or after skipping all), user sees a "Resume work?" prompt and can confirm to start a new work session or dismiss to stay idle. Priority: must-have
+
   > Socratic: Counter-argument considered: "Auto-resume the work session — prompts add friction and contradict pomodoro flow." Resolution: kept; symmetry with FR-008 (manual end). User after break may need tea / water / bathroom — auto-resume = forced cycle, abandonable.
 
 - FR-019: User who completes consecutive breaks does not see the same exercise twice in a row (no-repeat across adjacent breaks within the same browser session). Priority: must-have
@@ -131,9 +146,11 @@ Catalog robustness — every quick-button selection always yields ≥1 exercise 
 ### Catalog & Rule Engine
 
 - FR-020: User receives 1–3 exercises drawn from a curated seed catalog of 10–15 exercises, each tagged with body-area(s), duration in seconds, and instruction text. Priority: must-have
+
   > Socratic: Counter-argument considered: "10–15 is too few — 5+ body-areas × 2–3 intensities = 15+ minimum." Resolution: kept (10–15 floor) per MVP scope-down; 4 quick-pick paths × ≥2 exercises each = 8–12 minimum coverage. Extending to 20–25 is a quick win post-MVP.
 
 - FR-021: User receives an exercise selection whose tags match the body-area tags derived from their input (quick-pick selection or keyword-matched free-text). Priority: must-have
+
   > Socratic: Counter-argument considered: "Pure body-area match ignores intensity; a chronic-pain user shouldn't get a high-intensity exercise for the painful area." Resolution: kept for MVP; single-dimension (body-area) only. Intensity dimension is post-MVP when richer input extraction is added (see Open Questions).
 
 - FR-022: User receives a non-empty exercise sequence regardless of which input combination they submit — the catalog covers every quick-pick option and every recognized keyword tag. Priority: must-have

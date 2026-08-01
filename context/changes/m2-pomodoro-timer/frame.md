@@ -1,6 +1,6 @@
 # Frame Brief: m2-pomodoro-timer
 
-> Framing step before /10x-plan. This document captures what is *actually*
+> Framing step before /10x-plan. This document captures what is _actually_
 > at issue, separated from what was initially assumed.
 
 ## Reported Observation
@@ -18,16 +18,16 @@ Potrzebujemy licznika Pomodoro (25 min) na dashboardzie, który przetrwa odświe
 The observation could originate at any of these dimensions:
 
 1. **Browser Execution Throttling** — The interval stops completely in background, meaning auto-navigate won't fire exactly when time expires, but only when the user returns.
-2. **Client-side State Volatility** — `localStorage` fails in incognito mode (quota=0), breaking NFR-2 (refresh survival) completely unless the fallback is bulletproof.  ← initial framing
+2. **Client-side State Volatility** — `localStorage` fails in incognito mode (quota=0), breaking NFR-2 (refresh survival) completely unless the fallback is bulletproof. ← initial framing
 3. **Session Expiry Timing (60s rule)** — Skew in `Date.now()` after OS sleep might break the overdue check (`elapsed >= total by <= 60s`), causing jarring redirects instead of the "Expired Session UI".
 
 ## Hypothesis Investigation
 
-| Hypothesis | Evidence | Verdict |
-| --- | --- | --- |
-| Browser Execution Throttling | Codebase lacks `visibilitychange` handlers. `setInterval` will fail to fire in background. Needs delta calculation + visibility event to recover. | STRONG |
-| Client-side State Volatility | Lesson L4 explicitly names this risk and mandates the try-catch fallback. `Banner.astro` exists as a potential pattern. | STRONG |
-| Session Expiry Timing (60s rule) | Roadmap explicitly accounts for OS sleep. Delta checking `Date.now() - startedAt` correctly triggers manual recovery if `>60s`. | NONE (Rule is safe) |
+| Hypothesis                       | Evidence                                                                                                                                          | Verdict             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| Browser Execution Throttling     | Codebase lacks `visibilitychange` handlers. `setInterval` will fail to fire in background. Needs delta calculation + visibility event to recover. | STRONG              |
+| Client-side State Volatility     | Lesson L4 explicitly names this risk and mandates the try-catch fallback. `Banner.astro` exists as a potential pattern.                           | STRONG              |
+| Session Expiry Timing (60s rule) | Roadmap explicitly accounts for OS sleep. Delta checking `Date.now() - startedAt` correctly triggers manual recovery if `>60s`.                   | NONE (Rule is safe) |
 
 ## Narrowing Signals
 

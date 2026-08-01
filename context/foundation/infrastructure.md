@@ -22,14 +22,14 @@ The repo is already scaffolded for it — `@astrojs/cloudflare` adapter, `wrangl
 
 Hard filter applied: Q1 = "No persistent connections" (`has_realtime: false`, `has_background_jobs: false`) → no platform dropped on the persistent-process filter. Tech stack is JS/TS on an edge-compatible runtime → all six candidates technically viable.
 
-| Platform | CLI-first | Managed/Serverless | Agent-readable docs | Stable deploy API | MCP / Integration | Total |
-|---|---|---|---|---|---|---|
-| **Cloudflare Workers** | Pass | Pass | Pass | Pass | Pass | **5 Pass** |
-| Vercel | Pass | Pass | Pass | Pass | Partial (MCP beta) | 4P / 1Partial |
-| Netlify | Pass | Pass | Pass | Pass | Pass | 5 Pass |
-| Fly.io | Pass | Partial (managed VMs) | Pass | Pass | Fail (no MCP) | 3P / 1Pt / 1F |
-| Railway | Pass | Pass | Partial | Pass | Fail | 3P / 1Pt / 1F |
-| Render | Partial (hooks+API) | Pass | Partial | Pass | Fail | 3P / 2Pt |
+| Platform               | CLI-first           | Managed/Serverless    | Agent-readable docs | Stable deploy API | MCP / Integration  | Total         |
+| ---------------------- | ------------------- | --------------------- | ------------------- | ----------------- | ------------------ | ------------- |
+| **Cloudflare Workers** | Pass                | Pass                  | Pass                | Pass              | Pass               | **5 Pass**    |
+| Vercel                 | Pass                | Pass                  | Pass                | Pass              | Partial (MCP beta) | 4P / 1Partial |
+| Netlify                | Pass                | Pass                  | Pass                | Pass              | Pass               | 5 Pass        |
+| Fly.io                 | Pass                | Partial (managed VMs) | Pass                | Pass              | Fail (no MCP)      | 3P / 1Pt / 1F |
+| Railway                | Pass                | Pass                  | Partial             | Pass              | Fail               | 3P / 1Pt / 1F |
+| Render                 | Partial (hooks+API) | Pass                  | Partial             | Pass              | Fail               | 3P / 2Pt      |
 
 ### Shortlisted Platforms
 
@@ -77,15 +77,15 @@ Six months in, the deploy "worked" but the app was quietly broken in production.
 
 ## Risk Register
 
-| Risk | Source | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| CI triggers on `master`, default branch is `main` — gate never runs | Unknown unknowns | H | H | Change `on.push`/`on.pull_request` branches to `main` in `ci.yml`; verify a PR triggers the run |
-| Worker deployed under default name `10x-astro-starter` | Unknown unknowns | H | M | Set `"name": "pomo-stretch"` in `wrangler.jsonc` before first deploy |
-| Agent uses deprecated Pages commands (`wrangler pages deploy`) | Devil's advocate | M | M | Pin the AGENTS.md / plan to Workers commands (`wrangler deploy`, `versions`, `rollback`); ignore Pages-era tutorials |
-| `SUPABASE_KEY` missing as prod Worker secret; fails silently (env `optional`) | Pre-mortem | M | H | Run `wrangler secret put` for both keys before first prod deploy; add a startup config check (`src/lib/config-status.ts` already exists) |
-| LLM SDK breaks on `workerd` (`nodejs_compat` partial) | Devil's advocate | M | M | Validate any AI SDK against `workerd` locally before merging; prefer fetch-based LLM clients over Node-SDK wrappers |
-| Supabase region far from users → NFR-1 < 1.5 s at risk | Devil's advocate | L | M | Pick a Supabase region near primary users; cache exercise catalog at edge; measure TTFB post-deploy |
-| `compatibility_date` bump changes runtime behavior | Unknown unknowns | L | M | Treat date changes as deliberate; re-test after any bump |
+| Risk                                                                          | Source           | Likelihood | Impact | Mitigation                                                                                                                               |
+| ----------------------------------------------------------------------------- | ---------------- | ---------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| CI triggers on `master`, default branch is `main` — gate never runs           | Unknown unknowns | H          | H      | Change `on.push`/`on.pull_request` branches to `main` in `ci.yml`; verify a PR triggers the run                                          |
+| Worker deployed under default name `10x-astro-starter`                        | Unknown unknowns | H          | M      | Set `"name": "pomo-stretch"` in `wrangler.jsonc` before first deploy                                                                     |
+| Agent uses deprecated Pages commands (`wrangler pages deploy`)                | Devil's advocate | M          | M      | Pin the AGENTS.md / plan to Workers commands (`wrangler deploy`, `versions`, `rollback`); ignore Pages-era tutorials                     |
+| `SUPABASE_KEY` missing as prod Worker secret; fails silently (env `optional`) | Pre-mortem       | M          | H      | Run `wrangler secret put` for both keys before first prod deploy; add a startup config check (`src/lib/config-status.ts` already exists) |
+| LLM SDK breaks on `workerd` (`nodejs_compat` partial)                         | Devil's advocate | M          | M      | Validate any AI SDK against `workerd` locally before merging; prefer fetch-based LLM clients over Node-SDK wrappers                      |
+| Supabase region far from users → NFR-1 < 1.5 s at risk                        | Devil's advocate | L          | M      | Pick a Supabase region near primary users; cache exercise catalog at edge; measure TTFB post-deploy                                      |
+| `compatibility_date` bump changes runtime behavior                            | Unknown unknowns | L          | M      | Treat date changes as deliberate; re-test after any bump                                                                                 |
 
 ## Getting Started
 
@@ -100,6 +100,7 @@ Validated against the pinned versions in this repo (`@astrojs/cloudflare` v13 / 
 ## Out of Scope
 
 The following were not evaluated in this research:
+
 - Docker image configuration
 - CI/CD pipeline setup beyond platform-native auto-deploy
 - Production-scale architecture (multi-region, HA, DR)

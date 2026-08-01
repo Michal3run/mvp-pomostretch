@@ -1,9 +1,11 @@
 # Plan: M3 Break Input
 
 ## Contract
+
 **Goal**: Implement the break input screen with 4 quick-picks and a free-text option, passing data to an API route and redirecting to the exercise sequence, replacing the M3 placeholder.
 
 ## Progress
+
 - [x] 1. **API Route setup**
   - Create `src/pages/api/break-input.ts`.
   - Add `export const prerender = false;`.
@@ -22,4 +24,5 @@
   - Confirm UI components use `shadcn/ui` where applicable.
 
 ## Notes
+
 - This plan covers M3 logic. It integrates smoothly with the M2 pomodoro timer and sets up the state for the M4 exercise sequence.

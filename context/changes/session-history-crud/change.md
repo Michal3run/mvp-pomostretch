@@ -22,9 +22,9 @@ test_plan_risks: [R-02, R-05, R-13]
 
 ## Why now
 
-The MVP framing (PRD, shape-notes Phase 7) accepted *"DB CRUD via auth + exercise catalog"* as satisfying the course's data-management requirement. Re-reading the official requirements pasted in chat on 2026-06-08:
+The MVP framing (PRD, shape-notes Phase 7) accepted _"DB CRUD via auth + exercise catalog"_ as satisfying the course's data-management requirement. Re-reading the official requirements pasted in chat on 2026-06-08:
 
-> *"Data management — creating, reading, updating, and deleting items (CRUD) in a way that makes sense for the application domain"* — and — *"Empty CRUD — a task list or book list is a good foundation, but the list alone isn't enough. Add a rule: recommendation, prioritization, validation, scoring."*
+> _"Data management — creating, reading, updating, and deleting items (CRUD) in a way that makes sense for the application domain"_ — and — _"Empty CRUD — a task list or book list is a good foundation, but the list alone isn't enough. Add a rule: recommendation, prioritization, validation, scoring."_
 
 makes the gap explicit:
 
@@ -40,19 +40,19 @@ The product **already has the harder half** — the rule engine doing the body-a
 
 New table `public.break_session` (Supabase Postgres):
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | `uuid` (PK, default `gen_random_uuid()`) | |
-| `user_id` | `uuid` (FK → `auth.users.id`, on delete cascade) | RLS pivot |
-| `created_at` | `timestamptz` (default `now()`) | when the break started |
-| `ended_at` | `timestamptz` (nullable) | NULL = abandoned (closed tab mid-break); set when "Resume work?" is shown or when the user skips the whole break |
-| `input_kind` | `text check (input_kind in ('quick_pick','free_text'))` | how the user described their pain |
-| `input_value` | `text` | the raw input — quick-pick label or the free-text string |
-| `derived_tags` | `text[]` | output of the keyword matcher — body-area tags actually used by the rule engine |
-| `selected_exercise_ids` | `uuid[]` | references `exercise.id`; ordered, length 1..3 |
-| `completed_count` | `int` (default 0) | how many exercises the user marked Done |
-| `skipped_count` | `int` (default 0) | how many the user marked Skip |
-| `note` | `text` (nullable, ≤ 500 chars) | **the user-editable field**: where the U in CRUD lives |
+| Column                  | Type                                                    | Notes                                                                                                            |
+| ----------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `id`                    | `uuid` (PK, default `gen_random_uuid()`)                |                                                                                                                  |
+| `user_id`               | `uuid` (FK → `auth.users.id`, on delete cascade)        | RLS pivot                                                                                                        |
+| `created_at`            | `timestamptz` (default `now()`)                         | when the break started                                                                                           |
+| `ended_at`              | `timestamptz` (nullable)                                | NULL = abandoned (closed tab mid-break); set when "Resume work?" is shown or when the user skips the whole break |
+| `input_kind`            | `text check (input_kind in ('quick_pick','free_text'))` | how the user described their pain                                                                                |
+| `input_value`           | `text`                                                  | the raw input — quick-pick label or the free-text string                                                         |
+| `derived_tags`          | `text[]`                                                | output of the keyword matcher — body-area tags actually used by the rule engine                                  |
+| `selected_exercise_ids` | `uuid[]`                                                | references `exercise.id`; ordered, length 1..3                                                                   |
+| `completed_count`       | `int` (default 0)                                       | how many exercises the user marked Done                                                                          |
+| `skipped_count`         | `int` (default 0)                                       | how many the user marked Skip                                                                                    |
+| `note`                  | `text` (nullable, ≤ 500 chars)                          | **the user-editable field**: where the U in CRUD lives                                                           |
 
 **RLS policies** (mandatory — see R-02 / R-05 in test-plan):
 
@@ -69,13 +69,13 @@ New table `public.break_session` (Supabase Postgres):
 
 All under `src/pages/api/sessions/` (Astro endpoints, server-rendered, gated by the same middleware as `/dashboard`):
 
-| Verb + path | Body | Returns | Notes |
-|---|---|---|---|
-| `POST /api/sessions` | `{ input_kind, input_value, derived_tags, selected_exercise_ids }` | `{ id, ...row }` | Create. Called by the client *after* the exercise sequence renders, so it does **not** sit on the < 1.5s critical path (NFR-1). |
-| `GET /api/sessions` | — | `{ items: [...], next_cursor? }` | Read list. Cursor pagination over `created_at desc`. |
-| `GET /api/sessions/:id` | — | `{ ...row }` | Read one. Returns 404 if not owned (don't leak existence). |
-| `PATCH /api/sessions/:id` | `{ note? \| ended_at? \| completed_count? \| skipped_count? }` | `{ ...row }` | Update. `note` is the user-driven case; `ended_at` / counts are client-driven progress writes from the exercise-sequence screen. Whitelist of editable fields enforced server-side. |
-| `DELETE /api/sessions/:id` | — | `204` | Delete. Hard delete (no soft-delete in MVP). |
+| Verb + path                | Body                                                               | Returns                          | Notes                                                                                                                                                                               |
+| -------------------------- | ------------------------------------------------------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/sessions`       | `{ input_kind, input_value, derived_tags, selected_exercise_ids }` | `{ id, ...row }`                 | Create. Called by the client _after_ the exercise sequence renders, so it does **not** sit on the < 1.5s critical path (NFR-1).                                                     |
+| `GET /api/sessions`        | —                                                                  | `{ items: [...], next_cursor? }` | Read list. Cursor pagination over `created_at desc`.                                                                                                                                |
+| `GET /api/sessions/:id`    | —                                                                  | `{ ...row }`                     | Read one. Returns 404 if not owned (don't leak existence).                                                                                                                          |
+| `PATCH /api/sessions/:id`  | `{ note? \| ended_at? \| completed_count? \| skipped_count? }`     | `{ ...row }`                     | Update. `note` is the user-driven case; `ended_at` / counts are client-driven progress writes from the exercise-sequence screen. Whitelist of editable fields enforced server-side. |
+| `DELETE /api/sessions/:id` | —                                                                  | `204`                            | Delete. Hard delete (no soft-delete in MVP).                                                                                                                                        |
 
 Validation: zod schema in `src/lib/sessions/schema.ts`, applied at every route. Free-text `input_value` length cap 500 chars (matches `note` cap; cheap DoS guard).
 
@@ -129,27 +129,27 @@ The first test to land for certification is the existing R-03 (E2E happy path) �
 
 ## Risks introduced (and mitigations)
 
-| Risk | Mitigation |
-|---|---|
-| RLS mis-configured → cross-user data leak | Two-user integration test (R-02 / R-05) before any deploy; `supabase db lint` + `supabase test db` if available. |
-| `POST /api/sessions` failure leaves UI inconsistent (user thinks break was saved, DB says no) | Optimistic UI: show success in toast immediately, retry once on failure, on second failure show toast "Nie zapisaliśmy tej przerwy w historii — pozostała część działa normalnie". The session continues regardless. |
-| No-repeat rule now depends on a network call (DB read) instead of synchronous `localStorage` | Keep a `localStorage` mirror of the last session (write-through cache); rule reads cache first, falls back to DB on cache miss. NFR-1 latency unchanged in the common case. |
-| Schema migration during course timeline → forgetting to apply migration to staging | Single migration file checked into `supabase/migrations/`; CI step `supabase db push --dry-run` (added in a follow-up CI change) catches drift. Manual `supabase db push` against staging is the deploy gate until then. |
-| Scope creep into a "stats dashboard" | Out of scope per PRD Non-Goals #4 (streaks/gamification). The Historia page is a **list + edit-note + delete**, nothing more — explicitly no charts, no aggregations, no streaks. If this slips, drop the change back to read-only list and accept the "U" via `note`-only edit. |
+| Risk                                                                                          | Mitigation                                                                                                                                                                                                                                                                       |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RLS mis-configured → cross-user data leak                                                     | Two-user integration test (R-02 / R-05) before any deploy; `supabase db lint` + `supabase test db` if available.                                                                                                                                                                 |
+| `POST /api/sessions` failure leaves UI inconsistent (user thinks break was saved, DB says no) | Optimistic UI: show success in toast immediately, retry once on failure, on second failure show toast "Nie zapisaliśmy tej przerwy w historii — pozostała część działa normalnie". The session continues regardless.                                                             |
+| No-repeat rule now depends on a network call (DB read) instead of synchronous `localStorage`  | Keep a `localStorage` mirror of the last session (write-through cache); rule reads cache first, falls back to DB on cache miss. NFR-1 latency unchanged in the common case.                                                                                                      |
+| Schema migration during course timeline → forgetting to apply migration to staging            | Single migration file checked into `supabase/migrations/`; CI step `supabase db push --dry-run` (added in a follow-up CI change) catches drift. Manual `supabase db push` against staging is the deploy gate until then.                                                         |
+| Scope creep into a "stats dashboard"                                                          | Out of scope per PRD Non-Goals #4 (streaks/gamification). The Historia page is a **list + edit-note + delete**, nothing more — explicitly no charts, no aggregations, no streaks. If this slips, drop the change back to read-only list and accept the "U" via `note`-only edit. |
 
 ## Effort estimate
 
 Solo, after-hours, with current Astro + Supabase wiring already bootstrapped:
 
-| Slice | Estimate |
-|---|---|
-| Migration + RLS policies + local `supabase start` test | 1.5 h |
-| 5 API endpoints + zod schema + ownership checks | 2.5 h |
-| Switch no-repeat data source (DB read + localStorage cache) | 1 h |
-| Historia page (list + inline note edit + delete confirm) | 2 h |
-| Topbar link + end-of-break POST wiring + toast on failure | 1 h |
-| Manual smoke test against local Supabase, fix obvious bugs | 1 h |
-| **Total** | **~9 h** |
+| Slice                                                       | Estimate |
+| ----------------------------------------------------------- | -------- |
+| Migration + RLS policies + local `supabase start` test      | 1.5 h    |
+| 5 API endpoints + zod schema + ownership checks             | 2.5 h    |
+| Switch no-repeat data source (DB read + localStorage cache) | 1 h      |
+| Historia page (list + inline note edit + delete confirm)    | 2 h      |
+| Topbar link + end-of-break POST wiring + toast on failure   | 1 h      |
+| Manual smoke test against local Supabase, fix obvious bugs  | 1 h      |
+| **Total**                                                   | **~9 h** |
 
 This fits inside the remaining MVP budget (PRD frontmatter `mvp_weeks: 3`, `after_hours_only: true`) without compressing other work.
 

@@ -28,9 +28,11 @@ Dla każdego milestone'a (M1 przez M6) utwórz plik `m[N]-issue.md`:
 ## 🔗 Dependencies
 
 **Depends on:**
+
 - [Lista milestone'ów które muszą być zakończone przed tym - linki będą dodane ręcznie po utworzeniu issues]
 
 **Blocks:**
+
 - [Lista milestone'ów które to blokuje]
 
 ## ✅ Acceptance Criteria
@@ -87,8 +89,10 @@ Dokładnie skopiuj nagłówki z roadmap.md:
 ## Co zrobić z M0?
 
 M0 (Auth Foundation) jest już complete (✅). Nie twórz dla niego issue, ale w M2 i M5 dependencies dodaj notatkę:
+
 ```markdown
 **Depends on:**
+
 - M0: Auth Foundation (✅ complete)
 - [inne zależności]
 ```
@@ -96,6 +100,7 @@ M0 (Auth Foundation) jest już complete (✅). Nie twórz dla niego issue, ale w
 ## Output
 
 Wygeneruj 6 plików:
+
 - `m1-issue.md`
 - `m2-issue.md`
 - `m3-issue.md`
@@ -105,7 +110,7 @@ Wygeneruj 6 plików:
 
 Na końcu wygeneruj **skrócony setup guide**:
 
-```markdown
+````markdown
 # Setup Guide
 
 ## Opcja A: Ręcznie przez GitHub UI
@@ -134,9 +139,12 @@ for i in {1..6}; do
     -d @m${i}-issue.json
 done
 ```
+````
 
 (Będziesz musiał przekonwertować .md na .json format)
+
 ```
+
 ```
 
 ## Ważne Notatki
@@ -146,7 +154,6 @@ done
 2. **Milestone MVP v1**: Jeśli nie istnieje, utwórz go najpierw:
    - Idź do https://github.com/Michal3run/mvp-pomostretch/milestones
    - New milestone → Title: "MVP v1", Due: 2026-07-31
-   
 3. **Kolejność tworzenia**: Twórz w kolejności M1→M2→M3→M4→M5→M6, żeby numerki issues były w sensownej kolejności
 
 ## Co mam zrobić?
@@ -154,6 +161,7 @@ done
 Przeczytaj `mvp-pomostretch/context/foundation/roadmap.md` szczegółowo i wygeneruj te 6 plików. Dla każdego milestone'a znajdziesz pełną specyfikację w sekcji `## M[N]: [Name]`.
 
 **Sekcje w roadmap.md które Cię interesują**:
+
 - `## Milestone Overview` (tabela z effort estimates)
 - `## Dependency Graph` (ASCII diagram pokazujący zależności)
 - `## M1: Database Schema...` aż do `## M6: Testing...` (pełne specyfikacje)
