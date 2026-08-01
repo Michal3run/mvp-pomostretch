@@ -290,3 +290,21 @@ The skill assumed "plan exists = not executed" and propagated that assumption th
 **Guideline**: Every change folder that involves infrastructure, deployment, or external account setup should have a **machine-readable status field** in its frontmatter. Status should be one of: `planned`, `in-progress`, `complete`, `abandoned`. Roadmap generation (and other skills) must check this field, not infer status from file existence.
 
 ---
+
+### L11: Plans Must Define Contracts, Not Just Intent (Astro/React Boundaries & Conventions)
+**Date**: 2026-07-25  
+**Context**: `10x-plan` generation for M2 Pomodoro Timer, caught by `10x-plan-review`.
+
+**Problem**: The planning agent read `AGENTS.md` and `research.md` perfectly but generated a plan that violated known boundaries:
+1. It left the `TimerState` type inline instead of moving it to `src/types.ts` as strictly dictated by `AGENTS.md`.
+2. It wrote "displays Banner.astro" inside a React island, which violates Astro's core architectural boundary (Astro components cannot mount inside React client components).
+3. It used soft language like "Exports prerender = false (if required)" instead of committing to a hard contract.
+
+**Why this happened**: When LLMs generate implementation plans, their attention mechanism focuses on the *feature intent* (e.g., "show a warning") and often drops the *strict architectural constraints* (e.g., "Astro components cannot run in React"). The LLM "knows" the rule, but fails to apply it unless forced to verify boundaries explicitly.
+
+**Mitigation checklist** (enforced during `/10x-plan` and `/10x-plan-review`):
+1. **Never write "if required", "as needed", or "refactor accordingly" in a plan**. A plan must make the architectural decision. If you don't know, research it.
+2. **Explicit Boundary Check**: Whenever a plan involves Astro islands (`client:load`), explicitly check if the phase attempts to import or use `.astro` files inside `.tsx`. This is an architectural failure.
+3. **Explicit Convention Check**: Before finalizing Phase blocks, mechanistically map the `AGENTS.md` rules (e.g., shared types in `src/types.ts`) to the specific phase outputs.
+
+**Guideline**: A plan is a contract, not a wishlist. When writing a plan, treat every bullet point as executable code. If the bullet point says "use Banner.astro here", ask yourself: "Will the compiler allow this?". If the answer is no, the plan is broken.
