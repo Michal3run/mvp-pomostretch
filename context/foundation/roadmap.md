@@ -174,13 +174,13 @@ No API endpoints, no UI — this milestone is schema + seed only.
 
 ### Acceptance Criteria
 
-- [ ] `supabase/migrations/<timestamp>_create_exercise_table.sql` exists and applies cleanly
-- [ ] `supabase/migrations/<timestamp>_create_break_session_table.sql` exists and applies cleanly
-- [ ] `SELECT COUNT(*) FROM exercise` returns ≥12 rows
-- [ ] Every quick-pick mapping (`Tylko oczy` → `eyes`, `Tylko kark` → `neck`, `Ogólne` → `general`, `Zaskocz mnie` → `random`) matches ≥2 exercises in the seed data (validates FR-022 robustness)
-- [ ] `break_session` has RLS enabled with 4 policies: `SELECT`, `INSERT`, `UPDATE`, `DELETE` all gated by `user_id = auth.uid()`
-- [ ] Local `supabase start` can query both tables
-- [ ] Staging Supabase project has both migrations applied
+- [x] `supabase/migrations/<timestamp>_create_exercise_table.sql` exists and applies cleanly
+- [x] `supabase/migrations/<timestamp>_create_break_session_table.sql` exists and applies cleanly
+- [x] `SELECT COUNT(*) FROM exercise` returns ≥12 rows
+- [x] Every quick-pick mapping (`Tylko oczy` → `eyes`, `Tylko kark` → `neck`, `Ogólne` → `general`, `Zaskocz mnie` → `random`) matches ≥2 exercises in the seed data (validates FR-022 robustness)
+- [x] `break_session` has RLS enabled with 4 policies: `SELECT`, `INSERT`, `UPDATE`, `DELETE` all gated by `user_id = auth.uid()`
+- [x] Local `supabase start` can query both tables
+- [x] Staging Supabase project has both migrations applied
 
 ### Schema: `exercise`
 
@@ -288,16 +288,16 @@ Timer state persists in `localStorage` — a page refresh during an active sessi
 
 ### Acceptance Criteria
 
-- [ ] Dashboard shows "Start work session" button when no active session
-- [ ] Clicking "Start" creates a 25-min timer, button changes to countdown display
-- [ ] Countdown updates every second in MM:SS format
-- [ ] "+5 min" button visible during active session, extends remaining time by 300 seconds
-- [ ] "Zaczynaj przerwę" button visible during active session, navigates to `/break-input`
-- [ ] When countdown reaches 00:00, auto-navigate to `/break-input`
-- [ ] `localStorage.getItem('pomostretch.timer')` contains `{ startedAt, durationMs, extendedMs }` during active session
-- [ ] Page refresh during active session (e.g., at 12:34 remaining) restores timer at correct remaining time (±2s tolerance)
-- [ ] Closing tab and reopening within ~30s restores timer (validates NFR-2)
-- [ ] Timer state clears from `localStorage` when session ends (manual or auto)
+- [x] Dashboard shows "Start work session" button when no active session
+- [x] Clicking "Start" creates a 25-min timer, button changes to countdown display
+- [x] Countdown updates every second in MM:SS format
+- [x] "+5 min" button visible during active session, extends remaining time by 300 seconds
+- [x] "Zaczynaj przerwę" button visible during active session, navigates to `/break-input`
+- [x] When countdown reaches 00:00, auto-navigate to `/break-input`
+- [x] `localStorage.getItem('pomostretch.timer')` contains `{ startedAt, durationMs, extendedMs }` during active session
+- [x] Page refresh during active session (e.g., at 12:34 remaining) restores timer at correct remaining time (±2s tolerance)
+- [x] Closing tab and reopening within ~30s restores timer (validates NFR-2)
+- [x] Timer state clears from `localStorage` when session ends (manual or auto)
 
 ### Implementation Notes
 
@@ -402,18 +402,18 @@ Submitting a quick-pick or free-text POSTs to `/api/break-input`, which stores t
 
 ### Acceptance Criteria
 
-- [ ] `/break-input` route exists and is gated (requires auth)
-- [ ] Page displays 4 quick-pick buttons with Polish labels
-- [ ] Page displays free-text textarea (optional)
-- [ ] Page displays "Skip break" button
-- [ ] Clicking any quick-pick button submits form via POST to `/api/break-input`
-- [ ] Typing free-text and submitting POSTs to `/api/break-input`
-- [ ] `POST /api/break-input` handler derives tags via keyword matcher, stores `{ kind, value, tags }` in signed cookie `pomostretch.break_input`, redirects to `/exercise-sequence`
-- [ ] Cookie has 5-min expiry (enough for one exercise sequence, expires after)
-- [ ] Empty free-text + no quick-pick selection → show validation message "Wybierz przycisk lub wpisz tekst"
-- [ ] Keyword matcher at `src/lib/keyword-matcher.ts` extracts body-area tags from Polish + English keywords
-- [ ] Free-text with no recognized keywords falls back to `tags=general` (FR-012 graceful fallback)
-- [ ] "Skip break" navigates to `/dashboard`, clears any timer state, user is idle (ready to start new session)
+- [x] `/break-input` route exists and is gated (requires auth)
+- [x] Page displays 4 quick-pick buttons with Polish labels
+- [x] Page displays free-text textarea (optional)
+- [x] Page displays "Skip break" button
+- [x] Clicking any quick-pick button submits form via POST to `/api/break-input`
+- [x] Typing free-text and submitting POSTs to `/api/break-input`
+- [x] `POST /api/break-input` handler derives tags via keyword matcher, stores `{ kind, value, tags }` in signed cookie `pomostretch.break_input`, redirects to `/exercise-sequence`
+- [x] Cookie has 5-min expiry (enough for one exercise sequence, expires after)
+- [x] Empty free-text + no quick-pick selection → show validation message "Wybierz przycisk lub wpisz tekst"
+- [x] Keyword matcher at `src/lib/keyword-matcher.ts` extracts body-area tags from Polish + English keywords
+- [x] Free-text with no recognized keywords falls back to `tags=general` (FR-012 graceful fallback)
+- [x] "Skip break" navigates to `/dashboard`, clears any timer state, user is idle (ready to start new session)
 
 ### Quick-Pick Mappings
 
