@@ -308,3 +308,23 @@ The skill assumed "plan exists = not executed" and propagated that assumption th
 3. **Explicit Convention Check**: Before finalizing Phase blocks, mechanistically map the `AGENTS.md` rules (e.g., shared types in `src/types.ts`) to the specific phase outputs.
 
 **Guideline**: A plan is a contract, not a wishlist. When writing a plan, treat every bullet point as executable code. If the bullet point says "use Banner.astro here", ask yourself: "Will the compiler allow this?". If the answer is no, the plan is broken.
+
+---
+
+### L12: React State + useCallback Closures, and Persistent State Cleanup on Terminal Transitions
+**Date**: 2026-08-01  
+**Context**: M2 Pomodoro Timer code review, two bugs found during post-implementation review.
+
+**Problem A — Stale closure in `extendTimer`**: After calling `setTimerState(newState)`, the code immediately called `calculateTime()`. But `calculateTime` is wrapped in `useCallback` with `timerState` as a dependency — so it still reads the **old** `timerState` from its closure. React state updates are asynchronous; the new state isn't available until the next render. The effect: after extending, the remaining time display doesn't update correctly until the next 1s interval tick.
+
+**Problem B — Zombie persistent state on `expired_card`**: When the timer expired and overdue > 60s, the code set `status = "expired_card"` but did NOT call `clearStoredTimer()`. Only the auto-navigate path (overdue ≤ 60s) cleared storage. Result: if the user refreshed during the expired card display, `localStorage` still held the old timer → the component re-mounted, re-evaluated, and either auto-navigated or showed the expired card again in an unpredictable loop.
+
+**Root cause**: Both bugs follow the same pattern — the implementer thought about the **happy path** (timer counting down, auto-navigate on expiry) but missed **secondary paths** (extend button, expired card display, manual refresh during expired state).
+
+**Solutions applied**:
+- A: Instead of calling `calculateTime()` after extend, compute remaining time inline using the `newState` variable directly: `setRemainingMs(Math.max(0, total - elapsed))`. This avoids the stale closure entirely.
+- B: Move `clearStoredTimer()` above the if/else branch so it fires for **all** expiry paths (auto-navigate AND expired card).
+
+**Guideline — React closures**: When calling a `useCallback` function after a `setState`, assume the callback reads **stale state**. Either: (a) recalculate inline using the local variable that was just passed to `setState`, or (b) use `useRef` for values that need instant reads, or (c) restructure so the computation happens in a `useEffect` that depends on the updated state.
+
+**Guideline — Persistent state cleanup**: When a component has persistent state (localStorage, cookies, IndexedDB), map out every terminal/transition state and verify that cleanup happens on **all** of them. A common pattern: draw a state machine (Idle → Active → Expired/Navigated) and check that every edge out of "Active" clears the persistent store. If you only clear on one exit path, the others leave zombie data.
