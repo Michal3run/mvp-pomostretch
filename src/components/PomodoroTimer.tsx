@@ -38,8 +38,8 @@ export default function PomodoroTimer() {
     const remaining = total - elapsed;
 
     if (remaining <= 0) {
+      clearStoredTimer();
       if (Math.abs(remaining) <= AUTO_NAVIGATE_GRACE_PERIOD) {
-        clearStoredTimer();
         window.location.assign("/break-input");
       } else {
         setStatus("expired_card");
@@ -92,7 +92,9 @@ export default function PomodoroTimer() {
     };
     setTimerState(newState);
     saveStoredTimer(newState);
-    calculateTime();
+    const total = newState.durationMs + newState.extendedMs;
+    const elapsed = Date.now() - newState.startedAt;
+    setRemainingMs(Math.max(0, total - elapsed));
   };
 
   const manualEnd = () => {
