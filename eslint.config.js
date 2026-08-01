@@ -15,7 +15,7 @@ const baseConfig = tseslint.config({
   extends: [eslint.configs.recommended, tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
   languageOptions: {
     parserOptions: {
-      projectService: true,
+      project: "./tsconfig.json",
       tsconfigRootDir: import.meta.dirname,
     },
   },
