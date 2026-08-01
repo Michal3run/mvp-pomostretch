@@ -40,8 +40,8 @@ foreach ($issue in $issues) {
     if ($milestonesToUpdate -contains $issue.title) {
         Write-Host "Aktualizuje treść: $($issue.title) (#$($issue.number))..." -NoNewline
         
-        # Zamieniamy puste checkboxy na zaznaczone
-        $newBody = $issue.body -replace '- \[ \]', '- [x]'
+        # Zamieniamy puste checkboxy na zaznaczone (używamy regexa z opcjonalnymi spacjami)
+        $newBody = $issue.body -replace '-\s*\[\s*\]', '- [x]'
         
         $json = @{ body = $newBody; state = "closed" } | ConvertTo-Json -Depth 5
         $null = Send-GitHubApi -Endpoint "/issues/$($issue.number)" -Method Patch -JsonBody $json
