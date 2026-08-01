@@ -1,6 +1,7 @@
 # Research: Session History CRUD
 
 ## Internal Research Findings
+
 - **Database Schema**: The `break_session` table was created via migration `20260715120100_create_break_session_table.sql`. It includes:
   - `id` (uuid)
   - `user_id` (uuid, references `auth.users`)
@@ -13,5 +14,6 @@
 - **API Structure**: Existing endpoints reside in `src/pages/api/`. Currently, there are no endpoints for managing (fetch/update/delete) historical session data.
 
 ## External Research Findings (Astro Form Actions vs API Routes)
+
 - **Astro ecosystem**: Astro recently introduced `astro:actions` for type-safe form handling.
 - **Project alignment**: Despite the new standard, the `AGENTS.md` strictly enforces the use of traditional API routes in `src/pages/api/**`, exporting `const prerender = false`, using uppercase HTTP methods (`GET`, `POST`, `PATCH`, `DELETE`), and validating with Zod. Therefore, we must implement standard endpoints instead of `astro:actions` to adhere to project rules.
