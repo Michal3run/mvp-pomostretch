@@ -1368,6 +1368,7 @@ This roadmap is a **living document** — it evolves as implementation reveals u
 - **FR-030 (Enhancement)**: Add client-side dictionary to translate database `body_areas` tags (e.g., `eyes`) to localized badges (e.g., `Oczy`) in `ExerciseSequence.tsx`.
 - **FR-031 (Enhancement)**: Add in-tab notification (audio chime and `document.title` update) when the 25-minute pomodoro timer expires.
 - **FR-032 (Enhancement)**: Add an optional "Idle Break" timer (e.g., 3, 5, 10 minutes) on the post-exercise screen, allowing users to rest before starting the next 25-minute session.
+- **FR-033 (Enhancement)**: Add an `image` column to the `exercise` table, upload SVG visualizations to `public/images/`, and expand the database seed to 24 exercises (from external `exercises.seed.json`).
 - **R-08**: Expand seed catalog with more exercises per body area to enable engine randomization (currently disabled due to <3 exercises per category).
 
 ### Handoff
