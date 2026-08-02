@@ -17,8 +17,10 @@ export default function SignInForm({ serverError }: Props) {
 
   function validate(formData?: FormData) {
     const next: typeof errors = {};
-    const rawEmail = formData?.get("email")?.toString() ?? "";
-    const rawPassword = formData?.get("password")?.toString() ?? "";
+    const emailEntry = formData?.get("email");
+    const rawEmail = typeof emailEntry === "string" ? emailEntry : "";
+    const passwordEntry = formData?.get("password");
+    const rawPassword = typeof passwordEntry === "string" ? passwordEntry : "";
     const targetEmail = rawEmail.trim() || email.trim();
     const targetPassword = rawPassword || password;
 
