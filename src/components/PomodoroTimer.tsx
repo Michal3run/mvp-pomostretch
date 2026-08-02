@@ -12,21 +12,18 @@ export default function PomodoroTimer() {
   const [status, setStatus] = useState<"idle" | "active" | "expired_card">("idle");
   const [remainingMs, setRemainingMs] = useState(DEFAULT_DURATION);
   const [showWarningBanner, setShowWarningBanner] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const timerId = setTimeout(() => {
-      const { state, isStorageAvailable } = getStoredTimer();
-      if (!isStorageAvailable) {
-        setShowWarningBanner(true);
-      }
-      if (state) {
-        setTimerState(state);
-        setStatus("active");
-      }
-    }, 0);
-    return () => {
-      clearTimeout(timerId);
-    };
+    const { state, isStorageAvailable } = getStoredTimer();
+    if (!isStorageAvailable) {
+      setShowWarningBanner(true);
+    }
+    if (state) {
+      setTimerState(state);
+      setStatus("active");
+    }
+    setIsMounted(true);
   }, []);
 
   const calculateTime = useCallback(() => {
@@ -134,6 +131,10 @@ export default function PomodoroTimer() {
     const s = totalSeconds % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
+
+  if (!isMounted) {
+    return <div className="mx-auto h-[260px] w-full max-w-md animate-pulse rounded-2xl bg-white/5" />;
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-4">
