@@ -1356,4 +1356,23 @@ This roadmap is a **living document** — it evolves as implementation reveals u
 
 ---
 
+## M7: UAT & Feedback Polish (Post-MVP)
+
+**Status**: planned
+**Dependencies**: M1-M6
+
+### Goals
+- Address user feedback logged in `context/foundation/uat-feedback.md` during manual testing.
+
+### Deliverables
+- **FR-030 (Enhancement)**: Add client-side dictionary to translate database `body_areas` tags (e.g., `eyes`) to localized badges (e.g., `Oczy`) in `ExerciseSequence.tsx`.
+- **FR-031 (Enhancement)**: Add in-tab notification (audio chime and `document.title` update) when the 25-minute pomodoro timer expires.
+- **FR-032 (Enhancement)**: Add an optional "Idle Break" timer (e.g., 3, 5, 10 minutes) on the post-exercise screen, allowing users to rest before starting the next 25-minute session.
+- **R-08**: Expand seed catalog with more exercises per body area to enable engine randomization (currently disabled due to <3 exercises per category).
+
+### Handoff
+- M7 complete: Exercises show Polish badges, timer makes a subtle sound upon expiry, and users can opt to run a 3-10 minute idle break after finishing exercises.
+
+---
+
 **Roadmap complete.** Next step: `/10x-new <change-id>` to create per-milestone implementation plans.
