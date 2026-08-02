@@ -1,0 +1,24 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="40" y="35" width="50" height="35" rx="4"/>
+    <line x1="50" y1="35" x2="50" y2="20"/>
+    <line x1="60" y1="35" x2="60" y2="18"/>
+    <line x1="70" y1="35" x2="70" y2="20"/>
+    <line x1="80" y1="35" x2="80" y2="22"/>
+    <rect x="160" y="35" width="50" height="35" rx="4"/>
+    <path d="M 168 35 Q 168 22, 178 22 Q 178 35, 178 35"/>
+    <path d="M 180 35 Q 180 18, 192 18 Q 192 35, 192 35"/>
+    <path d="M 194 35 Q 194 18, 204 18 Q 204 35, 204 35"/>
+    <rect x="40" y="155" width="50" height="35" rx="4"/>
+    <path d="M 50 155 Q 60 145, 75 150 Q 80 155, 80 155"/>
+    <rect x="160" y="155" width="50" height="35" rx="4"/>
+    <path d="M 168 155 Q 168 140, 180 140 L 195 140 Q 205 140, 205 155"/>
+  </g>
+  <g fill="#64748B" font-family="Verdana" font-size="14" text-anchor="middle">
+    <text x="65" y="96">1</text>
+    <text x="185" y="96">2</text>
+    <text x="65" y="216">3</text>
+    <text x="185" y="216">4</text>
+  </g>
+</svg>
