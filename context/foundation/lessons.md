@@ -499,3 +499,25 @@ Using redirected Wrangler configuration.
 **Solution**: Add `"endOfLine": "auto"` to `.prettierrc.json`. This tells Prettier to respect the existing line endings of the environment (LF in Linux, CRLF in Windows working directories) rather than strictly enforcing `lf` everywhere.
 
 **Guideline**: When bootstrapping projects or working across OS boundaries (Windows devs, Linux CI), always configure Prettier's `endOfLine` property. Never trust a "green" local linter on Windows if the project lacks explicit line-ending configuration.
+
+---
+
+### L21: TypeScript Strictness and ESLint Rules Will Silently Break CI
+
+**Date**: 2026-08-02
+**Context**: M8 CI Pipeline failures (Strict TypeScript & ESLint)
+
+**Problem**: The developer pushed code where `npm run lint` was failing in CI due to:
+
+1. `react-hooks/set-state-in-effect`: Setting state inside `useEffect` (often necessary for SSR hydration mismatch avoidance) was flagged as an error, causing CI to fail.
+2. `@typescript-eslint/no-empty-function`: Using `.catch(() => {})` on `fetch` promises to silently ignore network errors triggered the empty function rule.
+3. `@typescript-eslint/no-unsafe-assignment`: Implicit `any` typing from `.catch(err => {})` triggered unsafe assignment.
+4. `eslint-plugin-react/no-unescaped-entities`: Using `{"Text"}` triggered a TypeError bug in ESLint itself, completely crashing the linter and failing CI.
+
+**Solution**:
+
+- For `useEffect` state setting intended for SSR hydration (like `isMounted`), explicitly disable the rule at the top of the file: `/* eslint-disable react-hooks/set-state-in-effect */`.
+- For ignored promise rejections, use `void fetch(...)` instead of `.catch(() => {})`, or add an explicit `/* ignore */` comment inside the empty catch block.
+- Always remove curly braces around simple strings in JSX (e.g., `Text` instead of `{"Text"}`) to prevent legacy ESLint plugin crashes.
+
+**Guideline**: CI is unforgiving. Never push code without running `npm run lint` locally. If a pattern (like `isMounted`) fundamentally conflicts with a rule, use explicit file-level disables rather than letting it cascade into CI failures.

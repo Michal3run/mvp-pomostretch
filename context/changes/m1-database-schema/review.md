@@ -10,11 +10,11 @@
 
 ## Verification Checklist
 
-| Requirement / Component            | Implementation                                                      | Verdict |
-| ---------------------------------- | ------------------------------------------------------------------- | ------- |
-| `exercise` table + seed data       | Applied during bootstrap.                                           | MATCH   |
-| `break_session` table              | Applied during bootstrap.                                           | MATCH   |
-| RLS Policies                       | Configured.                                                         | MATCH   |
+| Requirement / Component      | Implementation            | Verdict |
+| ---------------------------- | ------------------------- | ------- |
+| `exercise` table + seed data | Applied during bootstrap. | MATCH   |
+| `break_session` table        | Applied during bootstrap. | MATCH   |
+| RLS Policies                 | Configured.               | MATCH   |
 
 ## Summary Verdict
 

@@ -70,6 +70,7 @@ const astroConfig = tseslint.config({
 });
 
 export default tseslint.config(
+  { ignores: ["test-results/**", "playwright-report/**"] },
   includeIgnoreFile(gitignorePath),
   baseConfig,
   reactConfig,
