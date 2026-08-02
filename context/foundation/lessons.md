@@ -426,9 +426,10 @@ Using redirected Wrangler configuration.
 ### L15: API Route Paths Don't Match Page Paths in PROTECTED_ROUTES
 
 **Date**: 2026-08-02  
-**Context**: M1-M5 review  
+**Context**: M1-M5 review
 
 **Problem**: The middleware uses startsWith matching, so `/break-input` protects the page but not `/api/break-input`. Every API route that handles user data needs either:
+
 - Its own inline auth check (preferred for JSON APIs — returns 401 JSON)
 - An explicit entry in `PROTECTED_ROUTES` (only if HTML redirect is acceptable)
 
@@ -439,7 +440,7 @@ Using redirected Wrangler configuration.
 ### L16: SSR Fixes Must Be Applied Consistently Across All Endpoints
 
 **Date**: 2026-08-02  
-**Context**: M1-M5 review  
+**Context**: M1-M5 review
 
 **Problem**: The double-instantiation fix was correctly implemented in middleware (`context.locals.supabase`) but M5 endpoints were written after the fix and still called `createClient()` directly. This happened because the M5 implementer followed the old pattern from M3/auth endpoints.
 
@@ -450,7 +451,7 @@ Using redirected Wrangler configuration.
 ### L17: TypeScript Types and DB Constraints Must Share a Single Source of Truth for Enums
 
 **Date**: 2026-08-02  
-**Context**: M1-M5 review  
+**Context**: M1-M5 review
 
 **Problem**: `input_kind` used hyphens in TypeScript (`"quick-pick"`) but underscores in the DB CHECK constraint (`'quick_pick'`). This was invisible until INSERT time because the cookie-based flow never hit the DB during M3.
 

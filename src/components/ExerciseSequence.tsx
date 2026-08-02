@@ -176,7 +176,11 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   };
 
   const extendIdleBreak = (minutes: number) => {
-    setIdleEndTime((prev) => (prev ? prev + minutes * 60 * 1000 : Date.now() + minutes * 60 * 1000));
+    setIdleEndTime((prev) => {
+      const newTime = prev ? prev + minutes * 60 * 1000 : Date.now() + minutes * 60 * 1000;
+      setIdleSecondsRemaining(Math.max(0, Math.ceil((newTime - Date.now()) / 1000)));
+      return newTime;
+    });
   };
 
   const handleResumeWork = () => {
@@ -322,7 +326,14 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           {formatSeconds(idleSecondsRemaining)}
         </div>
 
-        <Button onClick={() => { extendIdleBreak(5); }} variant="secondary" size="sm" className="mb-4 gap-2">
+        <Button
+          onClick={() => {
+            extendIdleBreak(5);
+          }}
+          variant="secondary"
+          size="sm"
+          className="mb-4 gap-2"
+        >
           <Plus size={16} />
           Dodaj 5 minut
         </Button>
