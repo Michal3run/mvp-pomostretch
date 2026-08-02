@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="105" cy="65" r="20" transform="rotate(-15 105 65)"/>
+    <line x1="115" y1="85" x2="125" y2="170"/>
+    <line x1="95" y1="105" x2="220" y2="105"/>
+    <path d="M 220 105 L 235 130 L 240 110"/>
+    <line x1="95" y1="105" x2="80" y2="170"/>
+    <line x1="100" y1="190" x2="150" y2="190"/>
+  </g>
+  <g fill="none" stroke="#4FB8A8" stroke-width="3" stroke-linecap="round">
+    <path d="M 75 45 Q 90 55, 90 65"/>
+    <polygon points="90,65 82,60 95,55" fill="#4FB8A8"/>
+  </g>
+</svg>

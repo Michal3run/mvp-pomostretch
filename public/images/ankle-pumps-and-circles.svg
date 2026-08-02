@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="128" y1="40" x2="128" y2="140"/>
+    <path d="M 128 140 Q 130 155, 145 158 L 200 158 Q 210 158, 210 168 L 200 168 L 145 175 Q 125 175, 125 165 Z"/>
+  </g>
+  <g fill="none" stroke="#4FB8A8" stroke-width="3" stroke-linecap="round">
+    <path d="M 215 145 Q 230 165, 215 185"/>
+    <polygon points="215,185 207,178 220,176" fill="#4FB8A8"/>
+    <ellipse cx="190" cy="160" rx="25" ry="14" stroke-dasharray="4 3" fill="none"/>
+  </g>
+</svg>

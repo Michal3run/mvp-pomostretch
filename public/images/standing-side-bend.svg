@@ -1,0 +1,13 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="155" cy="55" r="16"/>
+    <path d="M 155 71 Q 175 110, 145 160 L 130 200 L 130 235"/>
+    <path d="M 145 80 Q 110 50, 75 35"/>
+    <path d="M 110 200 L 110 235"/>
+  </g>
+  <g fill="none" stroke="#4FB8A8" stroke-width="3" stroke-linecap="round">
+    <path d="M 200 90 Q 195 130, 175 150"/>
+    <polygon points="175,150 178,140 168,145" fill="#4FB8A8"/>
+  </g>
+</svg>
