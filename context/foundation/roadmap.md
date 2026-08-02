@@ -1387,16 +1387,19 @@ This roadmap is a **living document** — it evolves as implementation reveals u
 ## M8: M8 Polish (Post-MVP)
 
 ### Focus
+
 - Rozbudowa bazy ćwiczeń, ze szczególnym naciskiem na dodanie minimum 5 nowych ćwiczeń na oczy, a także nowe ćwiczenia dla karku i odcinka lędźwiowego.
 - Dodanie "Info Overlay", który tłumaczy jak aplikacja działa oraz explicitly wspomina dla oceniających MVP, że pod spodem funkcjonuje pełny CRUD historii sesji z RLS.
 - Implementacja testów E2E bezpieczeństwa (RLS isolation) na dwóch użytkownikach, pokrywających UI oraz requesty API bezpośrednio.
 
 ### Deliverables
+
 - **Nowe ćwiczenia (migracja)**: idempotentna migracja SQL dodająca nowe ćwiczenia.
 - **InfoButton**: przycisk z informacją (Shadcn Dialog/Sheet) renderowany na dashboardzie (wyspa React).
 - **Testy E2E**: plik z testem Playwright `rls-security.spec.ts`.
 
 ### Handoff
+
 - M8 complete: Aplikacja informuje o swoim działaniu i wymaganiach biznesowych (CRUD), posiada większy zasób ćwiczeń na oczy aby uniknąć błędów przy częstych przerwach, testy RLS pomyślnie weryfikują bezpieczeństwo izolacji środowisk.
 
 ---
