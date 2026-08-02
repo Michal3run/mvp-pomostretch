@@ -24,7 +24,7 @@ interface ExerciseResult {
   status: "done" | "skipped";
 }
 
-import { FALLBACK_EXERCISE_CATALOG } from "../lib/exercise-catalog";
+import { FALLBACK_EXERCISE_CATALOG } from "@/lib/exercise-catalog";
 
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
   const [exercises] = useState<Exercise[]>(() => {
