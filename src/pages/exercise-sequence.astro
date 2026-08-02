@@ -18,12 +18,10 @@ try {
   return Astro.redirect("/break-input");
 }
 
-const supabase = createClient(Astro.request.headers, Astro.cookies);
+const supabase = Astro.locals.supabase;
 let catalog: Exercise[] = [];
 
 if (supabase) {
-  // Ensure Supabase SSR client resolves user session so JWT auth header is attached for native RLS
-  await supabase.auth.getUser();
   const { data, error } = await supabase.from("exercise").select("*");
   if (error) {
     console.error("Failed to fetch exercise catalog:", error);
