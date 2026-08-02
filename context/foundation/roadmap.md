@@ -86,14 +86,14 @@ The roadmap prioritizes **vertical slices** — user-visible outcomes that cross
 
 The roadmap is complete when **all** of the following are green:
 
-- [ ] **M0-M5 shipped**: M0, M1, M2, M3 done. M4, M5 pending.
-- [ ] **US-01 demoable**: Full pomodoro cycle (sign-in → timer → break → exercises → resume) works end-to-end on production
-- [ ] **CRUD certified**: Break history page accessible, user can view/edit/delete their own sessions, RLS tested with two users
-- [ ] **Tests green in CI**: E2E (R-03), integration (R-01, R-02, R-04, R-05, R-13), all passing
-- [ ] **Guardrails validated**: G1/G2/G3 measured and confirmed (see M6 measurement protocols)
-- [ ] **Production deployed**: ~~Cloudflare Worker live~~ ✅, ~~Supabase project created~~ ✅, ~~secrets configured~~ ✅, ~~M1 migrations applied~~ ✅, smoke test passed
-- [ ] **Documentation current**: README updated with production URL (https://pomo-stretch.michal3run.workers.dev), setup instructions, test commands
-- [ ] **No P0/P1 bugs**: All High-impact risks from Risk Register resolved or accepted with documented mitigation
+- [x] **M0-M5 shipped**: M0, M1, M2, M3, M4, M5 done.
+- [x] **US-01 demoable**: Full pomodoro cycle (sign-in → timer → break → exercises → resume) works end-to-end on production
+- [x] **CRUD certified**: Break history page accessible, user can view/edit/delete their own sessions, RLS tested with two users
+- [x] **Tests green in CI**: E2E (R-03), integration (R-01, R-02, R-04, R-05, R-13), all passing
+- [x] **Guardrails validated**: G1/G2/G3 measured and confirmed (see M6 measurement protocols)
+- [x] **Production deployed**: Cloudflare Worker live, Supabase project created, secrets configured, M1 migrations applied, smoke test passed
+- [x] **Documentation current**: README updated with production URL (https://pomo-stretch.michal3run.workers.dev), setup instructions, test commands
+- [x] **No P0/P1 bugs**: All High-impact risks from Risk Register resolved or accepted with documented mitigation
 
 This checklist is the single source of truth for "are we done?"
 
@@ -109,9 +109,9 @@ Six milestones, ordered by dependency and risk:
 | **M1** | Database Schema & Exercise Catalog | Horizontal (done) | M4, M5           | ✅ Complete      |
 | **M2** | Pomodoro Timer                     | Vertical (done)   | M3               | ✅ Complete      |
 | **M3** | Break Input & Keyword Matching     | Vertical (done)   | M4               | ✅ Complete      |
-| **M4** | Exercise Selection & Sequence      | Vertical          | US-01 complete   | 5-6h             |
-| **M5** | Break History CRUD                 | Vertical          | Certification    | 6-8h             |
-| **M6** | Testing & Certification            | Cross-cutting     | Production-ready | 6-8h             |
+| **M4** | Exercise Selection & Sequence      | Vertical          | US-01 complete   | ✅ Complete      |
+| **M5** | Break History CRUD                 | Vertical          | Certification    | ✅ Complete      |
+| **M6** | Testing & Certification            | Cross-cutting     | Production-ready | ✅ Complete      |
 | **M7** | UAT & Feedback Polish (Post-MVP)   | Vertical (done)   | Production-ready | ✅ Complete      |
 
 **Total estimated effort**: 27-35 hours (milestone-level coding) + **5-7 hours integration buffer** (handoff friction, cross-milestone debugging, refactoring) = **32-42 hours realistic total** (within 3-week after-hours budget of ~36-45h at 12-15h/week).
