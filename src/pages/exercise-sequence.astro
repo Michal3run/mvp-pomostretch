@@ -28,7 +28,7 @@ if (supabase) {
   if (error) {
     console.error("Failed to fetch exercise catalog:", error);
   } else {
-    catalog = (data ?? []) as Exercise[];
+    catalog = data as Exercise[];
   }
 }
 ---
