@@ -1,0 +1,46 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import HistoryList, { type BreakSessionItem } from "@/components/HistoryList";
+
+export const prerender = false;
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect("/auth/signin");
+}
+
+const supabase = Astro.locals.supabase;
+let initialSessions: BreakSessionItem[] = [];
+
+if (supabase) {
+  const { data, error } = await supabase.from("break_session").select("*").order("created_at", { ascending: false });
+
+  if (!error) {
+    initialSessions = data as BreakSessionItem[];
+  }
+}
+---
+
+<Layout title="Historia Przerw | PomoStretch">
+  <div class="bg-cosmic min-h-screen p-4 md:p-8">
+    <div class="mx-auto max-w-4xl">
+      <Topbar />
+
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-white md:text-3xl">Historia Przerw</h1>
+          <p class="text-sm text-purple-200/70">Zarządzaj swoimi odbyłymi sesjami rozciągania (CRUD)</p>
+        </div>
+        <a
+          href="/dashboard"
+          class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-purple-200 transition hover:bg-white/10"
+        >
+          ← Powrót do Dashboardu
+        </a>
+      </div>
+
+      <HistoryList client:load initialSessions={initialSessions} />
+    </div>
+  </div>
+</Layout>

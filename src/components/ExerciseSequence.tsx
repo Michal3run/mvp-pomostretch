@@ -1,18 +1,12 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Exercise, BreakInputCookie } from "@/types";
-import { selectExercises } from "@/lib/rule-engine";
-import { saveStoredTimer } from "@/lib/timer-storage";
-import { getLastSessionIds, saveLastSessionIds } from "@/lib/session-storage";
 import { Button } from "@/components/ui/button";
-import { Check, SkipForward, Play, Home, Clock, Sparkles, AlertCircle, RotateCcw, Coffee, Plus } from "lucide-react";
-
-const BODY_AREA_LABELS: Record<string, string> = {
-  eyes: "Oczy",
-  neck: "Kark",
-  shoulders: "Barki",
-  lower_back: "Lędźwie",
-  general: "Ogólne",
-};
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Check, SkipForward, Play, AlertTriangle } from "lucide-react";
+import { saveLastSessionIds } from "@/lib/session-storage";
+import { getStoredExerciseState, saveStoredExerciseState, clearStoredExerciseState } from "@/lib/exercise-storage";
+import { saveStoredTimer } from "@/lib/timer-storage";
 
 interface ExerciseSequenceProps {
   breakInput: BreakInputCookie;
@@ -24,67 +18,100 @@ interface ExerciseResult {
   status: "done" | "skipped";
 }
 
-import { FALLBACK_EXERCISE_CATALOG } from "@/lib/exercise-catalog";
-import { getStoredExerciseState, saveStoredExerciseState, clearStoredExerciseState } from "@/lib/exercise-storage";
+const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
+  {
+    id: "fb-1",
+    name: "Mruganie i rozluźnienie oczu",
+    description: "Zamknij oczy na 5 sekund, a następnie mrugaj szybko przez 10 sekund.",
+    duration_seconds: 30,
+    body_areas: ["eyes"],
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "fb-2",
+    name: "Powolne skłony głowy",
+    description: "Opuszczaj powoli brodę do klatki piersiowej, a następnie odchylaj w tył.",
+    duration_seconds: 45,
+    body_areas: ["neck"],
+    created_at: new Date().toISOString(),
+  },
+];
 
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
   const [exercises, setExercises] = useState<Exercise[]>(() => {
-    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    return selectExercises({
-      tags: breakInput.tags,
-      lastSessionIds: getLastSessionIds(),
-      catalog: activeCatalog,
-    });
-  });
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [status, setStatus] = useState<"active" | "completed" | "idle_break">("active");
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
-
-  // Idle break state
-  const [idleEndTime, setIdleEndTime] = useState<number | null>(null);
-  const [idleSecondsRemaining, setIdleSecondsRemaining] = useState<number>(0);
-
-  // Image loading state
-  const [imageLoaded, setImageLoaded] = useState(false);
-  useEffect(() => {
-    setImageLoaded(false);
-  }, [currentIndex]);
-
-  // M5 preparation stats
-  const [completedCount, setCompletedCount] = useState(0);
-  const [skippedCount, setSkippedCount] = useState(0);
-  const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
-
-  // Restore state from localStorage
-  useEffect(() => {
     const storedState = getStoredExerciseState();
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-
     if (storedState && storedState.exerciseIds.length > 0) {
-      // Reconstruct exercises array from IDs
-      const restoredExercises = storedState.exerciseIds
+      const restored = storedState.exerciseIds
         .map((id) => activeCatalog.find((ex) => ex.id === id))
-        .filter(Boolean) as Exercise[];
-
-      if (restoredExercises.length > 0) {
-        setExercises(restoredExercises);
-        setCurrentIndex(storedState.currentIndex);
-        setStatus(storedState.status);
-        setCompletedCount(storedState.completedCount);
-        setSkippedCount(storedState.skippedCount);
-        setIdleEndTime(storedState.idleEndTime);
-        if (storedState.status === "active") {
-          setSecondsRemaining(restoredExercises[storedState.currentIndex]?.duration_seconds || 0);
-        }
-      }
-    } else {
-      setSecondsRemaining(exercises[0]?.duration_seconds || 0);
+        .filter((ex): ex is Exercise => ex !== undefined);
+      if (restored.length > 0) return restored;
     }
+    return activeCatalog.slice(0, 3);
+  });
+
+  const [currentIndex, setCurrentIndex] = useState<number>(() => {
+    const storedState = getStoredExerciseState();
+    return storedState?.currentIndex ?? 0;
+  });
+
+  const [status, setStatus] = useState<"active" | "completed" | "idle_break">(() => {
+    const storedState = getStoredExerciseState();
+    return storedState?.status ?? "active";
+  });
+
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
+    const storedState = getStoredExerciseState();
+    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
+    if (storedState?.status === "active") {
+      const restored = storedState.exerciseIds
+        .map((id) => activeCatalog.find((ex) => ex.id === id))
+        .filter((ex): ex is Exercise => ex !== undefined);
+      return restored[storedState.currentIndex]?.duration_seconds ?? activeCatalog[0].duration_seconds;
+    }
+    return activeCatalog[0]?.duration_seconds ?? 0;
+  });
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Idle break state
+  const [idleEndTime, setIdleEndTime] = useState<number | null>(() => {
+    const storedState = getStoredExerciseState();
+    return storedState?.idleEndTime ?? null;
+  });
+  const [idleSecondsRemaining, setIdleSecondsRemaining] = useState<number>(0);
+
+  // Image loading state - adjust state during render when index changes
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [prevIndex, setPrevIndex] = useState(currentIndex);
+  if (prevIndex !== currentIndex) {
+    setPrevIndex(currentIndex);
+    setImageLoaded(false);
+  }
+
+  // M5 preparation stats
+  const [completedCount, setCompletedCount] = useState<number>(() => {
+    const storedState = getStoredExerciseState();
+    return storedState?.completedCount ?? 0;
+  });
+  const [skippedCount, setSkippedCount] = useState<number>(() => {
+    const storedState = getStoredExerciseState();
+    return storedState?.skippedCount ?? 0;
+  });
+  const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
+
+  // Mark mounted after initial render
+  useEffect(() => {
     setIsMounted(true);
-  }, [catalog, exercises]);
+  }, []);
+
+  // Sync catalog updates if catalog was loaded async after mount
+  useEffect(() => {
+    if (catalog.length > 0 && exercises.length === 0) {
+      setExercises(catalog.slice(0, 3));
+      setSecondsRemaining(catalog[0]?.duration_seconds ?? 0);
+    }
+  }, [catalog, exercises.length]);
 
   // Save state to localStorage on change
   useEffect(() => {
@@ -93,9 +120,9 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
       exerciseIds: exercises.map((ex) => ex.id),
       currentIndex,
       status,
-      idleEndTime,
       completedCount,
       skippedCount,
+      idleEndTime,
     });
   }, [isMounted, exercises, currentIndex, status, idleEndTime, completedCount, skippedCount]);
 
@@ -109,22 +136,29 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
       const ids = finalSelectedExercises.map((ex) => ex.id);
       saveLastSessionIds(ids);
 
-      fetch("/api/session-history", {
+      void fetch("/api/session-history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ break_type: breakInput.quickPick || breakInput.freeText }),
-      }).catch((_err: unknown) => {
-        // Ignore network error
+        body: JSON.stringify({
+          input_kind: breakInput.kind,
+          input_value: breakInput.value || "Przerwa",
+          derived_tags: breakInput.tags.length > 0 ? breakInput.tags : ["general"],
+          selected_exercise_ids: ids,
+          completed_count: completedCount,
+          skipped_count: skippedCount,
+          ended_at: new Date().toISOString(),
+        }),
       });
 
       setStatus("completed");
     },
-    [breakInput],
+    [breakInput, completedCount, skippedCount],
   );
 
   const advanceNext = useCallback(
     (actionStatus: "done" | "skipped") => {
-      const currentEx = exercises[currentIndex] as Exercise | undefined;
+      const currentEx = exercises[currentIndex];
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (currentEx) {
         setExerciseResults((prev) => [...prev, { exerciseId: currentEx.id, status: actionStatus }]);
       }
@@ -135,10 +169,10 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         setSkippedCount((prev) => prev + 1);
       }
 
-      const nextIdx = currentIndex + 1;
-      if (nextIdx < exercises.length) {
+      if (currentIndex < exercises.length - 1) {
+        const nextIdx = currentIndex + 1;
         setCurrentIndex(nextIdx);
-        setSecondsRemaining(exercises[nextIdx].duration_seconds);
+        setSecondsRemaining(exercises[nextIdx]?.duration_seconds ?? 0);
       } else {
         finishSequence(exercises);
       }
@@ -146,114 +180,77 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     [currentIndex, exercises, finishSequence],
   );
 
-  const handleDone = useCallback(() => {
-    advanceNext("done");
-  }, [advanceNext]);
-
-  const handleSkip = useCallback(() => {
-    advanceNext("skipped");
-  }, [advanceNext]);
-
-  // Per-exercise countdown timer using Date.now() to eliminate drift and handle background tabs
+  // Active exercise countdown timer
   useEffect(() => {
-    if (status !== "active" || exercises.length === 0) return;
+    if (status !== "active" || secondsRemaining <= 0) return;
 
-    const currentEx = exercises[currentIndex] as Exercise | undefined;
-    if (!currentEx) return;
-
-    const durationMs = currentEx.duration_seconds * 1000;
-    const endTime = Date.now() + durationMs;
-
-    const calculateRemaining = () => {
-      const remainingSec = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-      setSecondsRemaining(remainingSec);
-
-      if (remainingSec === 0) {
-        handleDone();
-      }
-    };
-
-    const interval = setInterval(() => {
-      calculateRemaining();
-    }, 100);
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        calculateRemaining();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const timer = setInterval(() => {
+      setSecondsRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          advanceNext("done");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearInterval(timer);
     };
-  }, [status, currentIndex, exercises, handleDone]);
+  }, [status, secondsRemaining, advanceNext]);
 
+  // Idle break countdown timer
   useEffect(() => {
-    if (status !== "idle_break" || !idleEndTime) return;
+    if (!idleEndTime) return;
 
-    const calculateRemaining = () => {
-      const remainingSec = Math.max(0, Math.ceil((idleEndTime - Date.now()) / 1000));
-      setIdleSecondsRemaining(remainingSec);
+    const tick = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, Math.ceil((idleEndTime - now) / 1000));
+      setIdleSecondsRemaining(remaining);
 
-      if (remainingSec === 0) {
-        // play sound
-        const audio = new Audio("/chime.mp3");
-        audio.play().catch(() => {
-          /* ignore */
-        });
-        window.document.title = "Koniec drzemki!";
+      if (remaining <= 0) {
         setIdleEndTime(null);
-      } else {
-        const m = Math.floor(remainingSec / 60);
-        const s = remainingSec % 60;
-        window.document.title = `(${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}) Odpoczynek`;
       }
     };
 
-    const interval = setInterval(calculateRemaining, 1000);
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") calculateRemaining();
-    };
+    tick();
+    const interval = setInterval(tick, 1000);
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       clearInterval(interval);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [status, idleEndTime]);
+  }, [idleEndTime]);
 
-  const startIdleBreak = (minutes: number) => {
-    setIdleEndTime(Date.now() + minutes * 60 * 1000);
-    setIdleSecondsRemaining(minutes * 60);
-    setStatus("idle_break");
+  const handleStartIdleBreak = (minutes: number) => {
+    const endTime = Date.now() + minutes * 60 * 1000;
+    setIdleEndTime(endTime);
   };
 
-  const extendIdleBreak = (minutes: number) => {
-    setIdleEndTime((prev) => {
-      const newTime = prev ? prev + minutes * 60 * 1000 : Date.now() + minutes * 60 * 1000;
-      setIdleSecondsRemaining(Math.max(0, Math.ceil((newTime - Date.now()) / 1000)));
-      return newTime;
-    });
+  const handleCancelIdleBreak = () => {
+    setIdleEndTime(null);
   };
 
   const handleResumeWork = () => {
-    window.document.title = "PomoStretch";
     saveStoredTimer({
       startedAt: Date.now(),
       durationMs: 25 * 60 * 1000,
       extendedMs: 0,
     });
     clearStoredExerciseState();
-    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {});
+    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      /* ignore */
+    });
     window.location.assign("/dashboard");
   };
 
   const handleReturnIdle = () => {
     clearStoredExerciseState();
-    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {});
+    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      /* ignore */
+    });
     window.location.assign("/dashboard");
   };
 
@@ -263,244 +260,183 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  if (!isMounted) {
-    return (
-      <div className="dark mx-auto flex w-full max-w-md flex-col gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 shadow-xl backdrop-blur-xl">
-        <div className="h-6 w-3/4 animate-pulse rounded bg-white/10" />
-        <div className="h-48 w-full animate-pulse rounded-lg bg-white/10" />
-        <div className="h-24 w-full animate-pulse rounded-lg bg-white/10" />
-      </div>
-    );
-  }
-
   if (exercises.length === 0) {
     return (
-      <div className="dark mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
-        <div className="bg-destructive/10 text-destructive flex h-16 w-16 items-center justify-center rounded-full">
-          <AlertCircle size={32} />
-        </div>
+      <Card className="mx-auto w-full max-w-md border-white/10 bg-white/5 text-white backdrop-blur-xl">
+        <CardContent className="pt-6 text-center">
+          <p className="text-purple-200">Ładowanie ćwiczeń...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Brak dostępnych ćwiczeń</h2>
-          <p className="text-muted-foreground text-sm">
-            Nie udało się przygotować ćwiczeń. Wybierz ponownie rodzaj przerwy lub wróć do dashboardu.
-          </p>
-        </div>
+  if (status === "completed") {
+    return (
+      <Card className="mx-auto w-full max-w-md border-white/10 bg-white/5 text-white backdrop-blur-xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-emerald-400">Świetna robota!</CardTitle>
+          <p className="mt-2 text-sm text-purple-200/80">Ukończyłeś sesję rozciągania.</p>
+        </CardHeader>
 
-        <div className="flex w-full flex-col gap-3 pt-2">
+        <CardContent className="space-y-6">
+          <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-center">
+            <p className="text-xs text-purple-300/70">Podsumowanie</p>
+            <div className="mt-2 flex justify-center gap-6">
+              <div>
+                <span className="block text-2xl font-bold text-emerald-400">{completedCount}</span>
+                <span className="text-xs text-purple-200/60">Ukończono</span>
+              </div>
+              <div>
+                <span className="block text-2xl font-bold text-amber-400">{skippedCount}</span>
+                <span className="text-xs text-purple-200/60">Pominięto</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Idle Break Section */}
+          <div className="rounded-xl border border-white/10 bg-purple-900/20 p-4">
+            <h4 className="text-sm font-semibold text-purple-200">Chcesz jeszcze chwilę odpocząć?</h4>
+            <p className="mt-1 text-xs text-purple-300/70">Wybierz czas na wolny odpoczynek bez ćwiczeń:</p>
+
+            {idleEndTime && idleSecondsRemaining > 0 ? (
+              <div className="mt-3 text-center">
+                <span className="font-mono text-3xl font-bold text-purple-200">
+                  {formatSeconds(idleSecondsRemaining)}
+                </span>
+                <div className="mt-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCancelIdleBreak}
+                    className="text-xs text-purple-300 hover:text-white"
+                  >
+                    Anuluj minutnik
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 flex justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleStartIdleBreak(3);
+                  }}
+                  className="border-purple-400/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/60"
+                >
+                  3 min
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleStartIdleBreak(5);
+                  }}
+                  className="border-purple-400/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/60"
+                >
+                  5 min
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleStartIdleBreak(10);
+                  }}
+                  className="border-purple-400/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/60"
+                >
+                  10 min
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-3">
           <Button
-            onClick={() => {
-              window.location.assign("/break-input");
-            }}
-            size="lg"
-            className="w-full gap-2 text-base"
+            onClick={handleResumeWork}
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 font-semibold text-white shadow-lg hover:from-purple-500 hover:to-indigo-500"
           >
-            <RotateCcw size={18} />
-            Wybierz inną przerwę
+            <Play className="mr-2 h-4 w-4" /> {"Wróć do pracy (Nowe Pomodoro)"}
           </Button>
-          <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
-            <Home size={18} />
-            Wróć do ekranu głównego
+
+          <Button
+            variant="ghost"
+            onClick={handleReturnIdle}
+            className="w-full text-purple-300/80 hover:bg-white/5 hover:text-white"
+          >
+            Wróć do Dashboardu bez uruchamiania timera
           </Button>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     );
   }
 
-  const currentExercise = exercises[currentIndex] as Exercise | undefined;
-
-  if (status === "completed" || !currentExercise) {
-    return (
-      <div className="dark mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
-        <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full">
-          <Sparkles size={32} />
-        </div>
-
-        <div className="space-y-2 text-center">
-          <h2 className="text-2xl font-bold tracking-tight">Świetna robota!</h2>
-          <p className="text-muted-foreground text-sm">
-            Przerwa zakończona. Wykonano {completedCount} z {exercises.length} ćwiczeń
-            {skippedCount > 0 ? ` (${skippedCount} pominięte)` : ""}.
-          </p>
-        </div>
-
-        <div className="flex w-full flex-col gap-3 pt-2">
-          <h3 className="mb-1 text-center text-lg font-medium">Chwila relaksu przed pracą?</h3>
-          <div className="flex w-full gap-2">
-            <Button
-              onClick={() => {
-                startIdleBreak(3);
-              }}
-              variant="secondary"
-              className="flex-1"
-            >
-              +3 min
-            </Button>
-            <Button
-              onClick={() => {
-                startIdleBreak(5);
-              }}
-              variant="secondary"
-              className="flex-1"
-            >
-              +5 min
-            </Button>
-            <Button
-              onClick={() => {
-                startIdleBreak(10);
-              }}
-              variant="secondary"
-              className="flex-1"
-            >
-              +10 min
-            </Button>
-          </div>
-
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card text-muted-foreground px-2">LUB</span>
-            </div>
-          </div>
-
-          <Button onClick={handleResumeWork} size="lg" className="w-full gap-2 text-base">
-            <Play size={18} />
-            Rozpocznij nową sesję (25 min)
-          </Button>
-          <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
-            <Home size={18} />
-            Wróć do ekranu głównego
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === "idle_break") {
-    return (
-      <div className="dark mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
-        <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full">
-          <Coffee size={32} />
-        </div>
-
-        <div className="space-y-2 text-center">
-          <h2 className="text-2xl font-bold tracking-tight">
-            {idleSecondsRemaining === 0 ? "Koniec przerwy!" : "Czas na odpoczynek"}
-          </h2>
-          <p className="text-muted-foreground text-sm">Oderwij wzrok od ekranu. Wróć do nas, gdy będziesz gotowy.</p>
-        </div>
-
-        <div className="my-4 font-mono text-6xl font-bold tracking-tighter tabular-nums">
-          {formatSeconds(idleSecondsRemaining)}
-        </div>
-
-        <Button
-          onClick={() => {
-            extendIdleBreak(5);
-          }}
-          variant="secondary"
-          size="sm"
-          className="mb-4 gap-2"
-        >
-          <Plus size={16} />
-          Dodaj 5 minut
-        </Button>
-
-        <div className="flex w-full flex-col gap-3 pt-2">
-          <Button onClick={handleResumeWork} size="lg" className="w-full gap-2 text-base">
-            <Play size={18} />
-            Rozpocznij nową sesję (25 min)
-          </Button>
-          <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
-            <Home size={18} />
-            Wróć do ekranu głównego
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  const totalExercises = exercises.length;
-  const progressPercent = ((currentIndex + 1) / totalExercises) * 100;
+  const currentExercise = exercises[currentIndex];
 
   return (
-    <div className="dark mx-auto flex w-full max-w-md flex-col gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
-      {/* Progress Header */}
-      <div className="space-y-2">
-        <div className="text-muted-foreground flex items-center justify-between text-xs font-semibold tracking-wider uppercase">
-          <span>
-            Ćwiczenie {currentIndex + 1} z {totalExercises}
+    <Card className="mx-auto w-full max-w-lg border-white/10 bg-white/5 text-white shadow-2xl backdrop-blur-xl">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div>
+          <span className="text-xs font-semibold tracking-wider text-purple-300/70 uppercase">
+            Ćwiczenie {currentIndex + 1} z {exercises.length}
           </span>
-          <span>{breakInput.value || "Przerwa"}</span>
+          <CardTitle className="mt-1 text-xl font-bold text-white">{currentExercise.name}</CardTitle>
         </div>
-        <div className="bg-secondary h-2 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-primary h-full transition-all duration-300 ease-out"
-            style={{ width: `${progressPercent}%` }}
-          />
+        <div className="text-right">
+          <span className="block font-mono text-2xl font-bold text-purple-300">{formatSeconds(secondsRemaining)}</span>
         </div>
-      </div>
+      </CardHeader>
 
-      {/* Exercise Content */}
-      <div className="space-y-3">
-        <h2 className="text-foreground text-2xl font-bold tracking-tight">{currentExercise.name}</h2>
-        <p className="text-muted-foreground text-sm leading-relaxed">{currentExercise.description}</p>
-
-        {/* Body Area Badges */}
-        <div className="flex flex-wrap gap-2 pt-1">
-          {currentExercise.body_areas.map((area) => (
-            <span
-              key={area}
-              className="bg-secondary text-secondary-foreground inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium"
-            >
-              {BODY_AREA_LABELS[area] || area}
-            </span>
-          ))}
-        </div>
-
-        {currentExercise.image && (
-          <div className="relative mt-6 flex min-h-48 w-full justify-center">
+      <CardContent className="space-y-4">
+        {/* SVG/Image illustration */}
+        {currentExercise.image ? (
+          <div className="relative flex h-48 w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/30 p-2">
             {!imageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-48 w-48 animate-pulse rounded-lg bg-white/10" />
+              <div className="absolute inset-0 flex animate-pulse items-center justify-center bg-purple-950/40 text-xs text-purple-300/60">
+                Ładowanie ilustracji...
               </div>
             )}
             <img
-              src={`/${currentExercise.image}`}
+              src={currentExercise.image}
               alt={currentExercise.name}
-              className={`h-48 max-w-full rounded-lg object-contain transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               onLoad={() => {
                 setImageLoaded(true);
               }}
+              className={`max-h-full max-w-full object-contain transition-opacity duration-300 ${
+                imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
             />
           </div>
+        ) : (
+          <div className="flex h-36 w-full items-center justify-center rounded-xl border border-dashed border-purple-400/20 bg-purple-950/20 p-4 text-center">
+            <AlertTriangle className="mr-2 h-5 w-5 text-purple-300/60" />
+            <span className="text-xs text-purple-300/60">Brak ilustracji dla tego ćwiczenia</span>
+          </div>
         )}
-      </div>
 
-      {/* Per-Exercise Countdown */}
-      <div className="bg-secondary/50 border-border/50 my-2 flex flex-col items-center justify-center rounded-lg border p-6">
-        <div className="text-muted-foreground mb-1 flex items-center gap-2 text-sm font-medium">
-          <Clock size={16} />
-          <span>Czas ćwiczenia</span>
-        </div>
-        <div className="text-foreground font-mono text-5xl font-bold tracking-tight tabular-nums">
-          {formatSeconds(secondsRemaining)}
-        </div>
-      </div>
+        <p className="text-sm leading-relaxed text-purple-100/90">{currentExercise.description}</p>
+      </CardContent>
 
-      {/* Action Buttons */}
-      <div className="flex w-full gap-3 pt-2">
-        <Button onClick={handleDone} size="lg" className="flex-1 gap-2 text-base">
-          <Check size={18} />
-          Zrobione
+      <CardFooter className="flex gap-3 pt-2">
+        <Button
+          onClick={() => {
+            advanceNext("done");
+          }}
+          className="flex-1 bg-emerald-600 font-semibold text-white hover:bg-emerald-500"
+        >
+          <Check className="mr-2 h-4 w-4" /> {"Gotowe (Done)"}
         </Button>
-        <Button onClick={handleSkip} variant="outline" size="lg" className="flex-1 gap-2 text-base">
-          <SkipForward size={18} />
-          Pomiń
+
+        <Button
+          variant="outline"
+          onClick={() => {
+            advanceNext("skipped");
+          }}
+          className="flex-1 border-white/20 bg-white/5 text-purple-200 hover:bg-white/10 hover:text-white"
+        >
+          <SkipForward className="mr-2 h-4 w-4" /> {"Pomiń (Skip)"}
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }
