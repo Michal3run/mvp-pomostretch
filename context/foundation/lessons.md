@@ -486,3 +486,16 @@ Using redirected Wrangler configuration.
 
 1. **Prefer `ON CONFLICT` updates** (Upserts) if the rows have natural unique keys.
 2. If inserting entirely new rows and abandoning old ones, **explicitly include cleanup logic** (e.g., `DELETE FROM` legacy rows) in the same migration to prevent data duplication and ghost records.
+
+---
+
+### L20: Prettier Line Endings (CRLF vs LF) Cause Silent CI Failures for Windows Users
+
+**Date**: 2026-08-02  
+**Context**: M8 CI Pipeline failures (`eslint-plugin-prettier`)
+
+**Problem**: The developer ran `npm run lint` and `npm run format` locally on Windows. Both commands succeeded with exit code `0`. However, the GitHub Actions CI (running on Ubuntu) consistently failed on the `npm run lint` step with dozens of `prettier/prettier` errors complaining about `Delete \r` (CRLF line endings). Windows users with `core.autocrlf=true` check out files with CRLF. Prettier strictly expected `LF`, so `eslint` caught the mismatch in CI but passed locally, causing massive frustration.
+
+**Solution**: Add `"endOfLine": "auto"` to `.prettierrc.json`. This tells Prettier to respect the existing line endings of the environment (LF in Linux, CRLF in Windows working directories) rather than strictly enforcing `lf` everywhere.
+
+**Guideline**: When bootstrapping projects or working across OS boundaries (Windows devs, Linux CI), always configure Prettier's `endOfLine` property. Never trust a "green" local linter on Windows if the project lacks explicit line-ending configuration.
