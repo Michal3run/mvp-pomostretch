@@ -29,7 +29,7 @@ import { FALLBACK_EXERCISE_CATALOG } from "@/lib/exercise-catalog";
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
   const [exercises] = useState<Exercise[]>(() => {
     const lastSessionIds = getLastSessionIds();
-    const activeCatalog = catalog && catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
+    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
     return selectExercises({
       tags: breakInput.tags,
       lastSessionIds,
@@ -52,6 +52,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   // Image loading state
   const [imageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line
     setImageLoaded(false);
   }, [currentIndex]);
 
@@ -411,7 +412,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
               src={`/${currentExercise.image}`}
               alt={currentExercise.name}
               className={`h-48 max-w-full rounded-lg object-contain transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              onLoad={() => setImageLoaded(true)}
+              onLoad={() => { setImageLoaded(true); }}
             />
           </div>
         )}
