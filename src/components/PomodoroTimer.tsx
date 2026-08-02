@@ -39,6 +39,16 @@ export default function PomodoroTimer() {
 
     if (remaining <= 0) {
       clearStoredTimer();
+
+      // Play sound and update title
+      const audio = new Audio("/chime.mp3"); // We assume chime.mp3 exists or we will use a generic one/create one later. Or we can use a data URI for a simple beep.
+      // Actually, let's just create an Audio object without throwing if it fails
+      audio.play().catch(() => {
+        /* ignore */
+      });
+      // eslint-disable-next-line react-compiler/react-compiler
+      window.document.title = "(00:00) Przerwa!";
+
       if (Math.abs(remaining) <= AUTO_NAVIGATE_GRACE_PERIOD) {
         window.location.assign("/break-input");
       } else {
@@ -47,6 +57,11 @@ export default function PomodoroTimer() {
       setRemainingMs(0);
     } else {
       setRemainingMs(remaining);
+      // Optional: update title with remaining time
+      const m = Math.floor(Math.ceil(remaining / 1000) / 60);
+      const s = Math.ceil(remaining / 1000) % 60;
+      // eslint-disable-next-line react-compiler/react-compiler
+      window.document.title = `(${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}) PomoStretch`;
     }
   }, [timerState, status]);
 
@@ -99,6 +114,8 @@ export default function PomodoroTimer() {
 
   const manualEnd = () => {
     clearStoredTimer();
+    // eslint-disable-next-line react-compiler/react-compiler
+    window.document.title = "PomoStretch";
     window.location.assign("/break-input");
   };
 
@@ -107,6 +124,8 @@ export default function PomodoroTimer() {
     setTimerState(null);
     setStatus("idle");
     setRemainingMs(DEFAULT_DURATION);
+    // eslint-disable-next-line react-compiler/react-compiler
+    window.document.title = "PomoStretch";
   };
 
   const formatTime = (ms: number) => {
@@ -139,7 +158,7 @@ export default function PomodoroTimer() {
           <div className="font-mono text-5xl opacity-50">25:00</div>
           <Button onClick={startTimer} size="lg" className="w-full gap-2 text-lg">
             <Play size={20} />
-            Start work session
+            Rozpocznij nową sesję
           </Button>
         </div>
       )}

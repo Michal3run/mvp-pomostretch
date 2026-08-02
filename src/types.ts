@@ -10,6 +10,7 @@ export interface Exercise {
   description: string;
   duration_seconds: number;
   body_areas: string[];
+  image?: string;
   created_at?: string;
 }
 
