@@ -172,6 +172,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
 
   const startIdleBreak = (minutes: number) => {
     setIdleEndTime(Date.now() + minutes * 60 * 1000);
+    setIdleSecondsRemaining(minutes * 60);
     setStatus("idle_break");
   };
 
@@ -205,7 +206,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
 
   if (exercises.length === 0) {
     return (
-      <div className="bg-card text-card-foreground mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-xl border p-8 text-center shadow-lg">
+      <div className="dark mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
         <div className="bg-destructive/10 text-destructive flex h-16 w-16 items-center justify-center rounded-full">
           <AlertCircle size={32} />
         </div>
@@ -230,7 +231,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           </Button>
           <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
             <Home size={18} />
-            Wróć do dashboardu
+            Wróć do ekranu głównego
           </Button>
         </div>
       </div>
@@ -241,7 +242,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
 
   if (status === "completed" || !currentExercise) {
     return (
-      <div className="bg-card text-card-foreground mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-xl border p-8 shadow-lg">
+      <div className="dark mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
         <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full">
           <Sparkles size={32} />
         </div>
@@ -301,7 +302,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           </Button>
           <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
             <Home size={18} />
-            Wróć do dashboardu
+            Wróć do ekranu głównego
           </Button>
         </div>
       </div>
@@ -310,7 +311,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
 
   if (status === "idle_break") {
     return (
-      <div className="bg-card text-card-foreground mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-xl border p-8 shadow-lg">
+      <div className="dark mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
         <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full">
           <Coffee size={32} />
         </div>
@@ -345,7 +346,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           </Button>
           <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
             <Home size={18} />
-            Wróć do dashboardu
+            Wróć do ekranu głównego
           </Button>
         </div>
       </div>
@@ -356,7 +357,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const progressPercent = ((currentIndex + 1) / totalExercises) * 100;
 
   return (
-    <div className="bg-card text-card-foreground mx-auto flex w-full max-w-md flex-col gap-6 rounded-xl border p-8 shadow-sm">
+    <div className="dark mx-auto flex w-full max-w-md flex-col gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
       {/* Progress Header */}
       <div className="space-y-2">
         <div className="text-muted-foreground flex items-center justify-between text-xs font-semibold tracking-wider uppercase">
