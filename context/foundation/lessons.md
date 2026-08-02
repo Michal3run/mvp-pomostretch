@@ -420,3 +420,38 @@ Using redirected Wrangler configuration.
 1. **Always inspect the DB schema / migrations** (`supabase/migrations/`) before writing mapping or tagging logic. Domain tags stored in session/cookies MUST match the exact string keys expected by DB queries.
 2. **Validate fallback requirements (FR-012)**: Never allow non-matching input to create an empty tag array when downstream logic requires valid category tags.
 3. **Use environment-aware cookie flags**: Never hardcode `secure: true` in cookie options; use `import.meta.env.PROD`.
+
+---
+
+### L15: API Route Paths Don't Match Page Paths in PROTECTED_ROUTES
+
+**Date**: 2026-08-02  
+**Context**: M1-M5 review  
+
+**Problem**: The middleware uses startsWith matching, so `/break-input` protects the page but not `/api/break-input`. Every API route that handles user data needs either:
+- Its own inline auth check (preferred for JSON APIs — returns 401 JSON)
+- An explicit entry in `PROTECTED_ROUTES` (only if HTML redirect is acceptable)
+
+**Guideline**: When adding a new API endpoint under `/api/`, always add an inline `context.locals.user` check. Never rely on a page-path entry in middleware to cover the `/api/` counterpart.
+
+---
+
+### L16: SSR Fixes Must Be Applied Consistently Across All Endpoints
+
+**Date**: 2026-08-02  
+**Context**: M1-M5 review  
+
+**Problem**: The double-instantiation fix was correctly implemented in middleware (`context.locals.supabase`) but M5 endpoints were written after the fix and still called `createClient()` directly. This happened because the M5 implementer followed the old pattern from M3/auth endpoints.
+
+**Guideline**: When a middleware pattern changes (like moving Supabase client to locals), grep for all files still using the old import and migrate them. A "fix" that only covers the file where the bug was discovered is incomplete.
+
+---
+
+### L17: TypeScript Types and DB Constraints Must Share a Single Source of Truth for Enums
+
+**Date**: 2026-08-02  
+**Context**: M1-M5 review  
+
+**Problem**: `input_kind` used hyphens in TypeScript (`"quick-pick"`) but underscores in the DB CHECK constraint (`'quick_pick'`). This was invisible until INSERT time because the cookie-based flow never hit the DB during M3.
+
+**Guideline**: For any value that will eventually be stored in a DB column with a CHECK constraint, define the canonical values in one place (e.g., a shared constant or the migration) and derive both the TypeScript type and the DB constraint from it. Cross-reference during code review by grepping for the enum values in both `src/` and `supabase/migrations/`.

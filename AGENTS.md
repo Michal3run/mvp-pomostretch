@@ -8,6 +8,7 @@ PomoStretch is an Astro 6 SSR app (React 19 islands, Tailwind 4, Supabase auth, 
 - Read secrets through `astro:env/server` (declared in `astro.config.mjs` `env.schema`), never `import.meta.env` on the client. Keep `SUPABASE_URL` / `SUPABASE_KEY` in `.env` (Node) or `.dev.vars` (Cloudflare) — both gitignored, never committed.
 - Every new Supabase table needs RLS enabled with granular per-operation, per-role policies. Name migrations `YYYYMMDDHHmmss_short_description.sql` in `supabase/migrations/`.
 - Gate new protected pages by adding their path to `PROTECTED_ROUTES` in `@src/middleware.ts` — auth is enforced there, not per-page.
+- API routes (`src/pages/api/**`) must include their own `context.locals.user` auth check returning 401 JSON. Do not rely on `PROTECTED_ROUTES` middleware for API auth.
 
 ## Project structure
 
@@ -50,6 +51,7 @@ npx wrangler secret put SUPABASE_KEY --name pomo-stretch-dev
 - Add shadcn/ui components via `npx shadcn@latest add <name>` (new-york variant, into `src/components/ui/`).
 - API handlers export uppercase `GET` / `POST` and validate input with zod.
 - Import via the `@/*` → `./src/*` alias.
+- All API endpoints must use `context.locals.supabase` (set by middleware), never call `createClient()` directly. The only exception is auth endpoints (`auth/signin`, `auth/signup`) which may need a client before middleware runs.
 - **GitHub Operations**: Do NOT use or require `gh` (GitHub CLI). Use standard `git` for repository operations and GitHub REST API (`curl -X POST https://api.github.com/repos/...` with `Authorization: Bearer <token>`) for creating issues, milestones, or PRs. If a task or skill asks for `gh`, automatically translate it to `curl` or `web_fetch`.
 
 ## Commits & CI
