@@ -11,33 +11,51 @@ const error = url.searchParams.get("error");
 
 <Layout title="Przerwa | PomoStretch">
   <div class="bg-cosmic flex min-h-screen flex-col items-center justify-center p-4">
-    <div class="w-full max-w-md space-y-8 rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl shadow-2xl">
+    <div
+      class="w-full max-w-md space-y-8 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-2xl backdrop-blur-xl"
+    >
       <div class="text-center">
         <h1 class="text-3xl font-bold tracking-tight">Czas na przerwę!</h1>
-        <p class="text-white/70 mt-4">Wybierz na czym chcesz się skupić lub wpisz własne potrzeby.</p>
+        <p class="mt-4 text-white/70">Wybierz na czym chcesz się skupić lub wpisz własne potrzeby.</p>
       </div>
 
       {error && <div class="bg-destructive/15 text-destructive rounded-md p-3 text-center text-sm">{error}</div>}
 
       <form method="POST" action="/api/break-input" class="space-y-6">
         <div class="grid grid-cols-2 gap-4">
-          <Button type="submit" name="quickPick" value="Tylko oczy" variant="outline" className="h-16 text-lg border-white/20 bg-white/5 hover:bg-white/20 hover:text-white"
-            >Tylko oczy</Button
+          <Button
+            type="submit"
+            name="quickPick"
+            value="Tylko oczy"
+            variant="outline"
+            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Tylko oczy</Button
           >
-          <Button type="submit" name="quickPick" value="Tylko kark" variant="outline" className="h-16 text-lg border-white/20 bg-white/5 hover:bg-white/20 hover:text-white"
-            >Tylko kark</Button
+          <Button
+            type="submit"
+            name="quickPick"
+            value="Tylko kark"
+            variant="outline"
+            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Tylko kark</Button
           >
-          <Button type="submit" name="quickPick" value="Ogólne" variant="outline" className="h-16 text-lg border-white/20 bg-white/5 hover:bg-white/20 hover:text-white"
-            >Ogólne</Button
+          <Button
+            type="submit"
+            name="quickPick"
+            value="Ogólne"
+            variant="outline"
+            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Ogólne</Button
           >
-          <Button type="submit" name="quickPick" value="Zaskocz mnie" variant="outline" className="h-16 text-lg border-white/20 bg-white/5 hover:bg-white/20 hover:text-white"
-            >Zaskocz mnie</Button
+          <Button
+            type="submit"
+            name="quickPick"
+            value="Zaskocz mnie"
+            variant="outline"
+            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Zaskocz mnie</Button
           >
         </div>
 
         <div class="relative flex items-center py-2">
           <div class="flex-grow border-t border-white/20"></div>
-          <span class="text-white/50 mx-4 flex-shrink-0 text-sm">LUB</span>
+          <span class="mx-4 flex-shrink-0 text-sm text-white/50">LUB</span>
           <div class="flex-grow border-t border-white/20"></div>
         </div>
 
@@ -47,12 +65,14 @@ const error = url.searchParams.get("error");
             placeholder="Opisz jak się czujesz, np. 'bolą mnie plecy od siedzenia'"
             className="min-h-[100px] resize-none border-white/20 bg-white/5 text-white placeholder:text-white/50"
           />
-          <Button type="submit" className="h-12 w-full text-lg bg-white text-black hover:bg-white/90">Wygeneruj zestaw</Button>
+          <Button type="submit" className="h-12 w-full bg-white text-lg text-black hover:bg-white/90"
+            >Wygeneruj zestaw</Button
+          >
         </div>
       </form>
 
       <div class="pt-4 text-center">
-        <a href="/dashboard" class="text-white/50 hover:text-white text-sm underline transition-colors"
+        <a href="/dashboard" class="text-sm text-white/50 underline transition-colors hover:text-white"
           >Pomiń przerwę i wróć do ekranu głównego</a
         >
       </div>

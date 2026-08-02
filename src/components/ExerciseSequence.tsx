@@ -46,6 +46,12 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const [idleEndTime, setIdleEndTime] = useState<number | null>(null);
   const [idleSecondsRemaining, setIdleSecondsRemaining] = useState<number>(0);
 
+  // Image loading state
+  const [imageLoaded, setImageLoaded] = useState(false);
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [currentIndex]);
+
   // M5 preparation stats
   const [completedCount, setCompletedCount] = useState(0);
   const [skippedCount, setSkippedCount] = useState(0);
@@ -392,11 +398,17 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         </div>
 
         {currentExercise.image && (
-          <div className="mt-6 flex justify-center">
+          <div className="relative mt-6 flex min-h-48 w-full justify-center">
+            {!imageLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-48 w-48 animate-pulse rounded-lg bg-white/10" />
+              </div>
+            )}
             <img
               src={`/${currentExercise.image}`}
               alt={currentExercise.name}
-              className="h-48 max-w-full rounded-lg object-contain"
+              className={`h-48 max-w-full rounded-lg object-contain transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setImageLoaded(true)}
             />
           </div>
         )}
