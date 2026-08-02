@@ -1,88 +1,103 @@
 import { test, expect } from "@playwright/test";
 
+interface SessionHistoryItem {
+  id: string;
+  user_id: string;
+  break_type: string;
+  created_at: string;
+}
+
+interface ApiResponse<T> {
+  data: T;
+  error?: string;
+}
+
 test.describe("M8: RLS Security and Isolation", () => {
-  // Use a unique suffix for this run to avoid collisions
   const suffix = Date.now();
   const userA = { email: `usera_${suffix}@example.com`, password: "testpassword123" };
   const userB = { email: `userb_${suffix}@example.com`, password: "testpassword123" };
   let sessionAId = "";
 
-  test("User B cannot see or delete User A's session", async ({ page, request }) => {
-    // === 1. Register and Login User A ===
-    await page.goto("/auth/signup");
-    await page.fill('input[name="email"]', userA.email);
-    await page.fill('input[name="password"]', userA.password);
-    await page.click('button[type="submit"]');
-    
-    // Wait for redirect to confirm-email, then go to signin
-    await expect(page).toHaveURL(/\/auth\/confirm-email/);
+  test("User B cannot see or delete User A's session", async ({ browser }) => {
+    // 1. Tworzymy osobny kontekst dla Użytkownika A
+    const contextA = await browser.newContext();
+    const pageA = await contextA.newPage();
 
-    await page.goto("/auth/signin");
-    await page.fill('input[name="email"]', userA.email);
-    await page.fill('input[name="password"]', userA.password);
-    await page.click('button[type="submit"]');
+    await pageA.goto("/auth/signup");
+    await pageA.fill('input[name="email"]', userA.email);
+    await pageA.fill('input[name="password"]', userA.password);
+    await pageA.click('button[type="submit"]');
 
-    // Wait for dashboard
-    await expect(page.getByText("Gotowy na sesję?")).toBeVisible({ timeout: 15000 });
+    await expect(pageA).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
 
-    // === 2. Create a session for User A ===
-    await page.getByRole("button", { name: "Rozpocznij nową sesję" }).click();
-    await expect(page.getByText("Czas skupienia")).toBeVisible();
-    
-    await page.getByRole("button", { name: "Zakończ" }).click();
-    await expect(page.getByText("Czas na przerwę!")).toBeVisible();
-    
-    await page.getByRole("button", { name: "Tylko kark" }).click();
-    await expect(page.getByRole("button", { name: "Zrobione" }).first()).toBeVisible({ timeout: 10000 });
-    
-    while (await page.getByRole("button", { name: "Zrobione" }).first().isVisible()) {
-      await page.getByRole("button", { name: "Zrobione" }).first().click();
-      await page.waitForTimeout(300);
+    if (!pageA.url().includes("/dashboard")) {
+      await pageA.goto("/auth/signin");
+      await pageA.fill('input[name="email"]', userA.email);
+      await pageA.fill('input[name="password"]', userA.password);
+      await pageA.click('button[type="submit"]');
     }
-    
-    await expect(page.getByText("Świetna robota!")).toBeVisible();
 
-    // Grab the ID from API as User A
-    const historyResA = await request.get("/api/session-history");
+    await expect(pageA.getByText("Gotowy na sesję?")).toBeVisible({ timeout: 15000 });
+
+    // Utworzenie sesji dla Użytkownika A
+    await pageA.getByRole("button", { name: "Rozpocznij nową sesję" }).click();
+    await expect(pageA.getByText("Czas skupienia")).toBeVisible();
+
+    await pageA.getByRole("button", { name: "Zakończ" }).click();
+    await expect(pageA.getByText("Czas na przerwę!")).toBeVisible();
+
+    await pageA.getByRole("button", { name: "Tylko kark" }).click();
+    await expect(pageA.getByRole("button", { name: "Zrobione" }).first()).toBeVisible({ timeout: 10000 });
+
+    while (await pageA.getByRole("button", { name: "Zrobione" }).first().isVisible()) {
+      await pageA.getByRole("button", { name: "Zrobione" }).first().click();
+      await pageA.waitForTimeout(300);
+    }
+
+    await expect(pageA.getByText("Świetna robota!")).toBeVisible();
+
+    // Pobieramy ID sesji przez pageA.request (uwzględnia ciasteczka zalogowanego pageA)
+    const historyResA = await pageA.request.get("/api/session-history");
     expect(historyResA.ok()).toBeTruthy();
-    const historyA = await historyResA.json();
-    
+    const historyA = (await historyResA.json()) as ApiResponse<SessionHistoryItem[]>;
+
     expect(historyA.data.length).toBeGreaterThan(0);
     sessionAId = historyA.data[0].id;
     expect(sessionAId).toBeTruthy();
 
-    // === 3. Logout User A ===
-    await page.goto("/dashboard");
-    await page.getByRole("button", { name: "Wyloguj się" }).click();
-    await expect(page).toHaveURL(/\/auth\/signin/);
+    // 2. Tworzymy całkowicie odrębny kontekst dla Użytkownika B
+    const contextB = await browser.newContext();
+    const pageB = await contextB.newPage();
 
-    // === 4. Register and Login User B ===
-    await page.goto("/auth/signup");
-    await page.fill('input[name="email"]', userB.email);
-    await page.fill('input[name="password"]', userB.password);
-    await page.click('button[type="submit"]');
-    
-    await expect(page).toHaveURL(/\/auth\/confirm-email/);
+    await pageB.goto("/auth/signup");
+    await pageB.fill('input[name="email"]', userB.email);
+    await pageB.fill('input[name="password"]', userB.password);
+    await pageB.click('button[type="submit"]');
 
-    await page.goto("/auth/signin");
-    await page.fill('input[name="email"]', userB.email);
-    await page.fill('input[name="password"]', userB.password);
-    await page.click('button[type="submit"]');
-    
-    await expect(page.getByText("Gotowy na sesję?")).toBeVisible({ timeout: 15000 });
+    await expect(pageB).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
 
-    // === 5. Check UI/API as User B ===
-    const historyResB = await request.get("/api/session-history");
+    if (!pageB.url().includes("/dashboard")) {
+      await pageB.goto("/auth/signin");
+      await pageB.fill('input[name="email"]', userB.email);
+      await pageB.fill('input[name="password"]', userB.password);
+      await pageB.click('button[type="submit"]');
+    }
+
+    await expect(pageB.getByText("Gotowy na sesję?")).toBeVisible({ timeout: 15000 });
+
+    // Weryfikacja UI/API dla Użytkownika B
+    const historyResB = await pageB.request.get("/api/session-history");
     expect(historyResB.ok()).toBeTruthy();
-    const historyB = await historyResB.json();
-    
-    // User B should not see User A's sessions
+    const historyB = (await historyResB.json()) as ApiResponse<SessionHistoryItem[]>;
+
+    // Użytkownik B nie powinien widzieć sesji Użytkownika A
     expect(historyB.data).toHaveLength(0);
 
-    // === 6. Direct API attack: try to delete User A's session as User B ===
-    const deleteAttempt = await request.delete(`/api/session-history/${sessionAId}`);
-    // Supabase RLS returns empty data for records we don't own. 
-    // The API handler returns 404 "Not Found" if data.length === 0
+    // Próba usunięcia sesji Użytkownika A przez Użytkownika B (oczekiwane 404 z uwagi na RLS)
+    const deleteAttempt = await pageB.request.delete(`/api/session-history/${sessionAId}`);
     expect(deleteAttempt.status()).toBe(404);
+
+    await contextA.close();
+    await contextB.close();
   });
 });
