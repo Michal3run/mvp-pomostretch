@@ -3,11 +3,13 @@
 Ten plan stanowi twardy kontrakt dla etapu testowania (Minimum-viable test set for certification), opierając się na badaniach (research.md) i uwzględniając zmiany wdrożone w M7.
 
 ## Zależności i Stack
+
 - **Framework E2E**: `@playwright/test` (R-03)
 - **Framework Unit Testów**: `vitest` (R-04)
 - **Skrypty**: Dodanie `npm run test` (dla vitest) oraz `npm run test:e2e` (dla Playwright) do `package.json`.
 
 ## Faza 1: Konfiguracja
+
 1. **Instalacja frameworków**:
    `npm install -D playwright @playwright/test vitest`
    `npx playwright install --with-deps chromium` (tylko jeden silnik na potrzeby CI/certyfikacji)
@@ -17,7 +19,9 @@ Ten plan stanowi twardy kontrakt dla etapu testowania (Minimum-viable test set f
    Ustawienie `webServer` działającego na `npm run dev` lub `npm run preview`. Adres `baseURL: http://localhost:4321`. Konfiguracja tylko dla przeglądarki Desktop Chrome, by zminimalizować czas trwania testów. Ustawienie testDir na `tests/e2e/`.
 
 ## Faza 2: Unit Testy (R-04)
+
 Cel: Zabezpieczenie R-04 - "Rule engine zwraca pustą sekwencję dla któregoś z 4 quick-picków".
+
 - Utworzenie pliku: `tests/unit/rule-engine.test.ts` (lub `src/lib/rule-engine.test.ts`).
 - Zbudowanie "mock catalog" składającego się z ok. 5-6 ćwiczeń obejmujących tagi: `eyes`, `neck`, `shoulders`, `lower_back`, `general`.
 - Test 1: Sprawdzenie, czy wejście `{ tags: ['eyes'] }` zwraca >= 1 ćwiczenie z mock katalogu.
@@ -27,7 +31,9 @@ Cel: Zabezpieczenie R-04 - "Rule engine zwraca pustą sekwencję dla któregoś 
 - Uruchomienie lokalnie i sprawdzenie na zielono.
 
 ## Faza 3: E2E Happy Path Test (R-03)
+
 Cel: Zabezpieczenie US-01 od początku do końca, łącznie z nowym UI z M7.
+
 - Utworzenie pliku: `tests/e2e/us-01.spec.ts`.
 - **Kroki testu**:
   1. Wejście na `/auth/signin`. Logowanie podanymi credentials testowymi (zmienne w pliku konfiguracyjnym lub mockowane).
@@ -43,9 +49,11 @@ Cel: Zabezpieczenie US-01 od początku do końca, łącznie z nowym UI z M7.
   11. Asercja powrotu na `/dashboard` i widoczności aktywnego timera (`Czas skupienia`).
 
 ## Faza 4: CI & Wpięcie do GitHub Actions
+
 - Aktualizacja `.github/workflows/ci.yml`.
 - Dodanie joba uruchamiającego testy jednostkowe `npm run test --run`.
 - Dodanie joba dla Playwright: instalacja i uruchomienie `npx playwright test`. Podpięcie zmiennych środowiskowych `SUPABASE_URL` i `SUPABASE_KEY` z repozytorium/sekretów, aby testy mogły przejść autoryzację.
 
 ---
+
 Ten plan zamyka zakres badawczy i tworzy ramy do odpalenia `/10x-implement`. Zapewnia najszybszą pętlę sprzężenia zwrotnego na certyfikację M6.
