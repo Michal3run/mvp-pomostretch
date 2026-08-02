@@ -15,8 +15,8 @@
 
 ## 3. Pomodoro Timer Does Not "Time" The Break
 - **Observation**: After finishing exercises, the app asks to start a new 25m work session. The user expected a 5 or 10-minute break timer countdown *after* or *instead of* the exercises.
-- **Root Cause**: This is actually a feature, not a bug, per `prd.md` (Line 179). The product's core loop replaces the passive "5 minute wait" with an active "sequence of exercises". The exercise sequence *is* the break.
-- **Action Plan**: No code change needed. The PRD explicitly designed this flow to maximize compliance and reduce idle phone-scrolling time. If user feedback strongly insists on idle breaks, we may need to introduce a "Skip exercises and just rest" fallback timer in a future iteration.
+- **Root Cause**: Initially designed as a feature in `prd.md` to replace passive breaks with active stretching. However, real-world usage reveals this is too rigid. Users still need normal "idle" break time (for tea, bathroom) after the 2-3 minutes of exercises.
+- **Action Plan**: Introduce an optional "Idle Break" timer after the exercise sequence completes. The user should be able to choose between immediately starting a new work session (25m) or taking an additional 3, 5, or 10-minute idle break.
 
 ## 4. Lack of Notifications at 25m Expiry
 - **Observation**: When the 25m timer hits zero, it's not clear if there is any sound or visual notification outside of the tab.

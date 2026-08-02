@@ -4,7 +4,15 @@ import { selectExercises } from "@/lib/rule-engine";
 import { saveStoredTimer } from "@/lib/timer-storage";
 import { getLastSessionIds, saveLastSessionIds } from "@/lib/session-storage";
 import { Button } from "@/components/ui/button";
-import { Check, SkipForward, Play, Home, Clock, Sparkles, AlertCircle, RotateCcw } from "lucide-react";
+import { Check, SkipForward, Play, Home, Clock, Sparkles, AlertCircle, RotateCcw, Coffee } from "lucide-react";
+
+const BODY_AREA_LABELS: Record<string, string> = {
+  eyes: "Oczy",
+  neck: "Kark",
+  shoulders: "Barki",
+  lower_back: "Lędźwie",
+  general: "Ogólne",
+};
 
 interface ExerciseSequenceProps {
   breakInput: BreakInputCookie;
@@ -27,10 +35,16 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [status, setStatus] = useState<"active" | "completed">(() => (exercises.length > 0 ? "active" : "completed"));
+  const [status, setStatus] = useState<"active" | "completed" | "idle_break">(() =>
+    exercises.length > 0 ? "active" : "completed",
+  );
   const [secondsRemaining, setSecondsRemaining] = useState<number>(() =>
     exercises.length > 0 ? exercises[0].duration_seconds : 0,
   );
+
+  // Idle break state
+  const [idleEndTime, setIdleEndTime] = useState<number | null>(null);
+  const [idleSecondsRemaining, setIdleSecondsRemaining] = useState<number>(0);
 
   // M5 preparation stats
   const [completedCount, setCompletedCount] = useState(0);
@@ -122,7 +136,47 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     };
   }, [status, currentIndex, exercises, handleDone]);
 
+  useEffect(() => {
+    if (status !== "idle_break" || !idleEndTime) return;
+
+    const calculateRemaining = () => {
+      const remainingSec = Math.max(0, Math.ceil((idleEndTime - Date.now()) / 1000));
+      setIdleSecondsRemaining(remainingSec);
+
+      if (remainingSec === 0) {
+        // play sound
+        const audio = new Audio("/chime.mp3");
+        audio.play().catch(() => {
+          /* ignore */
+        });
+        window.document.title = "Koniec drzemki!";
+        setIdleEndTime(null);
+      } else {
+        const m = Math.floor(remainingSec / 60);
+        const s = remainingSec % 60;
+        window.document.title = `(${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}) Odpoczynek`;
+      }
+    };
+
+    const interval = setInterval(calculateRemaining, 1000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") calculateRemaining();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [status, idleEndTime]);
+
+  const startIdleBreak = (minutes: number) => {
+    setIdleEndTime(Date.now() + minutes * 60 * 1000);
+    setStatus("idle_break");
+  };
+
   const handleResumeWork = () => {
+    window.document.title = "PomoStretch";
     saveStoredTimer({
       startedAt: Date.now(),
       durationMs: 25 * 60 * 1000,
@@ -193,14 +247,85 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         </div>
 
         <div className="flex w-full flex-col gap-3 pt-2">
-          <h3 className="text-center text-lg font-medium">Czy chcesz wznowić pracę?</h3>
+          <h3 className="mb-1 text-center text-lg font-medium">Chwila relaksu przed pracą?</h3>
+          <div className="flex w-full gap-2">
+            <Button
+              onClick={() => {
+                startIdleBreak(3);
+              }}
+              variant="secondary"
+              className="flex-1"
+            >
+              +3 min
+            </Button>
+            <Button
+              onClick={() => {
+                startIdleBreak(5);
+              }}
+              variant="secondary"
+              className="flex-1"
+            >
+              +5 min
+            </Button>
+            <Button
+              onClick={() => {
+                startIdleBreak(10);
+              }}
+              variant="secondary"
+              className="flex-1"
+            >
+              +10 min
+            </Button>
+          </div>
+
+          <div className="relative my-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card text-muted-foreground px-2">LUB</span>
+            </div>
+          </div>
+
           <Button onClick={handleResumeWork} size="lg" className="w-full gap-2 text-base">
             <Play size={18} />
-            Tak, rozpocznij nową sesję (25 min)
+            Rozpocznij nową sesję (25 min)
           </Button>
           <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
             <Home size={18} />
-            Nie, wróć do dashboardu
+            Wróć do dashboardu
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "idle_break") {
+    return (
+      <div className="bg-card text-card-foreground mx-auto flex w-full max-w-md flex-col items-center gap-6 rounded-xl border p-8 shadow-lg">
+        <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full">
+          <Coffee size={32} />
+        </div>
+
+        <div className="space-y-2 text-center">
+          <h2 className="text-2xl font-bold tracking-tight">
+            {idleSecondsRemaining === 0 ? "Koniec przerwy!" : "Czas na odpoczynek"}
+          </h2>
+          <p className="text-muted-foreground text-sm">Oderwij wzrok od ekranu. Wróć do nas, gdy będziesz gotowy.</p>
+        </div>
+
+        <div className="my-4 font-mono text-6xl font-bold tracking-tighter tabular-nums">
+          {formatSeconds(idleSecondsRemaining)}
+        </div>
+
+        <div className="flex w-full flex-col gap-3 pt-2">
+          <Button onClick={handleResumeWork} size="lg" className="w-full gap-2 text-base">
+            <Play size={18} />
+            Rozpocznij nową sesję (25 min)
+          </Button>
+          <Button onClick={handleReturnIdle} variant="outline" size="lg" className="w-full gap-2 text-base">
+            <Home size={18} />
+            Wróć do dashboardu
           </Button>
         </div>
       </div>
@@ -240,10 +365,20 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
               key={area}
               className="bg-secondary text-secondary-foreground inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium"
             >
-              {area}
+              {BODY_AREA_LABELS[area] || area}
             </span>
           ))}
         </div>
+
+        {currentExercise.image && (
+          <div className="mt-6 flex justify-center">
+            <img
+              src={`/${currentExercise.image}`}
+              alt={currentExercise.name}
+              className="h-48 max-w-full rounded-lg object-contain"
+            />
+          </div>
+        )}
       </div>
 
       {/* Per-Exercise Countdown */}
