@@ -25,25 +25,23 @@ interface ExerciseResult {
 }
 
 import { FALLBACK_EXERCISE_CATALOG } from "@/lib/exercise-catalog";
+import { getStoredExerciseState, saveStoredExerciseState, clearStoredExerciseState } from "@/lib/exercise-storage";
 
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
-  const [exercises] = useState<Exercise[]>(() => {
-    const lastSessionIds = getLastSessionIds();
+  const [isMounted, setIsMounted] = useState(false);
+
+  const [exercises, setExercises] = useState<Exercise[]>(() => {
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
     return selectExercises({
       tags: breakInput.tags,
-      lastSessionIds,
+      lastSessionIds: getLastSessionIds(),
       catalog: activeCatalog,
     });
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [status, setStatus] = useState<"active" | "completed" | "idle_break">(() =>
-    exercises.length > 0 ? "active" : "completed",
-  );
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(() =>
-    exercises.length > 0 ? exercises[0].duration_seconds : 0,
-  );
+  const [status, setStatus] = useState<"active" | "completed" | "idle_break">("active");
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
 
   // Idle break state
   const [idleEndTime, setIdleEndTime] = useState<number | null>(null);
@@ -52,7 +50,6 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   // Image loading state
   const [imageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
-    // eslint-disable-next-line
     setImageLoaded(false);
   }, [currentIndex]);
 
@@ -61,21 +58,69 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const [skippedCount, setSkippedCount] = useState(0);
   const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
 
+  // Restore state from localStorage
+  useEffect(() => {
+    const storedState = getStoredExerciseState();
+    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
+
+    if (storedState && storedState.exerciseIds.length > 0) {
+      // Reconstruct exercises array from IDs
+      const restoredExercises = storedState.exerciseIds
+        .map((id) => activeCatalog.find((ex) => ex.id === id))
+        .filter(Boolean) as Exercise[];
+
+      if (restoredExercises.length > 0) {
+        setExercises(restoredExercises);
+        setCurrentIndex(storedState.currentIndex);
+        setStatus(storedState.status);
+        setCompletedCount(storedState.completedCount);
+        setSkippedCount(storedState.skippedCount);
+        setIdleEndTime(storedState.idleEndTime);
+        if (storedState.status === "active") {
+          setSecondsRemaining(restoredExercises[storedState.currentIndex]?.duration_seconds || 0);
+        }
+      }
+    } else {
+      setSecondsRemaining(exercises[0]?.duration_seconds || 0);
+    }
+    setIsMounted(true);
+  }, [catalog, exercises]);
+
+  // Save state to localStorage on change
+  useEffect(() => {
+    if (!isMounted || exercises.length === 0) return;
+    saveStoredExerciseState({
+      exerciseIds: exercises.map((ex) => ex.id),
+      currentIndex,
+      status,
+      idleEndTime,
+      completedCount,
+      skippedCount,
+    });
+  }, [isMounted, exercises, currentIndex, status, idleEndTime, completedCount, skippedCount]);
+
   const isCompletedHandledRef = useRef(false);
 
-  const finishSequence = useCallback((finalSelectedExercises: Exercise[]) => {
-    if (isCompletedHandledRef.current) return;
-    isCompletedHandledRef.current = true;
+  const finishSequence = useCallback(
+    (finalSelectedExercises: Exercise[]) => {
+      if (isCompletedHandledRef.current) return;
+      isCompletedHandledRef.current = true;
 
-    const ids = finalSelectedExercises.map((ex) => ex.id);
-    saveLastSessionIds(ids);
+      const ids = finalSelectedExercises.map((ex) => ex.id);
+      saveLastSessionIds(ids);
 
-    fetch("/api/clear-break-cookie", { method: "POST" }).catch((_err: unknown) => {
-      // Ignore network error
-    });
+      fetch("/api/session-history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ break_type: breakInput.quickPick || breakInput.freeText }),
+      }).catch((_err: unknown) => {
+        // Ignore network error
+      });
 
-    setStatus("completed");
-  }, []);
+      setStatus("completed");
+    },
+    [breakInput],
+  );
 
   const advanceNext = useCallback(
     (actionStatus: "done" | "skipped") => {
@@ -201,10 +246,14 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
       durationMs: 25 * 60 * 1000,
       extendedMs: 0,
     });
+    clearStoredExerciseState();
+    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {});
     window.location.assign("/dashboard");
   };
 
   const handleReturnIdle = () => {
+    clearStoredExerciseState();
+    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {});
     window.location.assign("/dashboard");
   };
 
@@ -213,6 +262,16 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     const s = sec % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
+
+  if (!isMounted) {
+    return (
+      <div className="dark mx-auto flex w-full max-w-md flex-col gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 shadow-xl backdrop-blur-xl">
+        <div className="h-6 w-3/4 animate-pulse rounded bg-white/10" />
+        <div className="h-48 w-full animate-pulse rounded-lg bg-white/10" />
+        <div className="h-24 w-full animate-pulse rounded-lg bg-white/10" />
+      </div>
+    );
+  }
 
   if (exercises.length === 0) {
     return (
@@ -412,7 +471,9 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
               src={`/${currentExercise.image}`}
               alt={currentExercise.name}
               className={`h-48 max-w-full rounded-lg object-contain transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              onLoad={() => { setImageLoaded(true); }}
+              onLoad={() => {
+                setImageLoaded(true);
+              }}
             />
           </div>
         )}

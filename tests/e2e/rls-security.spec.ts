@@ -49,7 +49,8 @@ test.describe("M8: RLS Security and Isolation", () => {
     await pageA.getByRole("button", { name: "Tylko kark" }).click();
     await expect(pageA.getByRole("button", { name: "Zrobione" }).first()).toBeVisible({ timeout: 10000 });
 
-    while (await pageA.getByRole("button", { name: "Zrobione" }).first().isVisible()) {
+    for (let i = 0; i < 20; i++) {
+      if (!(await pageA.getByRole("button", { name: "Zrobione" }).first().isVisible())) break;
       await pageA.getByRole("button", { name: "Zrobione" }).first().click();
       await pageA.waitForTimeout(300);
     }

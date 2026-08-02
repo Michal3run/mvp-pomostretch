@@ -99,7 +99,7 @@ export const POST: APIRoute = async (context) => {
 
   context.cookies.set("pomostretch.break_input", cookieValue, {
     path: "/",
-    maxAge: 5 * 60,
+    maxAge: 30 * 60,
     httpOnly: true,
     secure: import.meta.env.PROD,
     sameSite: "lax",
