@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 export interface ExerciseStoredState {
   exerciseIds: string[];
   currentIndex: number;

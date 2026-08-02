@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type { TimerState } from "@/types";
 
 const TIMER_STORAGE_KEY = "pomostretch.timer";
