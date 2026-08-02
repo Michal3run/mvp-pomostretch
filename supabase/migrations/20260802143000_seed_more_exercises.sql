@@ -2,6 +2,8 @@
 -- Adding 5 eyes exercises, 3 neck exercises, 2 lower_back exercises
 -- Using WHERE NOT EXISTS to make it idempotent
 
+ALTER TABLE public.exercise ADD CONSTRAINT exercise_name_key UNIQUE (name);
+
 INSERT INTO public.exercise (name, description, duration_seconds, body_areas, image)
 SELECT * FROM (VALUES
   -- Eyes (5 exercises)
