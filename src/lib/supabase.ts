@@ -6,6 +6,11 @@ export function createClient(requestHeaders: Headers, cookies: AstroCookies) {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return null;
   }
+  try {
+    new URL(SUPABASE_URL);
+  } catch {
+    return null;
+  }
   return createServerClient(SUPABASE_URL, SUPABASE_KEY, {
     cookies: {
       getAll() {
