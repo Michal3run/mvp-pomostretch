@@ -153,7 +153,7 @@ export default function PomodoroTimer() {
       )}
 
       {status === "idle" && (
-        <div className="bg-card text-card-foreground flex flex-col items-center gap-6 rounded-xl border p-8 shadow-sm">
+        <div className="dark flex flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
           <h2 className="text-2xl font-bold">Gotowy na sesję?</h2>
           <div className="font-mono text-5xl opacity-50">25:00</div>
           <Button onClick={startTimer} size="lg" className="w-full gap-2 text-lg">
@@ -164,7 +164,7 @@ export default function PomodoroTimer() {
       )}
 
       {status === "active" && (
-        <div className="bg-card text-card-foreground flex flex-col items-center gap-8 rounded-xl border p-8 shadow-sm">
+        <div className="dark flex flex-col items-center gap-8 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
           <h2 className="text-muted-foreground text-xl font-medium">Czas skupienia</h2>
           <div className="font-mono text-7xl font-bold tracking-tighter tabular-nums">{formatTime(remainingMs)}</div>
 
@@ -182,7 +182,7 @@ export default function PomodoroTimer() {
       )}
 
       {status === "expired_card" && (
-        <div className="bg-card text-card-foreground border-primary flex flex-col items-center gap-6 rounded-xl border-2 p-8 shadow-lg">
+        <div className="dark flex flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-8 text-white shadow-xl backdrop-blur-xl">
           <h2 className="text-center text-2xl font-bold">Sesja zakończona</h2>
           <p className="text-muted-foreground text-center">Twój czas skupienia dobiegł końca w tle. Czas na przerwę!</p>
 
