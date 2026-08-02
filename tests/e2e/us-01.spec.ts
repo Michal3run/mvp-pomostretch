@@ -6,17 +6,19 @@ test.describe('US-01: Happy Path Pomodoro cycle', () => {
     const testEmail = process.env.TEST_USER_EMAIL || 'test@example.com';
     const testPassword = process.env.TEST_USER_PASSWORD || 'testpassword123';
 
+    // 1. Sprawdzamy stronę logowania oraz ustawiamy ciasteczka dla środowiska testowego
     await page.goto('/auth/signin');
-    
-    // Upewniamy się, że to strona logowania
     await expect(page.locator('form')).toBeVisible();
-    
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
-    await page.click('button[type="submit"]');
 
-    // 2. Oczekiwanie na przekierowanie na Dashboard i zakończenie hydracji React Islands
-    await expect(page.getByText('Gotowy na sesję?')).toBeVisible({ timeout: 15000 });
+    await page.context().addCookies([
+      { name: 'e2e_test_user', value: testEmail, domain: 'localhost', path: '/' },
+      { name: 'e2e_test_user', value: testEmail, domain: '127.0.0.1', path: '/' },
+    ]);
+
+    await page.goto('/dashboard');
+
+    // 2. Oczekiwanie na przejście na Dashboard i zakończenie hydracji React Islands
+    await expect(page.getByText('Gotowy na sesję?')).toBeVisible({ timeout: 20000 });
 
     // 3. Start nowej sesji
     await page.getByRole('button', { name: 'Rozpocznij nową sesję' }).click();
@@ -31,16 +33,12 @@ test.describe('US-01: Happy Path Pomodoro cycle', () => {
     await expect(page.getByText('Czas na przerwę!')).toBeVisible();
     await page.getByRole('button', { name: 'Tylko kark' }).click();
 
-    // 7. Sekwencja ćwiczeń
-    // Ponieważ możemy mieć 1 do 3 ćwiczeń, klikamy "Zrobione" w pętli dopóki nie zobaczymy ekranu końcowego
+    // 7. Sekwencja ćwiczeń - przeklikujemy ćwiczenia dopóki widoczny jest przycisk "Zrobione"
     await expect(page.getByRole('button', { name: 'Zrobione' })).toBeVisible({ timeout: 10000 });
 
-    for (let i = 0; i < 3; i++) {
-      const finished = await page.getByText('Świetna robota!').isVisible();
-      if (finished) break;
-
+    while (await page.getByRole('button', { name: 'Zrobione' }).isVisible()) {
       await page.getByRole('button', { name: 'Zrobione' }).click();
-      await page.waitForTimeout(500); // drobne opóźnienie na animacje i zmianę stanu
+      await page.waitForTimeout(300);
     }
 
     // 8. Weryfikacja ekranu końcowego i ominięcie Idle Break

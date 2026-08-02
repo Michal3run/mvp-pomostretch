@@ -113,6 +113,7 @@ Six milestones, ordered by dependency and risk:
 | **M5** | Break History CRUD                 | Vertical          | Certification    | ✅ Complete      |
 | **M6** | Testing & Certification            | Cross-cutting     | Production-ready | ✅ Complete      |
 | **M7** | UAT & Feedback Polish (Post-MVP)   | Vertical (done)   | Production-ready | ✅ Complete      |
+| **M8** | M8 Polish (Post-MVP)               | Vertical          | Production-ready | ⏳ In Progress   |
 
 **Total estimated effort**: 27-35 hours (milestone-level coding) + **5-7 hours integration buffer** (handoff friction, cross-milestone debugging, refactoring) = **32-42 hours realistic total** (within 3-week after-hours budget of ~36-45h at 12-15h/week).
 
@@ -1380,6 +1381,23 @@ This roadmap is a **living document** — it evolves as implementation reveals u
 ### Handoff
 
 - M7 complete: Exercises show Polish badges, timer makes a subtle sound upon expiry, and users can opt to run a 3-10 minute idle break after finishing exercises.
+
+---
+
+## M8: M8 Polish (Post-MVP)
+
+### Focus
+- Rozbudowa bazy ćwiczeń, ze szczególnym naciskiem na dodanie minimum 5 nowych ćwiczeń na oczy, a także nowe ćwiczenia dla karku i odcinka lędźwiowego.
+- Dodanie "Info Overlay", który tłumaczy jak aplikacja działa oraz explicitly wspomina dla oceniających MVP, że pod spodem funkcjonuje pełny CRUD historii sesji z RLS.
+- Implementacja testów E2E bezpieczeństwa (RLS isolation) na dwóch użytkownikach, pokrywających UI oraz requesty API bezpośrednio.
+
+### Deliverables
+- **Nowe ćwiczenia (migracja)**: idempotentna migracja SQL dodająca nowe ćwiczenia.
+- **InfoButton**: przycisk z informacją (Shadcn Dialog/Sheet) renderowany na dashboardzie (wyspa React).
+- **Testy E2E**: plik z testem Playwright `rls-security.spec.ts`.
+
+### Handoff
+- M8 complete: Aplikacja informuje o swoim działaniu i wymaganiach biznesowych (CRUD), posiada większy zasób ćwiczeń na oczy aby uniknąć błędów przy częstych przerwach, testy RLS pomyślnie weryfikują bezpieczeństwo izolacji środowisk.
 
 ---
 

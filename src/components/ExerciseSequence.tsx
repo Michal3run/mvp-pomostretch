@@ -24,13 +24,16 @@ interface ExerciseResult {
   status: "done" | "skipped";
 }
 
+import { FALLBACK_EXERCISE_CATALOG } from "../lib/exercise-catalog";
+
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
   const [exercises] = useState<Exercise[]>(() => {
     const lastSessionIds = getLastSessionIds();
+    const activeCatalog = catalog && catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
     return selectExercises({
       tags: breakInput.tags,
       lastSessionIds,
-      catalog,
+      catalog: activeCatalog,
     });
   });
 

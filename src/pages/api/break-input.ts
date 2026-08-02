@@ -105,5 +105,11 @@ export const POST: APIRoute = async (context) => {
     sameSite: "lax",
   });
 
-  return context.redirect("/exercise-sequence");
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: "/exercise-sequence",
+      "Set-Cookie": `pomostretch.break_input=${encodeURIComponent(cookieValue)}; Path=/; Max-Age=300; HttpOnly; SameSite=Lax`,
+    },
+  });
 };
