@@ -43,7 +43,7 @@ export function FormField({
           id={id}
           name={name ?? id}
           type={type}
-          value={value}
+          defaultValue={value}
           onChange={(e) => {
             onChange(e.target.value);
           }}

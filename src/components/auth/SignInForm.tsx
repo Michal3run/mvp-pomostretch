@@ -15,14 +15,19 @@ export default function SignInForm({ serverError }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  function validate() {
+  function validate(formData?: FormData) {
     const next: typeof errors = {};
-    if (!email.trim()) {
+    const rawEmail = (formData?.get("email") as string) ?? "";
+    const rawPassword = (formData?.get("password") as string) ?? "";
+    const targetEmail = rawEmail.trim() || email.trim();
+    const targetPassword = rawPassword || password;
+
+    if (!targetEmail) {
       next.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
       next.email = "Enter a valid email address";
     }
-    if (!password) {
+    if (!targetPassword) {
       next.password = "Password is required";
     }
     setErrors(next);
@@ -34,7 +39,16 @@ export default function SignInForm({ serverError }: Props) {
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
+    const data = new FormData(e.currentTarget);
+    const emailVal = (data.get("email") as string) || "";
+    const passVal = (data.get("password") as string) || "";
+    
+    // If form data has values, allow native form POST submission
+    if (emailVal.trim() && passVal) {
+      return;
+    }
+
+    if (!validate(data)) {
       e.preventDefault();
     }
   }
