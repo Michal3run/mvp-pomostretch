@@ -1354,12 +1354,15 @@ This roadmap is a **living document** — it evolves as implementation reveals u
 
 - **2026-07-10**: Initial roadmap (v1). Six milestones sequenced, dependencies graphed, risks registered. Baseline: auth complete, no product features yet.
 - **2026-07-11**: Corrected deployment status throughout document. Infrastructure deployment (Phases 0-4 from deployment-plan.md) was completed 2026-06-09 — production live at https://pomo-stretch.michal3run.workers.dev, Supabase project operational, auto-deploy active. Roadmap milestone M6 now focuses on M1 database migrations + product feature validation, not infrastructure setup.
+- **2026-07-28**: Milestone M4 (Exercise Selection & Sequence) completed. Rule engine implementation.
+- **2026-08-01**: Milestone M5 (Break History CRUD) completed.
+- **2026-08-02**: Milestone M7 (UAT & Feedback Polish) completed. Polskie etykiety, notyfikacje dźwiękowe/tytułowe, przerwa Idle Break oraz baza 25 ilustrowanych ćwiczeń wdrożona na środowisko DEV.
 
 ---
 
 ## M7: UAT & Feedback Polish (Post-MVP)
 
-**Status**: planned
+**Status**: completed
 **Dependencies**: M1-M6
 
 ### Goals

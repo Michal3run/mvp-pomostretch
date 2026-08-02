@@ -456,3 +456,33 @@ Using redirected Wrangler configuration.
 **Problem**: `input_kind` used hyphens in TypeScript (`"quick-pick"`) but underscores in the DB CHECK constraint (`'quick_pick'`). This was invisible until INSERT time because the cookie-based flow never hit the DB during M3.
 
 **Guideline**: For any value that will eventually be stored in a DB column with a CHECK constraint, define the canonical values in one place (e.g., a shared constant or the migration) and derive both the TypeScript type and the DB constraint from it. Cross-reference during code review by grepping for the enum values in both `src/` and `supabase/migrations/`.
+
+---
+
+### L18: React Islands with Persistent State Initialization Mismatch SSR
+
+**Date**: 2026-08-02  
+**Context**: M7 Pomodoro Timer UAT Polish
+
+**Problem**: The `PomodoroTimer.tsx` React component uses `localStorage` (via `getStoredTimer()`) to restore active timer state. Initially, it set the default state to `idle`, and then in a `useEffect`, restored the state to `active`. Because Astro renders HTML on the server (which doesn't have `localStorage`), the initial HTML sent to the client showed "Start work session" (idle). When React hydrated on the client and `useEffect` ran, it abruptly swapped to "Czas skupienia" (active). This caused a very jarring UI flash for users returning to their active timer.
+
+**Mitigation**: You cannot read `localStorage` during initial SSR render, but reading it directly in the React initializer (`useState(() => localStorage.get(...))`) causes React hydration errors because the client output differs from the server output.
+**Solution**: Use an `isMounted` state initialized to `false`, and only set it to `true` inside `useEffect`. While `!isMounted`, render a skeleton/placeholder matching the dimensions of the component. This hides the SSR "idle" state and shows a smooth loading animation until hydration completes, preventing the flash without triggering hydration mismatches.
+
+**Guideline**: For any React component in Astro that relies on purely client-side data (like `localStorage` or `IndexedDB`) to determine its initial visual state, **do not render the default UI during SSR if it might immediately change**. Always use an `isMounted` pattern and render a skeleton placeholder until hydration is complete.
+
+---
+
+### L19: Database Migrations with Seed Data Lack Idempotency Without Explicit Conflict Resolution
+
+**Date**: 2026-08-02  
+**Context**: M7 Exercise Seed Data Migration
+
+**Problem**: We pushed a new migration that added an `image` column to the `exercise` table and inserted 25 new exercises (with images) using standard `INSERT INTO public.exercise (...)` statements. However, the database already contained 5 legacy exercises from an earlier milestone that had `image: NULL`. The migration ran successfully, adding the 25 new rows, but the 5 legacy rows remained, polluting the catalog. Users saw a mix of beautiful new exercises and broken old ones.
+
+**Mitigation**: Run a subsequent migration (`DELETE FROM public.exercise WHERE image IS NULL;`) to purge the legacy rows.
+
+**Guideline**: When writing a migration that seeds data into an existing table where the schema has changed (e.g., adding a new required conceptual field like an image):
+
+1. **Prefer `ON CONFLICT` updates** (Upserts) if the rows have natural unique keys.
+2. If inserting entirely new rows and abandoning old ones, **explicitly include cleanup logic** (e.g., `DELETE FROM` legacy rows) in the same migration to prevent data duplication and ghost records.
