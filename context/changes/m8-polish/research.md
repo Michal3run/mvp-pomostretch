@@ -1,12 +1,15 @@
 # M8 Polish: Research
 
 ## Cel i kontekst
+
 Rozbudowa aplikacji o funkcje edukacyjne i post-MVP:
+
 1. Panel informacyjny (Info Overlay) z opisem logiki biznesowej z PRD.
 2. Zwiększenie liczby ćwiczeń (rozwiązanie problemu braku świeżych ćwiczeń po kilku cyklach z tagiem "oczy").
 3. Rozszerzenie pokrycia testowego E2E o bezpieczeństwo RLS.
 
 ## Ustalenia z Codebase
+
 1. **Dlaczego "Oczy" szybko wyczerpują ćwiczenia?**
    - Po sprawdzeniu migracji Supabase (`20260802110000_add_exercise_image_and_seed.sql`), w bazie znajduje się 25 ćwiczeń, ale **tylko 3** z nich mają przypisany tag `eyes`.
    - Zgodnie z PRD i logiką w `src/lib/rule-engine.ts`, silnik nie powtarza ćwiczeń, które użytkownik wykonał w poprzedniej sesji.
@@ -15,7 +18,7 @@ Rozbudowa aplikacji o funkcje edukacyjne i post-MVP:
 
 2. **Testowanie RLS (Role Level Security)**
    - W M5 dodano CRUD do historii przerw z włączonym RLS w bazie Supabase.
-   - Testy Vitest testują logikę na poziomie klienta, ale najlepszym potwierdzeniem bezpiecznej aplikacji jest test E2E symulujący dwóch prawdziwych użytkowników: 
+   - Testy Vitest testują logikę na poziomie klienta, ale najlepszym potwierdzeniem bezpiecznej aplikacji jest test E2E symulujący dwóch prawdziwych użytkowników:
      - User A tworzy wpis sesji.
      - User B loguje się i sprawdza, czy nie widzi wpisu A w swoim widoku historii, oraz API odrzuca próby usunięcia ID sesji A.
 
