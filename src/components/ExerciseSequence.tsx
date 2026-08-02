@@ -4,7 +4,7 @@ import { selectExercises } from "@/lib/rule-engine";
 import { saveStoredTimer } from "@/lib/timer-storage";
 import { getLastSessionIds, saveLastSessionIds } from "@/lib/session-storage";
 import { Button } from "@/components/ui/button";
-import { Check, SkipForward, Play, Home, Clock, Sparkles, AlertCircle, RotateCcw, Coffee } from "lucide-react";
+import { Check, SkipForward, Play, Home, Clock, Sparkles, AlertCircle, RotateCcw, Coffee, Plus } from "lucide-react";
 
 const BODY_AREA_LABELS: Record<string, string> = {
   eyes: "Oczy",
@@ -175,6 +175,10 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     setStatus("idle_break");
   };
 
+  const extendIdleBreak = (minutes: number) => {
+    setIdleEndTime((prev) => (prev ? prev + minutes * 60 * 1000 : Date.now() + minutes * 60 * 1000));
+  };
+
   const handleResumeWork = () => {
     window.document.title = "PomoStretch";
     saveStoredTimer({
@@ -317,6 +321,11 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         <div className="my-4 font-mono text-6xl font-bold tracking-tighter tabular-nums">
           {formatSeconds(idleSecondsRemaining)}
         </div>
+
+        <Button onClick={() => { extendIdleBreak(5); }} variant="secondary" size="sm" className="mb-4 gap-2">
+          <Plus size={16} />
+          Dodaj 5 minut
+        </Button>
 
         <div className="flex w-full flex-col gap-3 pt-2">
           <Button onClick={handleResumeWork} size="lg" className="w-full gap-2 text-base">

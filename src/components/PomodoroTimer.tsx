@@ -60,7 +60,7 @@ export default function PomodoroTimer() {
       // Optional: update title with remaining time
       const m = Math.floor(Math.ceil(remaining / 1000) / 60);
       const s = Math.ceil(remaining / 1000) % 60;
-      // eslint-disable-next-line react-compiler/react-compiler
+
       window.document.title = `(${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}) PomoStretch`;
     }
   }, [timerState, status]);
@@ -114,7 +114,7 @@ export default function PomodoroTimer() {
 
   const manualEnd = () => {
     clearStoredTimer();
-    // eslint-disable-next-line react-compiler/react-compiler
+
     window.document.title = "PomoStretch";
     window.location.assign("/break-input");
   };
@@ -124,7 +124,7 @@ export default function PomodoroTimer() {
     setTimerState(null);
     setStatus("idle");
     setRemainingMs(DEFAULT_DURATION);
-    // eslint-disable-next-line react-compiler/react-compiler
+
     window.document.title = "PomoStretch";
   };
 
