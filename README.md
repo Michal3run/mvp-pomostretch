@@ -55,6 +55,8 @@ npm run dev
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm run test` - Run Vitest unit tests
+- `npm run test:e2e` - Run Playwright end-to-end tests
 
 ## Project Structure
 
@@ -151,6 +153,7 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 ## Deployment
 
 This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+Production URL: **https://pomo-stretch.michal3run.workers.dev**
 
 1. Build the project:
 
