@@ -12,10 +12,9 @@ const mockCatalog: Exercise[] = [
 ];
 
 describe("selectExercises Rule Engine", () => {
-  it("falls back to DEFAULT_CATALOG for empty catalog", () => {
+  it("returns empty array for empty catalog", () => {
     const result = selectExercises({ tags: ["neck"], catalog: [] });
-    expect(result.length).toBeGreaterThan(0);
-    expect(result.some((ex) => ex.body_areas.includes("neck"))).toBe(true);
+    expect(result).toEqual([]);
   });
 
   it("filters exercises matching requested tag", () => {
