@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { createClient } from "@/lib/supabase";
 import { z } from "zod";
 
 export const prerender = false;
@@ -33,7 +32,7 @@ export const DELETE: APIRoute = async (context) => {
     });
   }
 
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
 
   if (!supabase) {
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
@@ -116,7 +115,7 @@ export const PATCH: APIRoute = async (context) => {
     });
   }
 
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
 
   if (!supabase) {
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {

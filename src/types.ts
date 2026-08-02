@@ -14,7 +14,7 @@ export interface Exercise {
 }
 
 export interface BreakInputCookie {
-  kind: "quick-pick" | "free-text";
+  kind: "quick_pick" | "free_text";
   value: string;
   tags: string[];
 }

@@ -21,6 +21,10 @@ const formSchema = z
   );
 
 export const POST: APIRoute = async (context) => {
+  if (!context.locals.user) {
+    return context.redirect("/auth/signin");
+  }
+
   const form = await context.request.formData();
 
   const parseResult = formSchema.safeParse({
@@ -37,16 +41,16 @@ export const POST: APIRoute = async (context) => {
   const trimmedText = rawFreeText?.trim();
   const freeText = trimmedText && trimmedText.length > 0 ? trimmedText : null;
 
-  let kind: "quick-pick" | "free-text" = "quick-pick";
+  let kind: "quick_pick" | "free_text" = "quick_pick";
   let value = "";
   const tagSet = new Set<string>();
 
   const textToAnalyze = quickPick ?? freeText ?? "";
   if (quickPick) {
-    kind = "quick-pick";
+    kind = "quick_pick";
     value = quickPick;
   } else if (freeText) {
-    kind = "free-text";
+    kind = "free_text";
     value = freeText;
   }
 

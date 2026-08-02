@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { createClient } from "@/lib/supabase";
 
 export const prerender = false;
 
@@ -13,7 +12,7 @@ export const GET: APIRoute = async (context) => {
     });
   }
 
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
 
   if (!supabase) {
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
