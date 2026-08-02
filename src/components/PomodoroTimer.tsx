@@ -21,12 +21,9 @@ export default function PomodoroTimer() {
       setShowWarningBanner(true);
     }
     if (state) {
-      // eslint-disable-next-line
       setTimerState(state);
-      // eslint-disable-next-line
       setStatus("active");
     }
-    // eslint-disable-next-line
     setIsMounted(true);
   }, []);
 
