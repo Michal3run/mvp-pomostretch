@@ -17,8 +17,8 @@ export default function SignInForm({ serverError }: Props) {
 
   function validate(formData?: FormData) {
     const next: typeof errors = {};
-    const rawEmail = (formData?.get("email") as string) ?? "";
-    const rawPassword = (formData?.get("password") as string) ?? "";
+    const rawEmail = formData?.get("email")?.toString() ?? "";
+    const rawPassword = formData?.get("password")?.toString() ?? "";
     const targetEmail = rawEmail.trim() || email.trim();
     const targetPassword = rawPassword || password;
 
@@ -42,7 +42,7 @@ export default function SignInForm({ serverError }: Props) {
     const data = new FormData(e.currentTarget);
     const emailVal = (data.get("email") as string) || "";
     const passVal = (data.get("password") as string) || "";
-    
+
     // If form data has values, allow native form POST submission
     if (emailVal.trim() && passVal) {
       return;

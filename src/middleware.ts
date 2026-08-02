@@ -26,7 +26,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
         user_metadata: {},
         aud: "authenticated",
         created_at: new Date().toISOString(),
-      } as any;
+      } as import("@supabase/supabase-js").User;
     }
   }
 
