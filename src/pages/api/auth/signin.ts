@@ -8,39 +8,18 @@ export const POST: APIRoute = async (context) => {
   const email = ((form.get("email") as string) || "").trim();
   const password = (form.get("password") as string) || "";
 
-  const testEmail = email || "test@example.com";
-
-  // E2E / local testing fallback for test accounts or fallback when unauthenticated in test mode
-  if (!email || email === "test@example.com" || email.endsWith("@example.com")) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: "/dashboard",
-        "Set-Cookie": `e2e_test_user=${encodeURIComponent(testEmail)}; Path=/; HttpOnly; SameSite=Lax`,
-      },
-    });
+  if (!email || !password) {
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Email and password are required")}`);
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: "/dashboard",
-        "Set-Cookie": `e2e_test_user=${encodeURIComponent(testEmail)}; Path=/; HttpOnly; SameSite=Lax`,
-      },
-    });
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: "/dashboard",
-        "Set-Cookie": `e2e_test_user=${encodeURIComponent(testEmail)}; Path=/; HttpOnly; SameSite=Lax`,
-      },
-    });
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(error.message)}`);
   }
 
   return context.redirect("/dashboard");
