@@ -9,14 +9,14 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     await page.goto("/auth/signup");
     await expect(page.locator("form")).toBeVisible();
-    
+
     await page.fill('input[name="email"]', testEmail);
     await page.fill('input[name="password"]', testPassword);
     await page.fill('input[name="confirmPassword"]', testPassword);
     await page.click('button[type="submit"]');
 
     await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
-    
+
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
       await page.fill('input[name="email"]', testEmail);
