@@ -26,6 +26,7 @@ test.describe("M8: RLS Security and Isolation", () => {
     await pageA.goto("/auth/signup");
     await pageA.fill('input[name="email"]', userA.email);
     await pageA.fill('input[name="password"]', userA.password);
+    await pageA.fill('input[name="confirmPassword"]', userA.password);
     await pageA.click('button[type="submit"]');
 
     await expect(pageA).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
@@ -73,6 +74,7 @@ test.describe("M8: RLS Security and Isolation", () => {
     await pageB.goto("/auth/signup");
     await pageB.fill('input[name="email"]', userB.email);
     await pageB.fill('input[name="password"]', userB.password);
+    await pageB.fill('input[name="confirmPassword"]', userB.password);
     await pageB.click('button[type="submit"]');
 
     await expect(pageB).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
