@@ -239,7 +239,6 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     });
     clearStoredExerciseState();
     fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       /* ignore */
     });
     window.location.assign("/dashboard");
@@ -248,7 +247,6 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const handleReturnIdle = () => {
     clearStoredExerciseState();
     fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       /* ignore */
     });
     window.location.assign("/dashboard");
