@@ -20,4 +20,8 @@ export default defineConfig({
       SUPABASE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },
+  server: {
+    host: "127.0.0.1",
+    port: 4321,
+  },
 });

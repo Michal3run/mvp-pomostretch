@@ -16,10 +16,30 @@ Test timeout of 30000ms exceeded.
 ```
 
 ```
-Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
-Call log:
-  - navigating to "http://localhost:4321/auth/signin", waiting until "load"
+Error: expect(locator).toBeVisible() failed
 
+Locator: getByRole('button', { name: 'Zrobione' })
+Expected: visible
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 10000ms
+  - waiting for getByRole('button', { name: 'Zrobione' })
+  - Test timeout of 30000ms exceeded.
+
+```
+
+```yaml
+- alert:
+  - strong: "Uwaga:"
+  - text: Supabase nie jest skonfigurowany — funkcje uwierzytelniania są wyłączone.
+  - link "Zobacz instrukcję konfiguracji":
+    - /url: https://github.com/przeprogramowani/10x-astro-starter#supabase-configuration
+  - text: .
+- text: Ćwiczenie 1 z 2 Mruganie i rozluźnienie oczu 00:25 Brak ilustracji dla tego ćwiczenia
+- paragraph: Zamknij oczy na 5 sekund, a następnie mrugaj szybko przez 10 sekund.
+- button "Gotowe (Done)"
+- button "Pomiń (Skip)"
 ```
 
 # Test source
@@ -33,8 +53,7 @@ Call log:
   6  |     const testEmail = process.env.TEST_USER_EMAIL ?? "test@example.com";
   7  | 
   8  |     // 1. Sprawdzamy stronę logowania oraz ustawiamy ciasteczka dla środowiska testowego
-> 9  |     await page.goto("/auth/signin");
-     |                ^ Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+  9  |     await page.goto("/auth/signin");
   10 |     await expect(page.locator("form")).toBeVisible();
   11 | 
   12 |     await page.context().addCookies([
@@ -61,7 +80,8 @@ Call log:
   33 |     await page.getByRole("button", { name: "Tylko kark" }).click();
   34 | 
   35 |     // 7. Sekwencja ćwiczeń - przeklikujemy ćwiczenia dopóki widoczny jest przycisk "Zrobione"
-  36 |     await expect(page.getByRole("button", { name: "Zrobione" })).toBeVisible({ timeout: 10000 });
+> 36 |     await expect(page.getByRole("button", { name: "Zrobione" })).toBeVisible({ timeout: 10000 });
+     |                                                                  ^ Error: expect(locator).toBeVisible() failed
   37 | 
   38 |     while (await page.getByRole("button", { name: "Zrobione" }).isVisible()) {
   39 |       await page.getByRole("button", { name: "Zrobione" }).click();
