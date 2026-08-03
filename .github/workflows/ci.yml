@@ -20,10 +20,12 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npx playwright install --with-deps chromium
-      - name: Create .dev.vars for Cloudflare/Wrangler
+      - name: Create .env and .dev.vars for CI tests
         run: |
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .dev.vars
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .dev.vars
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env
       - run: npm run test:e2e
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
