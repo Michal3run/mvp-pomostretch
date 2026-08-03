@@ -49,7 +49,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
 
   const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    return activeCatalog[0]?.duration_seconds ?? 0;
+    return activeCatalog[0] ? activeCatalog[0].duration_seconds : 0;
   });
 
   const [isMounted, setIsMounted] = useState(false);
@@ -88,13 +88,14 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         setIdleEndTime(storedState.idleEndTime);
         if (storedState.status === "active") {
           setSecondsRemaining(
-            restored[storedState.currentIndex]?.duration_seconds ?? activeCatalog[0]?.duration_seconds ?? 0,
+            restored[storedState.currentIndex]?.duration_seconds ??
+              (activeCatalog[0] ? activeCatalog[0].duration_seconds : 0),
           );
         }
       }
     } else if (catalog.length > 0 && exercises.length === 0) {
       setExercises(catalog.slice(0, 3));
-      setSecondsRemaining(catalog[0]?.duration_seconds ?? 0);
+      setSecondsRemaining(catalog[0] ? catalog[0].duration_seconds : 0);
     }
     setIsMounted(true);
   }, [catalog, exercises.length]);
