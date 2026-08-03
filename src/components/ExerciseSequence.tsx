@@ -39,46 +39,23 @@ const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
 
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
   const [exercises, setExercises] = useState<Exercise[]>(() => {
-    const storedState = getStoredExerciseState();
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    if (storedState && storedState.exerciseIds.length > 0) {
-      const restored = storedState.exerciseIds
-        .map((id) => activeCatalog.find((ex) => ex.id === id))
-        .filter((ex): ex is Exercise => ex !== undefined);
-      if (restored.length > 0) return restored;
-    }
     return activeCatalog.slice(0, 3);
   });
 
-  const [currentIndex, setCurrentIndex] = useState<number>(() => {
-    const storedState = getStoredExerciseState();
-    return storedState?.currentIndex ?? 0;
-  });
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const [status, setStatus] = useState<"active" | "completed" | "idle_break">(() => {
-    const storedState = getStoredExerciseState();
-    return storedState?.status ?? "active";
-  });
+  const [status, setStatus] = useState<"active" | "completed" | "idle_break">("active");
 
   const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
-    const storedState = getStoredExerciseState();
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    if (storedState?.status === "active") {
-      const restored = storedState.exerciseIds
-        .map((id) => activeCatalog.find((ex) => ex.id === id))
-        .filter((ex): ex is Exercise => ex !== undefined);
-      return restored[storedState.currentIndex]?.duration_seconds ?? activeCatalog[0].duration_seconds;
-    }
     return activeCatalog[0]?.duration_seconds ?? 0;
   });
 
   const [isMounted, setIsMounted] = useState(false);
 
   // Idle break state
-  const [idleEndTime, setIdleEndTime] = useState<number | null>(() => {
-    const storedState = getStoredExerciseState();
-    return storedState?.idleEndTime ?? null;
-  });
+  const [idleEndTime, setIdleEndTime] = useState<number | null>(null);
   const [idleSecondsRemaining, setIdleSecondsRemaining] = useState<number>(0);
 
   // Image loading state - adjust state during render when index changes
@@ -90,27 +67,34 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   }
 
   // M5 preparation stats
-  const [completedCount, setCompletedCount] = useState<number>(() => {
-    const storedState = getStoredExerciseState();
-    return storedState?.completedCount ?? 0;
-  });
-  const [skippedCount, setSkippedCount] = useState<number>(() => {
-    const storedState = getStoredExerciseState();
-    return storedState?.skippedCount ?? 0;
-  });
+  const [completedCount, setCompletedCount] = useState<number>(0);
+  const [skippedCount, setSkippedCount] = useState<number>(0);
   const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
 
-  // Mark mounted after initial render
+  // Restore state from localStorage on mount
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Sync catalog updates if catalog was loaded async after mount
-  useEffect(() => {
-    if (catalog.length > 0 && exercises.length === 0) {
+    const storedState = getStoredExerciseState();
+    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
+    if (storedState && storedState.exerciseIds.length > 0) {
+      const restored = storedState.exerciseIds
+        .map((id) => activeCatalog.find((ex) => ex.id === id))
+        .filter((ex): ex is Exercise => ex !== undefined);
+      if (restored.length > 0) {
+        setExercises(restored);
+        setCurrentIndex(storedState.currentIndex ?? 0);
+        setStatus(storedState.status ?? "active");
+        setCompletedCount(storedState.completedCount ?? 0);
+        setSkippedCount(storedState.skippedCount ?? 0);
+        setIdleEndTime(storedState.idleEndTime ?? null);
+        if (storedState.status === "active") {
+          setSecondsRemaining(restored[storedState.currentIndex]?.duration_seconds ?? activeCatalog[0]?.duration_seconds ?? 0);
+        }
+      }
+    } else if (catalog.length > 0 && exercises.length === 0) {
       setExercises(catalog.slice(0, 3));
       setSecondsRemaining(catalog[0]?.duration_seconds ?? 0);
     }
+    setIsMounted(true);
   }, [catalog, exercises.length]);
 
   // Save state to localStorage on change
@@ -136,7 +120,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
       const ids = finalSelectedExercises.map((ex) => ex.id);
       saveLastSessionIds(ids);
 
-      void fetch("/api/session-history", {
+      fetch("/api/session-history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -148,6 +132,8 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           skipped_count: skippedCount,
           ended_at: new Date().toISOString(),
         }),
+      }).catch(() => {
+        /* ignore error */
       });
 
       setStatus("completed");
@@ -257,6 +243,16 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     const s = sec % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
+
+  if (!isMounted) {
+    return (
+      <Card className="mx-auto w-full max-w-md border-white/10 bg-white/5 text-white backdrop-blur-xl">
+        <CardContent className="pt-6 text-center">
+          <p className="text-purple-200">Ładowanie...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (exercises.length === 0) {
     return (
