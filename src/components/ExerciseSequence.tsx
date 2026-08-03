@@ -81,13 +81,15 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         .filter((ex): ex is Exercise => ex !== undefined);
       if (restored.length > 0) {
         setExercises(restored);
-        setCurrentIndex(storedState.currentIndex ?? 0);
-        setStatus(storedState.status ?? "active");
-        setCompletedCount(storedState.completedCount ?? 0);
-        setSkippedCount(storedState.skippedCount ?? 0);
-        setIdleEndTime(storedState.idleEndTime ?? null);
+        setCurrentIndex(storedState.currentIndex);
+        setStatus(storedState.status);
+        setCompletedCount(storedState.completedCount);
+        setSkippedCount(storedState.skippedCount);
+        setIdleEndTime(storedState.idleEndTime);
         if (storedState.status === "active") {
-          setSecondsRemaining(restored[storedState.currentIndex]?.duration_seconds ?? activeCatalog[0]?.duration_seconds ?? 0);
+          setSecondsRemaining(
+            restored[storedState.currentIndex]?.duration_seconds ?? activeCatalog[0]?.duration_seconds ?? 0,
+          );
         }
       }
     } else if (catalog.length > 0 && exercises.length === 0) {
