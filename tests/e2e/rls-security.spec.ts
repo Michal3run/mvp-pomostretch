@@ -1,3 +1,4 @@
+// Covers R-02: User isolation — User B must not be able to read or delete User A's sessions.
 import { test, expect } from "@playwright/test";
 
 interface SessionHistoryItem {
@@ -13,12 +14,15 @@ interface ApiResponse<T> {
 }
 
 test.describe("M8: RLS Security and Isolation", () => {
-  const suffix = Date.now();
-  const userA = { email: `usera_${suffix}@example.com`, password: "testpassword123" };
-  const userB = { email: `userb_${suffix}@example.com`, password: "testpassword123" };
-  let sessionAId = "";
-
   test("User B cannot see or delete User A's session", async ({ browser }) => {
+    // suffix is generated inside the test so that retries don't reuse the same
+    // email addresses (which could be in a "pending confirmation" state after
+    // the first attempt, causing signups to fail on retry).
+    const suffix = Date.now();
+    const userA = { email: `usera_${suffix}@example.com`, password: "testpassword123" };
+    const userB = { email: `userb_${suffix}@example.com`, password: "testpassword123" };
+    let sessionAId = "";
+
     // 1. Tworzymy osobny kontekst dla Użytkownika A
     const contextA = await browser.newContext();
     const pageA = await contextA.newPage();
