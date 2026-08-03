@@ -2,19 +2,27 @@ import { test, expect } from "@playwright/test";
 
 test.describe("US-01: Happy Path Pomodoro cycle", () => {
   test("Completes a full cycle", async ({ page }) => {
-    // 1. Zalogowanie się za pomocą danych testowych (lub test@example.com jeśli brak w env)
-    const testEmail = process.env.TEST_USER_EMAIL ?? "test@example.com";
+    // 1. Rejestracja nowego użytkownika do testu E2E
+    const suffix = Date.now();
+    const testEmail = `us01_${suffix}@example.com`;
+    const testPassword = "testpassword123";
 
-    // 1. Sprawdzamy stronę logowania oraz ustawiamy ciasteczka dla środowiska testowego
-    await page.goto("/auth/signin");
+    await page.goto("/auth/signup");
     await expect(page.locator("form")).toBeVisible();
+    
+    await page.fill('input[name="email"]', testEmail);
+    await page.fill('input[name="password"]', testPassword);
+    await page.fill('input[name="confirmPassword"]', testPassword);
+    await page.click('button[type="submit"]');
 
-    await page.context().addCookies([
-      { name: "e2e_test_user", value: testEmail, domain: "localhost", path: "/" },
-      { name: "e2e_test_user", value: testEmail, domain: "127.0.0.1", path: "/" },
-    ]);
-
-    await page.goto("/dashboard");
+    await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
+    
+    if (!page.url().includes("/dashboard")) {
+      await page.goto("/auth/signin");
+      await page.fill('input[name="email"]', testEmail);
+      await page.fill('input[name="password"]', testPassword);
+      await page.click('button[type="submit"]');
+    }
 
     // 2. Oczekiwanie na przejście na Dashboard i zakończenie hydracji React Islands
     await expect(page.getByText("Gotowy na sesję?")).toBeVisible({ timeout: 20000 });
