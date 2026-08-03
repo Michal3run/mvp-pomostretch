@@ -1,8 +1,10 @@
+// Covers R-03: Full US-01 Pomodoro cycle has no dead-ends (integration gap check).
 import { test, expect } from "@playwright/test";
 
 test.describe("US-01: Happy Path Pomodoro cycle", () => {
   test("Completes a full cycle", async ({ page }) => {
-    // 1. Rejestracja nowego użytkownika do testu E2E
+    // 1. Rejestracja nowego użytkownika do testu E2E.
+    // suffix is generated here (not at module scope) so retries get fresh emails.
     const suffix = Date.now();
     const testEmail = `us01_${suffix}@example.com`;
     const testPassword = "testpassword123";
@@ -15,6 +17,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     await page.fill('input[name="confirmPassword"]', testPassword);
     await page.click('button[type="submit"]');
 
+    // After signup, Supabase may redirect to confirm-email (if email confirmation is ON)
+    // or directly to dashboard (if email confirmation is OFF — required for CI).
+    // If redirected elsewhere, try signing in directly.
     await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
 
     if (!page.url().includes("/dashboard")) {
