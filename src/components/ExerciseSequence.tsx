@@ -421,7 +421,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           }}
           className="flex-1 bg-emerald-600 font-semibold text-white hover:bg-emerald-500"
         >
-          <Check className="mr-2 h-4 w-4" /> {"Gotowe (Done)"}
+          <Check className="mr-2 h-4 w-4" /> Zrobione
         </Button>
 
         <Button
@@ -431,7 +431,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           }}
           className="flex-1 border-white/20 bg-white/5 text-purple-200 hover:bg-white/10 hover:text-white"
         >
-          <SkipForward className="mr-2 h-4 w-4" /> {"Pomiń (Skip)"}
+          <SkipForward className="mr-2 h-4 w-4" /> Pomiń
         </Button>
       </CardFooter>
     </Card>

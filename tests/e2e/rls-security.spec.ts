@@ -33,7 +33,7 @@ test.describe("M8: RLS Security and Isolation", () => {
     await pageA.fill('input[name="confirmPassword"]', userA.password);
     await pageA.click('button[type="submit"]');
 
-    await expect(pageA).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
+    await expect(pageA).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/, { timeout: 15000 });
 
     if (!pageA.url().includes("/dashboard")) {
       await pageA.goto("/auth/signin");
@@ -57,7 +57,12 @@ test.describe("M8: RLS Security and Isolation", () => {
     for (let i = 0; i < 20; i++) {
       if (!(await pageA.getByRole("button", { name: "Zrobione" }).first().isVisible())) break;
       await pageA.getByRole("button", { name: "Zrobione" }).first().click();
-      await pageA.waitForTimeout(300);
+      await expect(async () => {
+        expect(
+          await pageA.getByText("Świetna robota!").isVisible() ||
+          await pageA.getByRole("button", { name: "Zrobione" }).first().isVisible()
+        ).toBeTruthy();
+      }).toPass({ timeout: 5000 });
     }
 
     await expect(pageA.getByText("Świetna robota!")).toBeVisible();
