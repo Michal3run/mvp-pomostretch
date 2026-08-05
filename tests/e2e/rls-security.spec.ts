@@ -2,6 +2,15 @@
 // Converted to a pure API integration test to avoid brittle UI tests for DB-level security.
 import { test, expect } from "@playwright/test";
 
+interface SessionHistoryItem {
+  id: string;
+}
+
+interface ApiResponse<T> {
+  data: T;
+  error?: string;
+}
+
 test.describe("M8: RLS Security and Isolation (Integration)", () => {
   test("User B cannot see or delete User A's session", async ({ playwright, baseURL }) => {
     const suffix = Date.now();
@@ -15,11 +24,11 @@ test.describe("M8: RLS Security and Isolation (Integration)", () => {
     // Signup & Signin User A
     await reqA.post("/api/auth/signup", {
       data: new URLSearchParams({ email: userA.email, password: userA.password }).toString(),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
     await reqA.post("/api/auth/signin", {
       data: new URLSearchParams({ email: userA.email, password: userA.password }).toString(),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
     // Create session for User A
@@ -30,12 +39,12 @@ test.describe("M8: RLS Security and Isolation (Integration)", () => {
         derived_tags: ["general"],
         selected_exercise_ids: ["00000000-0000-0000-0000-000000000000"],
         completed_count: 1,
-        skipped_count: 0
-      }
+        skipped_count: 0,
+      },
     });
-    
+
     expect(sessionResA.ok()).toBeTruthy();
-    const historyA = await sessionResA.json();
+    const historyA = (await sessionResA.json()) as ApiResponse<SessionHistoryItem>;
     sessionAId = historyA.data.id;
     expect(sessionAId).toBeTruthy();
 
@@ -45,17 +54,17 @@ test.describe("M8: RLS Security and Isolation (Integration)", () => {
     // Signup & Signin User B
     await reqB.post("/api/auth/signup", {
       data: new URLSearchParams({ email: userB.email, password: userB.password }).toString(),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
     await reqB.post("/api/auth/signin", {
       data: new URLSearchParams({ email: userB.email, password: userB.password }).toString(),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
     // User B should not see User A's session
     const getResB = await reqB.get("/api/session-history");
     expect(getResB.ok()).toBeTruthy();
-    const historyB = await getResB.json();
+    const historyB = (await getResB.json()) as ApiResponse<SessionHistoryItem[]>;
     expect(historyB.data).toHaveLength(0);
 
     // User B attempting to delete User A's session should receive 404
