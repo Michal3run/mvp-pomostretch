@@ -20,7 +20,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // After signup, Supabase may redirect to confirm-email (if email confirmation is ON)
     // or directly to dashboard (if email confirmation is OFF — required for CI).
     // If redirected elsewhere, try signing in directly.
-    await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/);
+    await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/, { timeout: 15000 });
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
@@ -50,7 +50,12 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     while (await page.getByRole("button", { name: "Zrobione" }).isVisible()) {
       await page.getByRole("button", { name: "Zrobione" }).click();
-      await page.waitForTimeout(300);
+      await expect(async () => {
+        expect(
+          await page.getByText("Świetna robota!").isVisible() ||
+          await page.getByRole("button", { name: "Zrobione" }).isVisible()
+        ).toBeTruthy();
+      }).toPass({ timeout: 5000 });
     }
 
     // 8. Weryfikacja ekranu końcowego i ominięcie Idle Break
