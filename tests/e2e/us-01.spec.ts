@@ -52,8 +52,8 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
       await page.getByRole("button", { name: "Zrobione" }).click();
       await expect(async () => {
         expect(
-          await page.getByText("Świetna robota!").isVisible() ||
-          await page.getByRole("button", { name: "Zrobione" }).isVisible()
+          (await page.getByText("Świetna robota!").isVisible()) ||
+            (await page.getByRole("button", { name: "Zrobione" }).isVisible()),
         ).toBeTruthy();
       }).toPass({ timeout: 5000 });
     }
