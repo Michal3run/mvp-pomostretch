@@ -60,7 +60,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     // 8. Weryfikacja ekranu końcowego i ominięcie Idle Break
     await expect(page.getByText("Świetna robota!")).toBeVisible();
-    await page.getByRole("button", { name: "Rozpocznij nową sesję (25 min)" }).click();
+    await page.getByRole("button", { name: "Wróć do pracy (Nowe Pomodoro)" }).click();
 
     // 9. Potwierdzenie powrotu do działającego timera na Dashboardzie
     await expect(page.getByText("Czas skupienia")).toBeVisible();
