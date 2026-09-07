@@ -16,14 +16,14 @@ A Pomodoro timer with personalized stretching exercises during breaks. After a f
 
 ## Core Features
 
-| Feature | Description |
-|---------|-------------|
-| **Pomodoro Timer** | 25-min focus sessions with manual end option |
-| **Pain-Based Input** | Quick-picks (eyes, neck, general, surprise) or free-text describing how you feel |
+| Feature                       | Description                                                                                                                                                |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pomodoro Timer**            | 25-min focus sessions with manual end option                                                                                                               |
+| **Pain-Based Input**          | Quick-picks (eyes, neck, general, surprise) or free-text describing how you feel                                                                           |
 | **Exercise Selection Engine** | Rule engine (`src/lib/rule-engine.ts`) filters exercises by body area tags, excludes last session's exercises, and guarantees ≥1 result via fallback chain |
-| **Exercise Sequence** | Guided 1–3 exercise cards with countdown timers, skip/done, and image illustrations |
-| **Session History** | Full CRUD — view, annotate (PATCH), and delete past break sessions |
-| **Idle Break** | Optional 3/5/10-min timer after exercises before returning to work |
+| **Exercise Sequence**         | Guided 1–3 exercise cards with countdown timers, skip/done, and image illustrations                                                                        |
+| **Session History**           | Full CRUD — view, annotate (PATCH), and delete past break sessions                                                                                         |
+| **Idle Break**                | Optional 3/5/10-min timer after exercises before returning to work                                                                                         |
 
 ## Project Structure
 
@@ -60,9 +60,9 @@ context/
 
 The project uses **8 Supabase migrations** in `supabase/migrations/`:
 
-| Table | Purpose | RLS |
-|-------|---------|-----|
-| `exercise` | Ergonomic exercise catalog (35+ exercises, 5 body areas) | SELECT for `authenticated` |
+| Table           | Purpose                                                       | RLS                                             |
+| --------------- | ------------------------------------------------------------- | ----------------------------------------------- |
+| `exercise`      | Ergonomic exercise catalog (35+ exercises, 5 body areas)      | SELECT for `authenticated`                      |
 | `break_session` | User's break history (input, tags, selected exercises, stats) | Per-operation per-user (`auth.uid() = user_id`) |
 
 Both tables have Row Level Security enabled with granular per-operation policies.
@@ -103,16 +103,16 @@ npx supabase db push   # Apply migrations
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server (Cloudflare workerd) |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm run test` | Run Vitest unit tests |
-| `npm run test:e2e` | Run Playwright E2E tests |
-| `npm run lint` | ESLint with type-checked rules |
-| `npm run lint:fix` | Auto-fix ESLint issues |
-| `npm run format` | Prettier formatting |
+| Command            | Description                           |
+| ------------------ | ------------------------------------- |
+| `npm run dev`      | Start dev server (Cloudflare workerd) |
+| `npm run build`    | Production build                      |
+| `npm run preview`  | Preview production build              |
+| `npm run test`     | Run Vitest unit tests                 |
+| `npm run test:e2e` | Run Playwright E2E tests              |
+| `npm run lint`     | ESLint with type-checked rules        |
+| `npm run lint:fix` | Auto-fix ESLint issues                |
+| `npm run format`   | Prettier formatting                   |
 
 ## Testing
 
@@ -124,10 +124,10 @@ npx supabase db push   # Apply migrations
 
 Deployed to [Cloudflare Workers](https://workers.cloudflare.com/).
 
-| Target | Command | URL |
-|--------|---------|-----|
-| **Dev** | `npm run build && npx wrangler deploy --name pomo-stretch-dev` | `pomo-stretch-dev.michal3run.workers.dev` |
-| **Production** | `npm run build && npx wrangler deploy` | `pomo-stretch.michal3run.workers.dev` |
+| Target         | Command                                                        | URL                                       |
+| -------------- | -------------------------------------------------------------- | ----------------------------------------- |
+| **Dev**        | `npm run build && npx wrangler deploy --name pomo-stretch-dev` | `pomo-stretch-dev.michal3run.workers.dev` |
+| **Production** | `npm run build && npx wrangler deploy`                         | `pomo-stretch.michal3run.workers.dev`     |
 
 Set `SUPABASE_URL` and `SUPABASE_KEY` as Cloudflare secrets:
 

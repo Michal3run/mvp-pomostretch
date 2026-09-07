@@ -22,10 +22,10 @@ Replace the default "10x Astro Starter" landing page at `src/pages/index.astro` 
    - **Krok 2: Diagnoza w 3 sekundy** — Szybki wybór miejsca dyskomfortu (kark, oczy, plecy, barki).
    - **Krok 3: Spersonalizowana ulga** — Ćwiczenia dopasowane do bólu z timerem i bez powtórek z rzędu.
 4. **Feature Grid for Desk Workers**:
-   - *Inteligentny silnik reguł*: Algorytm dbający o to, by nie powtarzać tych samych ćwiczeń i zawsze dobierać ćwiczenia do zgłoszenia.
-   - *100% przy biurku*: Bez maty, bez przebierania się – dyskretne ćwiczenia biurowe.
-   - *Prywatność i Kontrola*: Dziennik przerw z notatkami, pełny CRUD, dane chronione RLS.
-   - *Ultra-szybki Edge SSR*: Działa w Cloudflare Workers, pamięta stan timera po odświeżeniu.
+   - _Inteligentny silnik reguł_: Algorytm dbający o to, by nie powtarzać tych samych ćwiczeń i zawsze dobierać ćwiczenia do zgłoszenia.
+   - _100% przy biurku_: Bez maty, bez przebierania się – dyskretne ćwiczenia biurowe.
+   - _Prywatność i Kontrola_: Dziennik przerw z notatkami, pełny CRUD, dane chronione RLS.
+   - _Ultra-szybki Edge SSR_: Działa w Cloudflare Workers, pamięta stan timera po odświeżeniu.
 5. **Polished Micro-elements**:
    - Ergonomic pain badges preview (`#kark`, `#oczy`, `#barki`, `#lędźwie`).
    - Clean, modern footer with product summary and GitHub/course notes.
@@ -64,25 +64,29 @@ Redesign the Hero section of `src/components/Welcome.astro` to introduce PomoStr
 ### Changes Required:
 
 #### 1. Landing Hero Redesign
+
 **File**: `src/components/Welcome.astro`
 **Intent**: Replace "10x Astro Starter" heading and generic paragraph with PomoStretch branding, ergonomic value proposition, and user-aware CTA buttons.
 **Contract**:
+
 - Frontmatter reads `const user = Astro.locals.user;`.
-- Displays badge: *"Dla programistów i pracowników biurowych"*.
-- Main title: *"Skup się na kodzie. Rozciągaj tam, gdzie boli."* with vibrant gradient text.
+- Displays badge: _"Dla programistów i pracowników biurowych"_.
+- Main title: _"Skup się na kodzie. Rozciągaj tam, gdzie boli."_ with vibrant gradient text.
 - Subtitle explains the 25-minute Pomodoro + 3-minute pain-targeted stretch sequence.
 - Primary CTA:
-  - If `user`: links to `/dashboard` (*"Przejdź do Dashboardu"*) with arrow icon.
-  - If guest: links to `/auth/signup` (*"Zacznij za darmo"*) and `/auth/signin` (*"Zaloguj się"*).
+  - If `user`: links to `/dashboard` (_"Przejdź do Dashboardu"_) with arrow icon.
+  - If guest: links to `/auth/signup` (_"Zacznij za darmo"_) and `/auth/signin` (_"Zaloguj się"_).
 - Visual pain-tags pill preview: `[ #kark ]`, `[ #oczy ]`, `[ #barki ]`, `[ #lędźwie ]`.
 
 ### Success Criteria:
 
 #### Automated Verification:
+
 - Linter passes: `npm run lint`
 - Astro build succeeds: `npm run build`
 
 #### Manual Verification:
+
 - Open `http://localhost:4321` as guest: verifies "Zacznij za darmo" and "Zaloguj się" buttons.
 - Open `http://localhost:4321` logged in: verifies "Przejdź do Dashboardu" appears.
 
@@ -97,28 +101,33 @@ Add an interactive 3-step workflow demonstration and a 4-card value pillar grid 
 ### Changes Required:
 
 #### 1. Workflow & Feature Grid Implementation
+
 **File**: `src/components/Welcome.astro`
 **Intent**: Replace the generic TypeScript/Tailwind cards with:
+
 1. **Pętla PomoStretch (3 kroki)**:
-   - Step 1: *25 min Skupienia* (Timer Pomodoro z ochroną sesji).
-   - Step 2: *3 sekundy Diagnozy* (Szybki wybór: Kark, Oczy, Barki, Plecy).
-   - Step 3: *Spersonalizowana Ulga* (Ćwiczenia dopasowane do bólu, bez powtórek).
+   - Step 1: _25 min Skupienia_ (Timer Pomodoro z ochroną sesji).
+   - Step 2: _3 sekundy Diagnozy_ (Szybki wybór: Kark, Oczy, Barki, Plecy).
+   - Step 3: _Spersonalizowana Ulga_ (Ćwiczenia dopasowane do bólu, bez powtórek).
 2. **4 Filary Produktu**:
-   - *Inteligentny Rule Engine*: Algorytm dobiera ćwiczenia na podstawie zgłoszonego dyskomfortu.
-   - *Ergonomia bez siłowni*: Ćwiczenia w 100% wykonalne przy biurku bez sprzętu.
-   - *Dziennik i Postępy*: Historia przerw z notatkami, wgląd w samopoczucie.
-   - *Prywatność i Szybkość*: Zabezpieczenie danych na poziomie bazy (RLS) i edge runtime Cloudflare.
-**Contract**:
+   - _Inteligentny Rule Engine_: Algorytm dobiera ćwiczenia na podstawie zgłoszonego dyskomfortu.
+   - _Ergonomia bez siłowni_: Ćwiczenia w 100% wykonalne przy biurku bez sprzętu.
+   - _Dziennik i Postępy_: Historia przerw z notatkami, wgląd w samopoczucie.
+   - _Prywatność i Szybkość_: Zabezpieczenie danych na poziomie bazy (RLS) i edge runtime Cloudflare.
+     **Contract**:
+
 - Cards use glassmorphic styling (`rounded-2xl border border-white/10 bg-white/5 backdrop-blur-lg hover:border-purple-500/30 transition`).
 - Semantic icons and accessible headings.
 
 ### Success Criteria:
 
 #### Automated Verification:
+
 - Linter passes: `npm run lint`
 - Build passes: `npm run build`
 
 #### Manual Verification:
+
 - Verify that cards render with clean typography and proper spacing on mobile, tablet, and wide screens.
 
 ---
@@ -132,23 +141,27 @@ Add a polished footer, refine mobile spacing, and ensure clean contrast across t
 ### Changes Required:
 
 #### 1. Footer & Meta Alignment
+
 **File**: `src/components/Welcome.astro`
 **Intent**: Add a minimal, elegant footer with copyright, stack credits (Astro, Supabase, Cloudflare), and direct navigation links.
 **File**: `src/pages/index.astro`
 **Intent**: Ensure the layout title is `"PomoStretch — Inteligentne Pomodoro & Rozciąganie dla Programistów"`.
 **Contract**:
+
 - Clean footer without broken links.
 - Meta title and description aligned with PomoStretch branding.
 
 ### Success Criteria:
 
 #### Automated Verification:
+
 - Unit tests pass: `npm test`
 - Playwright tests pass: `npm run test:e2e`
 - Linter passes: `npm run lint`
 - Build succeeds: `npm run build`
 
 #### Manual Verification:
+
 - Verify that navigating from `/` to `/auth/signup` and `/dashboard` functions seamlessly.
 
 ---

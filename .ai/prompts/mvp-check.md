@@ -2,6 +2,7 @@
 name: MVP Project Analysis Report
 description: Analyzes a project against minimal technical requirements for 10xDevs certification.
 ---
+
 # MVP Project Analysis Report
 
 You are an expert in 10xDevs certification project analysis.
@@ -24,12 +25,13 @@ below, purely from the code and documentation in the repository.
 Please analyze this project against the minimal technical requirements below.
 These requirements are intentionally modest — the goal is to confirm solid technical
 foundations, not to demand a large application. For each criterion, provide:
+
 - A clear ✅ (met) or ❌ (not met) status
 - A brief explanation of what was found or what is missing
 - For met criteria, point to concrete evidence (file paths, function names)
-Base every ✅ on evidence you actually located in the repository. If you cannot find
-evidence for a criterion, mark it ❌ rather than assuming it exists — but remember the
-bar is "minimal", so do not demand more than each criterion asks for.
+  Base every ✅ on evidence you actually located in the repository. If you cannot find
+  evidence for a criterion, mark it ❌ rather than assuming it exists — but remember the
+  bar is "minimal", so do not demand more than each criterion asks for.
 
 ## Analysis Criteria:
 
@@ -58,7 +60,7 @@ bar is "minimal", so do not demand more than each criterion asks for.
    - Look for a test plan document (e.g. test-plan.md) that defines the risk(s) the tests
      are meant to cover. Check the context/ directory first (e.g.
      context/foundation/test-plan.md), then fall back to the AI tool's configuration directory or docs/.
-   - Then confirm at least one real test (*.test.*, *.spec.*, or a test directory) exists
+   - Then confirm at least one real test (_.test._, _.spec._, or a test directory) exists
      and meaningfully exercises that risk. Any framework is fine (Vitest, Jest,
      Playwright, pytest, Go test, etc.).
    - In your explanation, name the specific risk from the test plan AND the specific test
@@ -90,7 +92,7 @@ bar is "minimal", so do not demand more than each criterion asks for.
 After analyzing, provide:
 
 1. **Checklist** with a clear ✅/❌ for each of the 5 criteria
-2. **Project Status**: Calculate percentage (X/5 * 100)
+2. **Project Status**: Calculate percentage (X/5 \* 100)
 3. **Priority Improvements**: For each unmet criterion, give specific, actionable guidance
    tailored to this project's type and stack
 
