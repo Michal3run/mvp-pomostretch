@@ -4,9 +4,10 @@ import type { Exercise, BreakInputCookie } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Check, SkipForward, Play, AlertTriangle } from "lucide-react";
-import { saveLastSessionIds } from "@/lib/session-storage";
+import { saveLastSessionIds, getLastSessionIds } from "@/lib/session-storage";
 import { getStoredExerciseState, saveStoredExerciseState, clearStoredExerciseState } from "@/lib/exercise-storage";
 import { saveStoredTimer } from "@/lib/timer-storage";
+import { selectExercises } from "@/lib/rule-engine";
 
 interface ExerciseSequenceProps {
   breakInput: BreakInputCookie;
@@ -20,7 +21,7 @@ interface ExerciseResult {
 
 const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
   {
-    id: "fb-1",
+    id: "00000000-0000-4000-a000-000000000001",
     name: "Mruganie i rozluźnienie oczu",
     description: "Zamknij oczy na 5 sekund, a następnie mrugaj szybko przez 10 sekund.",
     duration_seconds: 30,
@@ -28,7 +29,7 @@ const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
     created_at: new Date().toISOString(),
   },
   {
-    id: "fb-2",
+    id: "00000000-0000-4000-a000-000000000002",
     name: "Powolne skłony głowy",
     description: "Opuszczaj powoli brodę do klatki piersiowej, a następnie odchylaj w tył.",
     duration_seconds: 45,
@@ -38,19 +39,15 @@ const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
 ];
 
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
-  const [exercises, setExercises] = useState<Exercise[]>(() => {
-    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    return activeCatalog.slice(0, 3);
-  });
+  // Exercises are initialized empty and populated client-side in useEffect
+  // to avoid SSR hydration mismatch (selectExercises uses localStorage + Math.random).
+  const [exercises, setExercises] = useState<Exercise[]>([]);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const [status, setStatus] = useState<"active" | "completed" | "idle_break">("active");
 
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
-    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    return activeCatalog[0] ? activeCatalog[0].duration_seconds : 0;
-  });
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -71,11 +68,12 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const [skippedCount, setSkippedCount] = useState<number>(0);
   const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
 
-  // Restore state from localStorage on mount
+  // Restore state from localStorage on mount, or select exercises via rule engine
   useEffect(() => {
     const storedState = getStoredExerciseState();
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
     if (storedState && storedState.exerciseIds.length > 0) {
+      // Restore in-progress session from localStorage (page reload mid-routine)
       const restored = storedState.exerciseIds
         .map((id) => activeCatalog.find((ex) => ex.id === id))
         .filter((ex): ex is Exercise => ex !== undefined);
@@ -92,13 +90,29 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
               (activeCatalog[0] ? activeCatalog[0].duration_seconds : 0),
           );
         }
+      } else {
+        // Stored IDs no longer match catalog — select fresh exercises
+        const selected = selectExercises({
+          tags: breakInput.tags,
+          lastSessionIds: getLastSessionIds(),
+          catalog: activeCatalog,
+        });
+        setExercises(selected);
+        setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
       }
-    } else if (catalog.length > 0 && exercises.length === 0) {
-      setExercises(catalog.slice(0, 3));
-      setSecondsRemaining(catalog[0] ? catalog[0].duration_seconds : 0);
+    } else {
+      // No stored state — use rule engine to select exercises based on user's pain input
+      const selected = selectExercises({
+        tags: breakInput.tags,
+        lastSessionIds: getLastSessionIds(),
+        catalog: activeCatalog,
+      });
+      setExercises(selected);
+      setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
     }
     setIsMounted(true);
-  }, [catalog, exercises.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalog]);
 
   // Save state to localStorage on change
   useEffect(() => {
