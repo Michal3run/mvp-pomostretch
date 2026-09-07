@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Exercise, BreakInputCookie } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -111,8 +110,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
       setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
     }
     setIsMounted(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catalog]);
+  }, [breakInput, catalog]);
 
   // Save state to localStorage on change
   useEffect(() => {

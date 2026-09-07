@@ -36,8 +36,8 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   const userBEmail = `rls_b_${suffix}@example.com`;
   const sharedPassword = "TestPassword123!";
 
-  let ctxA: APIRequestContext;
-  let ctxB: APIRequestContext;
+  let ctxA: APIRequestContext | undefined;
+  let ctxB: APIRequestContext | undefined;
   let userASessionId: string;
 
   const baseURL = "http://127.0.0.1:4321";
