@@ -168,15 +168,24 @@ Align all repository metadata, project descriptions, and submission checklists w
 
 ---
 
+## Review Amendments (applied during implementation)
+
+Fixes from plan review that deviated from the original plan:
+
+1. **Fallback exercise IDs**: Changed `"fb-1"`, `"fb-2"` to valid UUIDs (`"00000000-0000-4000-a000-000000000001"`, `"00000000-0000-4000-a000-000000000002"`) — original IDs would fail `z.string().uuid()` validation on `POST /api/session-history` and the `uuid[]` column constraint on `break_session`.
+2. **Hydration safety**: Exercise selection explicitly runs in `useEffect` (client-only), not in `useState` initializer — `getLastSessionIds()` reads `localStorage` and `selectExercises()` uses `Math.random()`, both of which cause SSR/client hydration mismatch.
+3. **Second dead-code callsite**: Fixed `useEffect` fallback branch (L96-98 in original) that also used `catalog.slice(0, 3)` — this would have become the primary initialization path after the `useState` change.
+4. **E2E assertion**: Used `text=/kark|szyj/i` regex on visible card text instead of `#kark` hashtag (no exercises have `#kark` in their UI text).
+
 ## Progress
 
 ### Phase 1: Business Logic Reconnection
 
 #### Automated
 
-- [ ] 1.1 Unit tests pass via npm test
-- [ ] 1.2 Linter passes without warnings via npm run lint
-- [ ] 1.3 Production build succeeds via npm run build
+- [x] 1.1 Unit tests pass via npm test
+- [x] 1.2 Linter passes without warnings via npm run lint
+- [x] 1.3 Production build succeeds via npm run build
 
 #### Manual
 
@@ -186,9 +195,9 @@ Align all repository metadata, project descriptions, and submission checklists w
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass via npm test
-- [ ] 2.2 Playwright suite passes via npm run test:e2e
-- [ ] 2.3 Linter passes via npm run lint
+- [x] 2.1 Unit tests pass via npm test
+- [x] 2.2 Playwright suite passes via npm run test:e2e
+- [x] 2.3 Linter passes via npm run lint
 
 #### Manual
 
@@ -198,9 +207,10 @@ Align all repository metadata, project descriptions, and submission checklists w
 
 #### Automated
 
-- [ ] 3.1 Linter passes via npm run lint
-- [ ] 3.2 Build passes via npm run build
+- [x] 3.1 Linter passes via npm run lint
+- [x] 3.2 Build passes via npm run build
 
 #### Manual
 
-- [ ] 3.3 Verify README.md and mvp-submit-checklist.md reflect exact repository layout and no phantom paths
+- [x] 3.3 Verify README.md and mvp-submit-checklist.md reflect exact repository layout and no phantom paths
+
