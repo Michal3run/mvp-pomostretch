@@ -1,39 +1,60 @@
 import { test, expect, request } from "@playwright/test";
-import type { APIRequestContext } from "@playwright/test";
+import type { APIRequestContext, BrowserContext, Page } from "@playwright/test";
 import crypto from "node:crypto";
 
 /**
- * Helper: sign up + sign in a new user via form-based endpoints.
+ * Helper: sign up + sign in a new user via browser (page-based form).
  *
- * Both /api/auth/signup and /api/auth/signin return 302 redirects.
- * We use maxRedirects: 0 so we get the raw 302 (not the HTML page).
- * Supabase auth cookies are set on the 302 response itself, so the
- * APIRequestContext captures them without needing to follow the redirect.
+ * Using `page.goto` + form fill avoids 403 from Supabase's hosted GoTrue
+ * which blocks raw `APIRequestContext.post()` signups (rate-limit / captcha
+ * on GitHub Actions runner IPs).
+ *
+ * After signin we extract cookies from the browser context and create a
+ * standalone APIRequestContext seeded with those cookies for API testing.
  */
 async function createAuthenticatedContext(
+  browser: BrowserContext,
   baseURL: string,
   email: string,
   password: string,
-): Promise<APIRequestContext> {
-  const api = await request.newContext({ baseURL });
+): Promise<{ api: APIRequestContext; page: Page }> {
+  const page = await browser.newPage();
 
-  // Signup — expect 302 redirect (to /auth/confirm-email on success, /auth/signup?error= on failure)
-  const signupRes = await api.post("/api/auth/signup", {
-    form: { email, password, confirmPassword: password },
-    maxRedirects: 0,
+  // --- Signup via real browser form ---
+  await page.goto("/auth/signup");
+  await expect(page.locator("form")).toBeVisible();
+  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="password"]', password);
+  await page.fill('input[name="confirmPassword"]', password);
+  await page.click('button[type="submit"]');
+
+  // After signup Supabase redirects to confirm-email, signin, or dashboard
+  await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/, {
+    timeout: 15_000,
   });
-  expect(signupRes.status(), `signup for ${email}: expected 302`).toBe(302);
-  expect(signupRes.headers().location, "signup should not redirect to error").not.toContain("error");
 
-  // Signin — expect 302 redirect to /dashboard on success
-  const signinRes = await api.post("/api/auth/signin", {
-    form: { email, password },
-    maxRedirects: 0,
+  // --- Signin (if not already on dashboard) ---
+  if (!page.url().includes("/dashboard")) {
+    await page.goto("/auth/signin");
+    await expect(page.locator("form")).toBeVisible();
+    await page.fill('input[name="email"]', email);
+    await page.fill('input[name="password"]', password);
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
+  }
+
+  // --- Extract cookies from browser and create APIRequestContext ---
+  const cookies = await browser.cookies();
+  const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+
+  const api = await request.newContext({
+    baseURL,
+    extraHTTPHeaders: {
+      Cookie: cookieHeader,
+    },
   });
-  expect(signinRes.status(), `signin for ${email}: expected 302`).toBe(302);
-  expect(signinRes.headers().location, "signin should redirect to /dashboard").toContain("/dashboard");
 
-  return api;
+  return { api, page };
 }
 
 interface SessionRecord {
@@ -58,21 +79,27 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   const userBEmail = `rls_b_${suffix}@example.com`;
   const sharedPassword = "TestPassword123!";
 
-  let ctxA: APIRequestContext;
-  let ctxB: APIRequestContext;
+  let apiA: APIRequestContext;
+  let apiB: APIRequestContext;
+  let pageA: Page;
+  let pageB: Page;
   let userASessionId: string;
 
   const baseURL = "http://127.0.0.1:4321";
 
   test.afterAll(async () => {
-    await ctxA.dispose();
-    await ctxB.dispose();
+    await apiA?.dispose();
+    await apiB?.dispose();
+    await pageA?.close();
+    await pageB?.close();
   });
 
-  test("User A: signup, signin, and create a break session", async () => {
-    ctxA = await createAuthenticatedContext(baseURL, userAEmail, sharedPassword);
+  test("User A: signup, signin, and create a break session", async ({ context }) => {
+    const result = await createAuthenticatedContext(context, baseURL, userAEmail, sharedPassword);
+    apiA = result.api;
+    pageA = result.page;
 
-    const createRes = await ctxA.post("/api/session-history", {
+    const createRes = await apiA.post("/api/session-history", {
       data: {
         input_kind: "quick_pick",
         input_value: "neck",
@@ -91,7 +118,7 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   });
 
   test("User A can read own sessions", async () => {
-    const res = await ctxA.get("/api/session-history");
+    const res = await apiA.get("/api/session-history");
     expect(res.status()).toBe(200);
 
     const body = (await res.json()) as SessionListResponse;
@@ -99,16 +126,20 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
     expect(body.data.map((s) => s.id)).toContain(userASessionId);
   });
 
-  test("User B: signup and signin", async () => {
-    ctxB = await createAuthenticatedContext(baseURL, userBEmail, sharedPassword);
+  test("User B: signup and signin", async ({ browser }) => {
+    // Create a fresh browser context for User B (separate cookie jar)
+    const ctxB = await browser.newContext({ baseURL });
+    const result = await createAuthenticatedContext(ctxB, baseURL, userBEmail, sharedPassword);
+    apiB = result.api;
+    pageB = result.page;
 
     // Sanity: User B is authenticated (200, not 401)
-    const res = await ctxB.get("/api/session-history");
+    const res = await apiB.get("/api/session-history");
     expect(res.status()).toBe(200);
   });
 
   test("User B sees an empty session list (cannot see User A's data)", async () => {
-    const res = await ctxB.get("/api/session-history");
+    const res = await apiB.get("/api/session-history");
     expect(res.status()).toBe(200);
 
     const body = (await res.json()) as SessionListResponse;
@@ -116,7 +147,7 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   });
 
   test("User B cannot delete User A's session (404 via RLS)", async () => {
-    const res = await ctxB.delete(`/api/session-history/${userASessionId}`);
+    const res = await apiB.delete(`/api/session-history/${userASessionId}`);
     expect(res.status()).toBe(404);
 
     const body = (await res.json()) as ErrorResponse;
