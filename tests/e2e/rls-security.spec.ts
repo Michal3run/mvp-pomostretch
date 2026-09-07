@@ -23,10 +23,7 @@ async function createAuthenticatedContext(
     maxRedirects: 0,
   });
   expect(signupRes.status(), `signup for ${email}: expected 302`).toBe(302);
-  expect(
-    signupRes.headers()["location"],
-    "signup should not redirect to error",
-  ).not.toContain("error");
+  expect(signupRes.headers().location, "signup should not redirect to error").not.toContain("error");
 
   // Signin — expect 302 redirect to /dashboard on success
   const signinRes = await api.post("/api/auth/signin", {
@@ -34,10 +31,7 @@ async function createAuthenticatedContext(
     maxRedirects: 0,
   });
   expect(signinRes.status(), `signin for ${email}: expected 302`).toBe(302);
-  expect(
-    signinRes.headers()["location"],
-    "signin should redirect to /dashboard",
-  ).toContain("/dashboard");
+  expect(signinRes.headers().location, "signin should redirect to /dashboard").toContain("/dashboard");
 
   return api;
 }

@@ -20,6 +20,7 @@ related_frs: [FR-014, FR-019, FR-022, FR-023, FR-027]
 ## Context & Motivation
 
 During final pre-submission audit against the official 10xDevs evaluator criteria (`.ai/prompts/mvp-check.md`), three critical blockers were discovered:
+
 1. **Business logic is disconnected in UI**: `selectExercises` exists in `src/lib/rule-engine.ts` with passing unit tests, but `src/components/ExerciseSequence.tsx` uses `activeCatalog.slice(0, 3)`, completely ignoring user input tags (`eyes`, `neck`, etc.) and the no-repeat history (`getLastSessionIds`).
 2. **Missing RLS verification test**: `mvp-submit-checklist.md` claims RLS is verified via automated API tests, but `tests/e2e/rls-security.spec.ts` was deleted in commit `92188a6` due to flakiness.
 3. **Template documentation**: `README.md` and `package.json` are still the default "10x Astro Starter", stating that no database or migrations exist, conflicting directly with the real schema and PRD.

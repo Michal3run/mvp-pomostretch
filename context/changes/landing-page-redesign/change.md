@@ -20,18 +20,19 @@ related_frs: [FR-001, FR-004]
 ## Context & Motivation
 
 Currently, navigating to the root URL (`/`) presents the default Astro template:
-> *"10x Astro Starter — A production-ready starter with authentication, modern tooling, and a cosmic developer experience."*
+
+> _"10x Astro Starter — A production-ready starter with authentication, modern tooling, and a cosmic developer experience."_
 
 This creates a jarring disconnect for course evaluators and real users. PomoStretch is a domain-driven product addressing desk-worker ergonomics and pain prevention. The landing page should communicate what the app does in 3 seconds, showcase the Pomodoro + Ergonomics loop, adapt dynamically if the user is already authenticated, and reinforce the cosmic/dark-mode aesthetic of the application.
 
 ## Key Deliverables
 
 1. **Hero Section**:
-   - Compelling value-driven headline: *"Skup się na kodzie. Rozciągaj tam, gdzie boli."*
+   - Compelling value-driven headline: _"Skup się na kodzie. Rozciągaj tam, gdzie boli."_
    - Clear sub-headline explaining the hybrid Pomodoro + pain-aware stretch sequence loop.
    - Dynamic Call-To-Action (CTA):
-     - Unauthenticated: *"Rozpocznij za darmo"* (`/auth/signup`) + *"Zaloguj się"* (`/auth/signin`).
-     - Authenticated: *"Przejdź do Dashboardu"* (`/dashboard`) + *"Zobacz historię"* (`/history`).
+     - Unauthenticated: _"Rozpocznij za darmo"_ (`/auth/signup`) + _"Zaloguj się"_ (`/auth/signin`).
+     - Authenticated: _"Przejdź do Dashboardu"_ (`/dashboard`) + _"Zobacz historię"_ (`/history`).
 
 2. **The 3-Step Interactive Workflow Loop**:
    - Step 1: **25 min Focus** (Pomodoro timer with local persistence).
@@ -39,10 +40,10 @@ This creates a jarring disconnect for course evaluators and real users. PomoStre
    - Step 3: **Personalized Stretch Sequence** (Targeted desk-friendly exercises with countdown and no-repeat memory).
 
 3. **Feature / Value Pillars**:
-   - *Inteligentny dobór (Rule Engine)*: Dopasowanie do konkretnego bólu, zero nudnych powtórek.
-   - *100% przy biurku*: Ćwiczenia niewymagające sprzętu ani maty gimnastycznej.
-   - *Prywatność i Historia*: Dziennik przerw i samopoczucia zabezpieczony RLS.
-   - *Błyskawiczna wydajność*: Edge SSR na Cloudflare Workers i odporność na odświeżenie karty.
+   - _Inteligentny dobór (Rule Engine)_: Dopasowanie do konkretnego bólu, zero nudnych powtórek.
+   - _100% przy biurku_: Ćwiczenia niewymagające sprzętu ani maty gimnastycznej.
+   - _Prywatność i Historia_: Dziennik przerw i samopoczucia zabezpieczony RLS.
+   - _Błyskawiczna wydajność_: Edge SSR na Cloudflare Workers i odporność na odświeżenie karty.
 
 4. **Component Architecture**:
    - Refactor `src/components/Welcome.astro` into `src/components/LandingHero.astro` and `src/components/LandingFeatures.astro` (or clean `Welcome.astro` redesign).
