@@ -67,9 +67,8 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const [skippedCount, setSkippedCount] = useState<number>(0);
   const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
 
-  // Restore state from localStorage on mount, or select exercises via rule engine
   useEffect(() => {
-    (async () => {
+    const init = () => {
       const storedState = getStoredExerciseState();
       const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
       if (storedState && storedState.exerciseIds.length > 0) {
@@ -111,7 +110,8 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
       }
       setIsMounted(true);
-    })();
+    };
+    init();
   }, [breakInput, catalog]);
 
   // Save state to localStorage on change
