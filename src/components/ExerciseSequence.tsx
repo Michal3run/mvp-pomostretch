@@ -68,39 +68,28 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
 
   useEffect(() => {
-    const init = () => {
-      const storedState = getStoredExerciseState();
-      const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-      if (storedState && storedState.exerciseIds.length > 0) {
-        // Restore in-progress session from localStorage (page reload mid-routine)
-        const restored = storedState.exerciseIds
-          .map((id) => activeCatalog.find((ex) => ex.id === id))
-          .filter((ex): ex is Exercise => ex !== undefined);
-        if (restored.length > 0) {
-          setExercises(restored);
-          setCurrentIndex(storedState.currentIndex);
-          setStatus(storedState.status);
-          setCompletedCount(storedState.completedCount);
-          setSkippedCount(storedState.skippedCount);
-          setIdleEndTime(storedState.idleEndTime);
-          if (storedState.status === "active") {
-            setSecondsRemaining(
-              restored[storedState.currentIndex]?.duration_seconds ??
-                (activeCatalog[0] ? activeCatalog[0].duration_seconds : 0),
-            );
-          }
-        } else {
-          // Stored IDs no longer match catalog — select fresh exercises
-          const selected = selectExercises({
-            tags: breakInput.tags,
-            lastSessionIds: getLastSessionIds(),
-            catalog: activeCatalog,
-          });
-          setExercises(selected);
-          setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
+    const storedState = getStoredExerciseState();
+    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
+    if (storedState && storedState.exerciseIds.length > 0) {
+      // Restore in-progress session from localStorage (page reload mid-routine)
+      const restored = storedState.exerciseIds
+        .map((id) => activeCatalog.find((ex) => ex.id === id))
+        .filter((ex): ex is Exercise => ex !== undefined);
+      if (restored.length > 0) {
+        setExercises(restored);
+        setCurrentIndex(storedState.currentIndex);
+        setStatus(storedState.status);
+        setCompletedCount(storedState.completedCount);
+        setSkippedCount(storedState.skippedCount);
+        setIdleEndTime(storedState.idleEndTime);
+        if (storedState.status === "active") {
+          setSecondsRemaining(
+            restored[storedState.currentIndex]?.duration_seconds ??
+              (activeCatalog[0] ? activeCatalog[0].duration_seconds : 0),
+          );
         }
       } else {
-        // No stored state — use rule engine to select exercises based on user's pain input
+        // Stored IDs no longer match catalog — select fresh exercises
         const selected = selectExercises({
           tags: breakInput.tags,
           lastSessionIds: getLastSessionIds(),
@@ -109,9 +98,17 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         setExercises(selected);
         setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
       }
-      setIsMounted(true);
-    };
-    init();
+    } else {
+      // No stored state — use rule engine to select exercises based on user's pain input
+      const selected = selectExercises({
+        tags: breakInput.tags,
+        lastSessionIds: getLastSessionIds(),
+        catalog: activeCatalog,
+      });
+      setExercises(selected);
+      setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
+    }
+    setIsMounted(true);
   }, [breakInput, catalog]);
 
   // Save state to localStorage on change
