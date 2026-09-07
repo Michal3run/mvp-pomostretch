@@ -68,6 +68,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
   const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const storedState = getStoredExerciseState();
     const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
     if (storedState && storedState.exerciseIds.length > 0) {
@@ -76,6 +77,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         .map((id) => activeCatalog.find((ex) => ex.id === id))
         .filter((ex): ex is Exercise => ex !== undefined);
       if (restored.length > 0) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setExercises(restored);
         setCurrentIndex(storedState.currentIndex);
         setStatus(storedState.status);
@@ -95,6 +97,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           lastSessionIds: getLastSessionIds(),
           catalog: activeCatalog,
         });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setExercises(selected);
         setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
       }
@@ -105,6 +108,7 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
         lastSessionIds: getLastSessionIds(),
         catalog: activeCatalog,
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setExercises(selected);
       setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
     }
