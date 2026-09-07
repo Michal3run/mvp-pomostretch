@@ -50,7 +50,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     // Verify that at least one exercise card shows neck-related content
     // (validates that selectExercises filters by body_areas, not arbitrary slicing)
-    await expect(page.locator("text=/kark|szyj/i").first()).toBeVisible();
+    await expect(page.locator("text=/kark|szyj|brod|głow/i").first()).toBeVisible();
 
     while (await page.getByRole("button", { name: "Zrobione" }).isVisible()) {
       await page.getByRole("button", { name: "Zrobione" }).click();

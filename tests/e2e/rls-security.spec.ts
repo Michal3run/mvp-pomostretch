@@ -43,8 +43,8 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   const baseURL = "http://127.0.0.1:4321";
 
   test.afterAll(async () => {
-    await ctxA.dispose();
-    await ctxB.dispose();
+    await ctxA?.dispose();
+    await ctxB?.dispose();
   });
 
   test("User A: signup, signin, and create a break session", async () => {
