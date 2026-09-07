@@ -21,6 +21,7 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
     // Explicitly forward Supabase credentials to the Astro dev server process.
     // Without this, the child process started by Playwright might not inherit
     // env vars set in the CI job's `env:` block, causing astro:env/server to
