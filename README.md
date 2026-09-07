@@ -1,177 +1,154 @@
-# 10x Astro Starter
+# PomoStretch
 
-![](./public/template.png)
+A Pomodoro timer with personalized stretching exercises during breaks. After a focus session, tell the app what hurts (neck, eyes, back…) and it selects 1–3 targeted exercises from a rule-based engine — no repeats from your last break.
 
-A modern, opinionated starter template for building fast, accessible web applications.
+**Live:** [pomo-stretch.michal3run.workers.dev](https://pomo-stretch.michal3run.workers.dev)
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v6 - Modern web framework with server-first rendering
-- [React](https://react.dev/) v19 - UI library for interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4 - Utility-first CSS framework
-- [Supabase](https://supabase.com/) - Authentication and backend-as-a-service
-- [Cloudflare Workers](https://workers.cloudflare.com/) - Edge deployment runtime
+- [Astro](https://astro.build/) v6 — SSR on Cloudflare Workers (`output: "server"`)
+- [React](https://react.dev/) v19 — Interactive islands (`client:load`)
+- [TypeScript](https://www.typescriptlang.org/) v5
+- [Tailwind CSS](https://tailwindcss.com/) v4
+- [Supabase](https://supabase.com/) — Auth (email/password) + PostgreSQL (RLS)
+- [Cloudflare Workers](https://workers.cloudflare.com/) — Edge deployment
+- [shadcn/ui](https://ui.shadcn.com/) — UI components (new-york variant)
 
-## Prerequisites
+## Core Features
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
-
-## Getting Started
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
-
-4. Create a `.dev.vars` file for local Cloudflare dev secrets:
-
-```bash
-cp .env.example .dev.vars
-```
-
-5. Run the development server:
-
-```bash
-npm run dev
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server (Cloudflare workerd runtime)
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint with type-checked rules
-- `npm run lint:fix` - Auto-fix ESLint issues
-- `npm run format` - Run Prettier
-- `npm run test` - Run Vitest unit tests
-- `npm run test:e2e` - Run Playwright end-to-end tests
+| Feature | Description |
+|---------|-------------|
+| **Pomodoro Timer** | 25-min focus sessions with manual end option |
+| **Pain-Based Input** | Quick-picks (eyes, neck, general, surprise) or free-text describing how you feel |
+| **Exercise Selection Engine** | Rule engine (`src/lib/rule-engine.ts`) filters exercises by body area tags, excludes last session's exercises, and guarantees ≥1 result via fallback chain |
+| **Exercise Sequence** | Guided 1–3 exercise cards with countdown timers, skip/done, and image illustrations |
+| **Session History** | Full CRUD — view, annotate (PATCH), and delete past break sessions |
+| **Idle Break** | Optional 3/5/10-min timer after exercises before returning to work |
 
 ## Project Structure
 
-```md
-.
-├── src/
-│ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ └── assets/ # Static assets
-├── public/ # Public assets
-├── wrangler.jsonc # Cloudflare Workers config
+```
+src/
+├── pages/               # Astro routes
+│   ├── api/             # REST endpoints (auth/, session-history/, break-input)
+│   ├── dashboard.astro  # Main timer view
+│   ├── break-input.astro
+│   ├── exercise-sequence.astro
+│   └── history.astro
+├── components/
+│   ├── ui/              # shadcn/ui primitives
+│   ├── auth/            # React auth forms
+│   ├── hooks/           # Custom React hooks
+│   ├── ExerciseSequence.tsx   # Exercise flow (React island)
+│   └── HistoryList.tsx        # Session history (React island)
+├── lib/
+│   ├── supabase.ts      # Supabase client factory
+│   ├── rule-engine.ts   # Exercise selection logic
+│   ├── session-storage.ts     # Last session no-repeat IDs
+│   ├── exercise-storage.ts    # In-progress exercise persistence
+│   └── timer-storage.ts       # Pomodoro timer persistence
+├── layouts/
+├── middleware.ts         # Auth guard for protected routes
+└── types.ts             # Shared DTOs
+supabase/
+└── migrations/          # 8 PostgreSQL migrations (exercise table, break_session, RLS, seeds)
+context/
+└── foundation/          # PRD, roadmap, test plan, tech stack, lessons
 ```
 
-## Supabase Configuration
+## Database Schema & Migrations
 
-This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
+The project uses **8 Supabase migrations** in `supabase/migrations/`:
 
-### First-time setup (local, no cloud project needed)
+| Table | Purpose | RLS |
+|-------|---------|-----|
+| `exercise` | Ergonomic exercise catalog (35+ exercises, 5 body areas) | SELECT for `authenticated` |
+| `break_session` | User's break history (input, tags, selected exercises, stats) | Per-operation per-user (`auth.uid() = user_id`) |
 
-Requires [Docker](https://www.docker.com/) and ~7 GB RAM.
+Both tables have Row Level Security enabled with granular per-operation policies.
 
-1. Create your `.env` file:
+## Getting Started
+
+### Prerequisites
+
+- Node.js v22.14.0 (see `.nvmrc`)
+- npm
+
+### Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Create environment files
 cp .env.example .env
+cp .env.example .dev.vars
+
+# Add your Supabase credentials to .env and .dev.vars:
+# SUPABASE_URL=https://<project-ref>.supabase.co
+# SUPABASE_KEY=<anon-key>
+
+# Start development server (Cloudflare workerd runtime)
+npm run dev
 ```
 
-2. Initialize the local Supabase project (creates a `supabase/` config folder):
+### Local Supabase (optional)
 
 ```bash
 npx supabase init
-```
-
-3. Start the local stack (downloads Docker images on first run):
-
-```bash
 npx supabase start
+# Copy credentials from CLI output to .env and .dev.vars
+npx supabase db push   # Apply migrations
 ```
 
-4. Copy the credentials printed by the CLI into your `.env` and `.dev.vars`:
+## Available Commands
 
-```
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_KEY=<anon key from CLI output>
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server (Cloudflare workerd) |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run test` | Run Vitest unit tests |
+| `npm run test:e2e` | Run Playwright E2E tests |
+| `npm run lint` | ESLint with type-checked rules |
+| `npm run lint:fix` | Auto-fix ESLint issues |
+| `npm run format` | Prettier formatting |
 
-5. To stop the stack when done:
+## Testing
 
-```bash
-npx supabase stop
-```
-
-The local Studio UI is available at `http://localhost:54323`.
-
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
-
-### Using a cloud Supabase project instead
-
-If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:
-
-| Variable       | Description                                                |
-| -------------- | ---------------------------------------------------------- |
-| `SUPABASE_URL` | Project URL from Supabase dashboard → Settings → API       |
-| `SUPABASE_KEY` | `anon` public key from Supabase dashboard → Settings → API |
-
-```
-SUPABASE_URL=https://<project-ref>.supabase.co
-SUPABASE_KEY=<anon-key>
-```
-
-### Email confirmation in local development
-
-By default Supabase requires email confirmation before a user can sign in. To skip this during local development:
-
-1. Open the Supabase dashboard for your project
-2. Go to **Authentication → Email → Confirm email**
-3. Toggle it **off**
-
-Users can then sign in immediately after sign-up without clicking a confirmation link.
-
-### Auth routes
-
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
-
-Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_ROUTES` array there to require authentication.
+- **Unit tests** (`src/lib/rule-engine.test.ts`): Exercise selection logic — tag matching, no-repeat filter, fallback chain, duration sorting.
+- **E2E tests** (`tests/e2e/us-01.spec.ts`): Full Pomodoro cycle — signup → session → break → exercise sequence with neck-tag verification → resume.
+- **RLS integration** (`tests/e2e/rls-security.spec.ts`): Multi-tenant isolation — User B cannot read or delete User A's break sessions.
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
-Production URL: **https://pomo-stretch.michal3run.workers.dev**
+Deployed to [Cloudflare Workers](https://workers.cloudflare.com/).
 
-1. Build the project:
+| Target | Command | URL |
+|--------|---------|-----|
+| **Dev** | `npm run build && npx wrangler deploy --name pomo-stretch-dev` | `pomo-stretch-dev.michal3run.workers.dev` |
+| **Production** | `npm run build && npx wrangler deploy` | `pomo-stretch.michal3run.workers.dev` |
 
-```bash
-npm run build
-```
-
-2. Deploy with Wrangler:
+Set `SUPABASE_URL` and `SUPABASE_KEY` as Cloudflare secrets:
 
 ```bash
-npx wrangler deploy
+npx wrangler secret put SUPABASE_URL
+npx wrangler secret put SUPABASE_KEY
 ```
-
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions (`.github/workflows/ci.yml`) runs lint + build on every push/PR to `master`. Requires `SUPABASE_URL` and `SUPABASE_KEY` as GitHub repository secrets.
+
+## Project Documentation
+
+Planning and design artifacts live in `context/foundation/`:
+
+- [`prd.md`](context/foundation/prd.md) — Product Requirements Document
+- [`roadmap.md`](context/foundation/roadmap.md) — Implementation roadmap
+- [`test-plan.md`](context/foundation/test-plan.md) — Risk-based test plan
+- [`tech-stack.md`](context/foundation/tech-stack.md) — Technology decisions
+- [`lessons.md`](context/foundation/lessons.md) — Lessons learned during development
 
 ## License
 
