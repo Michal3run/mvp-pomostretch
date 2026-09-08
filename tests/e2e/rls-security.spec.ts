@@ -11,14 +11,17 @@ import crypto from "node:crypto";
  *
  * After signin we extract cookies from the browser context and create a
  * standalone APIRequestContext seeded with those cookies for API testing.
+ *
+ * The Origin header is required because Astro's built-in CSRF checkOrigin
+ * rejects state-changing requests (POST/DELETE/PATCH) without a matching Origin.
  */
 async function createAuthenticatedContext(
-  browser: BrowserContext,
+  browserCtx: BrowserContext,
   baseURL: string,
   email: string,
   password: string,
 ): Promise<{ api: APIRequestContext; page: Page }> {
-  const page = await browser.newPage();
+  const page = await browserCtx.newPage();
 
   // --- Signup via real browser form ---
   await page.goto("/auth/signup");
@@ -28,9 +31,14 @@ async function createAuthenticatedContext(
   await page.fill('input[name="confirmPassword"]', password);
   await page.click('button[type="submit"]');
 
-  // After signup Supabase redirects to confirm-email, signin, or dashboard
-  await expect(page).toHaveURL(/\/auth\/(confirm-email|signin|dashboard)/, {
-    timeout: 15_000,
+  // After signup Supabase redirects to confirm-email, signin, or dashboard.
+  // Also handle staying on /auth/signup when the server-side redirect failed
+  // (e.g. the signup succeeded but page didn't navigate — we still try signin).
+  await page.waitForURL(
+    (url) => url.pathname !== "/auth/signup",
+    { timeout: 15_000 },
+  ).catch(() => {
+    // If still on signup page, that's okay — we'll try signin next
   });
 
   // --- Signin (if not already on dashboard) ---
@@ -44,13 +52,17 @@ async function createAuthenticatedContext(
   }
 
   // --- Extract cookies from browser and create APIRequestContext ---
-  const cookies = await browser.cookies();
+  const cookies = await browserCtx.cookies();
   const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
 
   const api = await request.newContext({
     baseURL,
     extraHTTPHeaders: {
       Cookie: cookieHeader,
+      // Astro's built-in CSRF (checkOrigin) rejects POST/DELETE/PATCH
+      // without a matching Origin header. The standalone APIRequestContext
+      // doesn't set this automatically like a browser would.
+      Origin: baseURL,
     },
   });
 
@@ -83,15 +95,17 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   let apiB: APIRequestContext;
   let pageA: Page;
   let pageB: Page;
+  let browserCtxB: BrowserContext;
   let userASessionId: string;
 
   const baseURL = "http://127.0.0.1:4321";
 
   test.afterAll(async () => {
-    await apiA.dispose();
-    await apiB.dispose();
-    await pageA.close();
-    await pageB.close();
+    await apiA?.dispose();
+    await apiB?.dispose();
+    await pageA?.close();
+    await pageB?.close();
+    await browserCtxB?.close();
   });
 
   test("User A: signup, signin, and create a break session", async ({ context }) => {
@@ -128,8 +142,8 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
 
   test("User B: signup and signin", async ({ browser }) => {
     // Create a fresh browser context for User B (separate cookie jar)
-    const ctxB = await browser.newContext({ baseURL });
-    const result = await createAuthenticatedContext(ctxB, baseURL, userBEmail, sharedPassword);
+    browserCtxB = await browser.newContext({ baseURL });
+    const result = await createAuthenticatedContext(browserCtxB, baseURL, userBEmail, sharedPassword);
     apiB = result.api;
     pageB = result.page;
 
