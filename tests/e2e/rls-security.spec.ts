@@ -34,12 +34,11 @@ async function createAuthenticatedContext(
   // After signup Supabase redirects to confirm-email, signin, or dashboard.
   // Also handle staying on /auth/signup when the server-side redirect failed
   // (e.g. the signup succeeded but page didn't navigate — we still try signin).
-  await page.waitForURL(
-    (url) => url.pathname !== "/auth/signup",
-    { timeout: 15_000 },
-  ).catch(() => {
-    // If still on signup page, that's okay — we'll try signin next
-  });
+  await page
+    .waitForURL((url) => url.pathname !== "/auth/signup", { timeout: 15_000 })
+    .catch(() => {
+      // If still on signup page, that's okay — we'll try signin next
+    });
 
   // --- Signin (if not already on dashboard) ---
   if (!page.url().includes("/dashboard")) {
@@ -91,12 +90,12 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   const userBEmail = `rls_b_${suffix}@example.com`;
   const sharedPassword = "TestPassword123!";
 
-  let apiA: APIRequestContext;
-  let apiB: APIRequestContext;
-  let pageA: Page;
-  let pageB: Page;
-  let browserCtxB: BrowserContext;
-  let userASessionId: string;
+  let apiA: APIRequestContext | undefined;
+  let apiB: APIRequestContext | undefined;
+  let pageA: Page | undefined;
+  let pageB: Page | undefined;
+  let browserCtxB: BrowserContext | undefined;
+  let userASessionId: string | undefined;
 
   const baseURL = "http://127.0.0.1:4321";
 
@@ -132,6 +131,7 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   });
 
   test("User A can read own sessions", async () => {
+    if (!apiA || !userASessionId) throw new Error("Test dependencies not initialized");
     const res = await apiA.get("/api/session-history");
     expect(res.status()).toBe(200);
 
@@ -153,6 +153,7 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   });
 
   test("User B sees an empty session list (cannot see User A's data)", async () => {
+    if (!apiB) throw new Error("apiB not initialized");
     const res = await apiB.get("/api/session-history");
     expect(res.status()).toBe(200);
 
@@ -161,6 +162,7 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   });
 
   test("User B cannot delete User A's session (404 via RLS)", async () => {
+    if (!apiB || !userASessionId) throw new Error("Test dependencies not initialized");
     const res = await apiB.delete(`/api/session-history/${userASessionId}`);
     expect(res.status()).toBe(404);
 
