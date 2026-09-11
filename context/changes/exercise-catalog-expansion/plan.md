@@ -95,9 +95,11 @@
 - [ ] Utworzyć plik migracji `supabase/migrations/20260910220000_expand_exercise_catalog_x2.sql`:
 - [ ] Zaktualizować `src/lib/exercise-catalog.ts` (fallback offline), dodając reprezentantów nowych stref.
 
-### Faza 5: Weryfikacja i testy
+### Faza 5: Aktualizacja E2E i weryfikacja
 
-- [ ] Uruchomić `npm run lint` i upewnić się, że nie ma błędów lintera/formatowania.
-- [ ] Uruchomić testy jednostkowe `npm test`.
-- [ ] Przetestować scenariusz użytkownika:
-- [ ] Uruchomić testy Playwright E2E (`npx playwright test`).
+- [x] Zaktualizować mocki/stany w `tests/e2e/us-01.spec.ts` (test sprawdzający przycisk "Tylko kark" powinien nadal przechodzić).
+- [x] Dodać nowy test w Playwright sprawdzający, czy przycisk "Zaskocz mnie" poprawnie prosi o tag `random` lub przepuszcza z odpowiednim query.
+- [x] Uruchomić weryfikację końcową:
+  - `npm run lint`
+  - `npm test`
+  - `npx playwright test`
