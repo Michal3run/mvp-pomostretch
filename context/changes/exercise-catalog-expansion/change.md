@@ -1,6 +1,6 @@
 ---
 change_id: exercise-catalog-expansion
-status: plan_reviewed
+status: implementing
 created: 2026-09-10
 updated: 2026-09-11
 owner: solo

@@ -1,6 +1,6 @@
 ---
 change_id: final-cleanup
-status: implementing
+status: implemented
 created: 2026-09-11
 updated: 2026-09-11
 owner: solo
