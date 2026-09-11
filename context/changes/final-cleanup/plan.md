@@ -6,7 +6,7 @@ Cleaning up the PomoStretch repository before MVP review by removing leftover sc
 
 ## Current State Analysis
 
-The repository contains several 10xdevs-specific instruction files (`GITHUB_ISSUES_PROMPT.md`), PowerShell scripts for issue management (`*.ps1`), unused files (`KIRO.md`, `eslint.log`), and test output directories (`ci-logs/`, `playwright-report/`, `test-results/`) that should not be committed for the final submission. Dependencies have minor updates available, and we need to ensure the project is fully formatted and linted.
+The repository contains several 10xdevs-specific instruction files (`GITHUB_ISSUES_PROMPT.md`), PowerShell scripts for issue management (`*.ps1`), unused files (`eslint.log`), and test output directories (`ci-logs/`, `playwright-report/`, `test-results/`) that should not be committed for the final submission. Note that IDE/agent instruction files (`AGENTS.md`, `CLAUDE.md`, `KIRO.md`) are intentionally preserved. Dependencies have minor updates available, and we need to ensure the project is fully formatted and linted.
 
 ## Desired End State
 
@@ -16,6 +16,7 @@ A clean repository containing only the actual MVP source code, tests, and standa
 
 - We are not changing any feature logic or architecture.
 - We are not upgrading dependencies to new major versions (to avoid breaking changes).
+- We are not deleting IDE/agent convention files (`AGENTS.md`, `CLAUDE.md`, `KIRO.md`).
 
 ## Implementation Approach
 
@@ -42,9 +43,9 @@ Delete scripts and markdown files not part of the core MVP, and remove temporary
 
 #### 2. Remove Prompt and Checklist Markdown Files
 
-**File**: `GITHUB_ISSUES_PROMPT.md`, `GITHUB_ISSUES_PROMPT_NO_CLI.md`, `KIRO.md`, `mvp-submit-checklist.md`
+**File**: `GITHUB_ISSUES_PROMPT.md`, `GITHUB_ISSUES_PROMPT_NO_CLI.md`, `mvp-submit-checklist.md`
 
-**Intent**: Delete instructions and checklists not needed in the final codebase.
+**Intent**: Delete instructions and checklists not needed in the final codebase (`KIRO.md` is retained alongside `CLAUDE.md`).
 
 **Contract**: Remove these files from the project.
 
@@ -60,11 +61,12 @@ Delete scripts and markdown files not part of the core MVP, and remove temporary
 
 #### Automated Verification:
 
-- All listed files and directories no longer exist.
+- All listed files and directories no longer exist: verified via `powershell -Command "Test-Path create-roadmap-issues.ps1, update-issues-body.ps1, update-roadmap-issues.ps1, GITHUB_ISSUES_PROMPT.md, GITHUB_ISSUES_PROMPT_NO_CLI.md, mvp-submit-checklist.md, eslint.log, ci-logs, playwright-report, test-results"` returns False for each item.
 
 #### Manual Verification:
 
-- Verify `git status` shows deleted files.
+- Verify `git status` shows deleted tracked files, and filesystem check confirms removal of gitignored/untracked items (`eslint.log`, `ci-logs/`, `playwright-report/`, `test-results/`).
+- Verify MVP submission readiness items before finalizing checklist deletion: GitHub Secrets confirmed, CI pipeline green, production deployment active, Supabase migrations applied, and core auth/timer flow verified.
 
 ---
 
@@ -98,6 +100,8 @@ Ensure dependencies are up to date and codebase formatting is clean.
 
 - `npm run lint` passes without errors.
 - `npm run build` completes successfully.
+- Unit tests pass: `npm test`.
+- Playwright E2E suite passes: `npm run test:e2e`.
 
 #### Manual Verification:
 
@@ -126,21 +130,22 @@ Ensure dependencies are up to date and codebase formatting is clean.
 
 #### Automated
 
-- [ ] 1.1 Remove PowerShell Scripts
-- [ ] 1.2 Remove Prompt and Checklist Markdown Files
-- [ ] 1.3 Remove Log Files and Output Directories
+- [x] 1.1 All listed files and directories no longer exist: verified via `powershell -Command "Test-Path create-roadmap-issues.ps1, update-issues-body.ps1, update-roadmap-issues.ps1, GITHUB_ISSUES_PROMPT.md, GITHUB_ISSUES_PROMPT_NO_CLI.md, mvp-submit-checklist.md, eslint.log, ci-logs, playwright-report, test-results"` returns False for each item.
 
 #### Manual
 
-- [ ] 1.4 Verify `git status` shows deleted files
+- [x] 1.2 Verify `git status` shows deleted tracked files, and filesystem check confirms removal of gitignored/untracked items (`eslint.log`, `ci-logs/`, `playwright-report/`, `test-results/`).
+- [x] 1.3 Verify MVP submission readiness items before finalizing checklist deletion: GitHub Secrets confirmed, CI pipeline green, production deployment active, Supabase migrations applied, and core auth/timer flow verified.
 
 ### Phase 2: Update Dependencies and Code Formatting
 
 #### Automated
 
-- [ ] 2.1 Update Dependencies
-- [ ] 2.2 Format and Lint Codebase
+- [ ] 2.1 `npm run lint` passes without errors.
+- [ ] 2.2 `npm run build` completes successfully.
+- [ ] 2.3 Unit tests pass: `npm test`.
+- [ ] 2.4 Playwright E2E suite passes: `npm run test:e2e`.
 
 #### Manual
 
-- [ ] 2.3 Application starts successfully with `npm run dev`
+- [ ] 2.5 Application starts successfully with `npm run dev`.
