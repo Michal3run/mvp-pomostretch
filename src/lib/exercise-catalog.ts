@@ -43,7 +43,25 @@ export const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
     description:
       "Wyciągnij prawą rękę przed siebie, dłonią do góry. Drugą ręką delikatnie ściągnij palce w dół, do siebie. Wytrzymaj 20 sekund, zmień rękę.",
     duration_seconds: 60,
-    body_areas: ["general"],
+    body_areas: ["general", "wrists_hands"],
     image: "images/wrist-flexor-stretch.svg",
+  },
+  {
+    id: "glutes-1",
+    name: "Pozycja gołębia na krześle",
+    description:
+      "Siedząc prosto na brzegu krzesła, połóż prawą kostkę na lewym udzie. Pochyl prosty tułów w przód, poczuj rozciąganie pośladka. Po 30s zmień stronę.",
+    duration_seconds: 60,
+    body_areas: ["glutes_hips"],
+    image: "images/seated-figure-4-deep.svg",
+  },
+  {
+    id: "back-1",
+    name: "Dekompresja na krześle",
+    description:
+      "Opierając dłonie na podłokietnikach lub krawędzi krzesła, wypchnij się w górę tak, by pośladki zawisły nad siedziskiem. Pozwól kręgosłupowi odpocząć.",
+    duration_seconds: 30,
+    body_areas: ["lower_back"],
+    image: "images/chair-pushup-decompression.svg",
   },
 ];
