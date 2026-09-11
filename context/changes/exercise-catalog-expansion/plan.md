@@ -42,7 +42,6 @@
 
 > **UWAGA DLA AGENTA (Podział sesji):** Ta faza jest bardzo obciążająca kontekst (creative work, Lesson L2). Nie realizuj tej fazy podczas głównej implementacji. Grafiki SVG powstaną w odrębnej sesji agenta z lepszym modelem wizualnym. Zostaw te zadania odznaczone w Progress, dopóki osobna sesja graficzna ich nie wykona.
 
-
 - Przygotować 38 spójnych estetycznie wektorów SVG w katalogu `public/images/`:
   - 12 grafik dla pośladków/bioder (m.in. `seated-figure-4-deep.svg`, `glute-squeezes.svg`, `desk-lunge.svg`, `seated-butterfly.svg`, `desk-assisted-squat.svg`, `standing-hip-abduction.svg`, `standing-it-band-stretch.svg`, itp.)
   - 8 grafik dla dłoni i nadgarstków (m.in. `reverse-prayer-stretch.svg`, `prayer-stretch.svg`, `ulnar-nerve-glide.svg`, `hand-wrist-shake.svg`, `finger-fan.svg`, `wrist-figure-8.svg`, `thenar-massage.svg`, `desk-finger-pushups.svg`)

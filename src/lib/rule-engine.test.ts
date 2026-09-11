@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { selectExercises } from "./rule-engine";
+import { selectExercises, fisherYatesShuffle } from "./rule-engine";
 import type { Exercise } from "@/types";
 
 const mockCatalog: Exercise[] = [
@@ -76,5 +76,38 @@ describe("selectExercises Rule Engine", () => {
       catalog: mockCatalog,
     });
     expect(result.length).toBe(3);
+  });
+
+  it("falls back to full catalog when general category has no exercises", () => {
+    const catalogWithoutGeneral: Exercise[] = [
+      { id: "10", name: "Neck only", description: "Neck only", duration_seconds: 30, body_areas: ["neck"] },
+    ];
+    const result = selectExercises({
+      tags: ["eyes"],
+      catalog: catalogWithoutGeneral,
+    });
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe("10");
+  });
+});
+
+describe("fisherYatesShuffle", () => {
+  it("preserves elements and array length", () => {
+    const original = [1, 2, 3, 4, 5];
+    const shuffled = fisherYatesShuffle(original);
+    expect(shuffled).toHaveLength(original.length);
+    expect(shuffled.sort()).toEqual(original.sort());
+  });
+
+  it("does not mutate original array", () => {
+    const original = Object.freeze([10, 20, 30]);
+    const shuffled = fisherYatesShuffle(original);
+    expect(shuffled).not.toBe(original);
+    expect(original).toEqual([10, 20, 30]);
+  });
+
+  it("handles empty or single item arrays", () => {
+    expect(fisherYatesShuffle([])).toEqual([]);
+    expect(fisherYatesShuffle([42])).toEqual([42]);
   });
 });

@@ -47,7 +47,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     // 6. Przejście do wyboru przerwy
     await expect(page.getByText("Czas na przerwę!")).toBeVisible();
-    await page.getByRole("button", { name: "Tylko kark" }).click();
+    await page.getByRole("button", { name: /Kark i szyja|Tylko kark/ }).click();
 
     // 7. Sekwencja ćwiczeń - sprawdź, że ćwiczenie dotyczy karku (rule engine działa)
     await expect(page.getByRole("button", { name: "Zrobione" })).toBeVisible({ timeout: 10000 });

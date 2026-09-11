@@ -1,264 +1,42 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState } from "react";
 import type { Exercise, BreakInputCookie } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { Check, SkipForward, Play, AlertTriangle } from "lucide-react";
-import { saveLastSessionIds, getLastSessionIds } from "@/lib/session-storage";
-import { getStoredExerciseState, saveStoredExerciseState, clearStoredExerciseState } from "@/lib/exercise-storage";
-import { saveStoredTimer } from "@/lib/timer-storage";
-import { selectExercises } from "@/lib/rule-engine";
+import { Check, SkipForward, AlertTriangle } from "lucide-react";
+import { useExerciseSequence } from "@/components/hooks/useExerciseSequence";
+import { SequenceCompletedCard } from "@/components/SequenceCompletedCard";
+import { formatDuration } from "@/lib/time-utils";
 
 interface ExerciseSequenceProps {
   breakInput: BreakInputCookie;
   catalog: Exercise[];
 }
 
-interface ExerciseResult {
-  exerciseId: string;
-  status: "done" | "skipped";
-}
-
-const FALLBACK_EXERCISE_CATALOG: Exercise[] = [
-  {
-    id: "00000000-0000-4000-a000-000000000001",
-    name: "Mruganie i rozluźnienie oczu",
-    description: "Zamknij oczy na 5 sekund, a następnie mrugaj szybko przez 10 sekund.",
-    duration_seconds: 30,
-    body_areas: ["eyes"],
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "00000000-0000-4000-a000-000000000002",
-    name: "Powolne skłony głowy",
-    description: "Opuszczaj powoli brodę do klatki piersiowej, a następnie odchylaj w tył.",
-    duration_seconds: 45,
-    body_areas: ["neck"],
-    created_at: new Date().toISOString(),
-  },
-];
-
 export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequenceProps) {
-  // Exercises are initialized empty and populated client-side in useEffect
-  // to avoid SSR hydration mismatch (selectExercises uses localStorage + Math.random).
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const {
+    exercises,
+    currentIndex,
+    currentExercise,
+    status,
+    secondsRemaining,
+    isMounted,
+    idleEndTime,
+    idleSecondsRemaining,
+    completedCount,
+    skippedCount,
+    advanceNext,
+    handleStartIdleBreak,
+    handleCancelIdleBreak,
+    handleResumeWork,
+    handleReturnIdle,
+  } = useExerciseSequence({ breakInput, catalog });
 
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-
-  const [status, setStatus] = useState<"active" | "completed" | "idle_break">("active");
-
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Idle break state
-  const [idleEndTime, setIdleEndTime] = useState<number | null>(null);
-  const [idleSecondsRemaining, setIdleSecondsRemaining] = useState<number>(0);
-
-  // Image loading state - adjust state during render when index changes
   const [imageLoaded, setImageLoaded] = useState(false);
   const [prevIndex, setPrevIndex] = useState(currentIndex);
   if (prevIndex !== currentIndex) {
     setPrevIndex(currentIndex);
     setImageLoaded(false);
   }
-
-  // M5 preparation stats
-  const [completedCount, setCompletedCount] = useState<number>(0);
-  const [skippedCount, setSkippedCount] = useState<number>(0);
-  const [_exerciseResults, setExerciseResults] = useState<ExerciseResult[]>([]);
-
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    const storedState = getStoredExerciseState();
-    const activeCatalog = catalog.length > 0 ? catalog : FALLBACK_EXERCISE_CATALOG;
-    if (storedState && storedState.exerciseIds.length > 0) {
-      // Restore in-progress session from localStorage (page reload mid-routine)
-      const restored = storedState.exerciseIds
-        .map((id) => activeCatalog.find((ex) => ex.id === id))
-        .filter((ex): ex is Exercise => ex !== undefined);
-      if (restored.length > 0) {
-        setExercises(restored);
-        setCurrentIndex(storedState.currentIndex);
-        setStatus(storedState.status);
-        setCompletedCount(storedState.completedCount);
-        setSkippedCount(storedState.skippedCount);
-        setIdleEndTime(storedState.idleEndTime);
-        if (storedState.status === "active") {
-          setSecondsRemaining(
-            restored[storedState.currentIndex]?.duration_seconds ??
-              (activeCatalog[0] ? activeCatalog[0].duration_seconds : 0),
-          );
-        }
-      } else {
-        // Stored IDs no longer match catalog — select fresh exercises
-        const selected = selectExercises({
-          tags: breakInput.tags,
-          lastSessionIds: getLastSessionIds(),
-          catalog: activeCatalog,
-        });
-        setExercises(selected);
-        setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
-      }
-    } else {
-      // No stored state — use rule engine to select exercises based on user's pain input
-      const selected = selectExercises({
-        tags: breakInput.tags,
-        lastSessionIds: getLastSessionIds(),
-        catalog: activeCatalog,
-      });
-      setExercises(selected);
-      setSecondsRemaining(selected[0]?.duration_seconds ?? 0);
-    }
-    setIsMounted(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, [breakInput, catalog]);
-
-  // Save state to localStorage on change
-  useEffect(() => {
-    if (!isMounted || exercises.length === 0) return;
-    saveStoredExerciseState({
-      exerciseIds: exercises.map((ex) => ex.id),
-      currentIndex,
-      status,
-      completedCount,
-      skippedCount,
-      idleEndTime,
-    });
-  }, [isMounted, exercises, currentIndex, status, idleEndTime, completedCount, skippedCount]);
-
-  const isCompletedHandledRef = useRef(false);
-
-  const finishSequence = useCallback(
-    (finalSelectedExercises: Exercise[]) => {
-      if (isCompletedHandledRef.current) return;
-      isCompletedHandledRef.current = true;
-
-      const ids = finalSelectedExercises.map((ex) => ex.id);
-      saveLastSessionIds(ids);
-
-      fetch("/api/session-history", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          input_kind: breakInput.kind,
-          input_value: breakInput.value || "Przerwa",
-          derived_tags: breakInput.tags.length > 0 ? breakInput.tags : ["general"],
-          selected_exercise_ids: ids,
-          completed_count: completedCount,
-          skipped_count: skippedCount,
-          ended_at: new Date().toISOString(),
-        }),
-      }).catch(() => {
-        /* ignore error */
-      });
-
-      setStatus("completed");
-    },
-    [breakInput, completedCount, skippedCount],
-  );
-
-  const advanceNext = useCallback(
-    (actionStatus: "done" | "skipped") => {
-      const currentEx = exercises[currentIndex];
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (currentEx) {
-        setExerciseResults((prev) => [...prev, { exerciseId: currentEx.id, status: actionStatus }]);
-      }
-
-      if (actionStatus === "done") {
-        setCompletedCount((prev) => prev + 1);
-      } else {
-        setSkippedCount((prev) => prev + 1);
-      }
-
-      if (currentIndex < exercises.length - 1) {
-        const nextIdx = currentIndex + 1;
-        setCurrentIndex(nextIdx);
-        setSecondsRemaining(exercises[nextIdx]?.duration_seconds ?? 0);
-      } else {
-        finishSequence(exercises);
-      }
-    },
-    [currentIndex, exercises, finishSequence],
-  );
-
-  // Active exercise countdown timer
-  useEffect(() => {
-    if (status !== "active" || secondsRemaining <= 0) return;
-
-    const timer = setInterval(() => {
-      setSecondsRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          advanceNext("done");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [status, secondsRemaining, advanceNext]);
-
-  // Idle break countdown timer
-  useEffect(() => {
-    if (!idleEndTime) return;
-
-    const tick = () => {
-      const now = Date.now();
-      const remaining = Math.max(0, Math.ceil((idleEndTime - now) / 1000));
-      setIdleSecondsRemaining(remaining);
-
-      if (remaining <= 0) {
-        setIdleEndTime(null);
-      }
-    };
-
-    tick();
-    const interval = setInterval(tick, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [idleEndTime]);
-
-  const handleStartIdleBreak = (minutes: number) => {
-    const endTime = Date.now() + minutes * 60 * 1000;
-    setIdleEndTime(endTime);
-  };
-
-  const handleCancelIdleBreak = () => {
-    setIdleEndTime(null);
-  };
-
-  const handleResumeWork = () => {
-    saveStoredTimer({
-      startedAt: Date.now(),
-      durationMs: 25 * 60 * 1000,
-      extendedMs: 0,
-    });
-    clearStoredExerciseState();
-    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {
-      /* ignore */
-    });
-    window.location.assign("/dashboard");
-  };
-
-  const handleReturnIdle = () => {
-    clearStoredExerciseState();
-    fetch("/api/clear-break-cookie", { method: "POST" }).catch(() => {
-      /* ignore */
-    });
-    window.location.assign("/dashboard");
-  };
-
-  const formatSeconds = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-  };
 
   if (!isMounted) {
     return (
@@ -270,118 +48,22 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     );
   }
 
-  if (exercises.length === 0) {
-    return (
-      <Card className="mx-auto w-full max-w-md border-white/10 bg-white/5 text-white backdrop-blur-xl">
-        <CardContent className="pt-6 text-center">
-          <p className="text-purple-200">Ładowanie ćwiczeń...</p>
-        </CardContent>
-      </Card>
-    );
-  }
+
 
   if (status === "completed") {
     return (
-      <Card className="mx-auto w-full max-w-md border-white/10 bg-white/5 text-white backdrop-blur-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-emerald-400">Świetna robota!</CardTitle>
-          <p className="mt-2 text-sm text-purple-200/80">Ukończyłeś sesję rozciągania.</p>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-center">
-            <p className="text-xs text-purple-300/70">Podsumowanie</p>
-            <div className="mt-2 flex justify-center gap-6">
-              <div>
-                <span className="block text-2xl font-bold text-emerald-400">{completedCount}</span>
-                <span className="text-xs text-purple-200/60">Ukończono</span>
-              </div>
-              <div>
-                <span className="block text-2xl font-bold text-amber-400">{skippedCount}</span>
-                <span className="text-xs text-purple-200/60">Pominięto</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Idle Break Section */}
-          <div className="rounded-xl border border-white/10 bg-purple-900/20 p-4">
-            <h4 className="text-sm font-semibold text-purple-200">Chcesz jeszcze chwilę odpocząć?</h4>
-            <p className="mt-1 text-xs text-purple-300/70">Wybierz czas na wolny odpoczynek bez ćwiczeń:</p>
-
-            {idleEndTime && idleSecondsRemaining > 0 ? (
-              <div className="mt-3 text-center">
-                <span className="font-mono text-3xl font-bold text-purple-200">
-                  {formatSeconds(idleSecondsRemaining)}
-                </span>
-                <div className="mt-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCancelIdleBreak}
-                    className="text-xs text-purple-300 hover:text-white"
-                  >
-                    Anuluj minutnik
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-3 flex justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    handleStartIdleBreak(3);
-                  }}
-                  className="border-purple-400/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/60"
-                >
-                  3 min
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    handleStartIdleBreak(5);
-                  }}
-                  className="border-purple-400/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/60"
-                >
-                  5 min
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    handleStartIdleBreak(10);
-                  }}
-                  className="border-purple-400/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/60"
-                >
-                  10 min
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardContent>
-
-        <CardFooter className="flex flex-col gap-3">
-          <Button
-            onClick={handleResumeWork}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 font-semibold text-white shadow-lg hover:from-purple-500 hover:to-indigo-500"
-          >
-            <Play className="mr-2 h-4 w-4" /> {"Wróć do pracy (Nowe Pomodoro)"}
-          </Button>
-
-          <Button
-            variant="ghost"
-            onClick={handleReturnIdle}
-            className="w-full text-purple-300/80 hover:bg-white/5 hover:text-white"
-          >
-            Wróć do Dashboardu bez uruchamiania timera
-          </Button>
-        </CardFooter>
-      </Card>
+      <SequenceCompletedCard
+        completedCount={completedCount}
+        skippedCount={skippedCount}
+        idleEndTime={idleEndTime}
+        idleSecondsRemaining={idleSecondsRemaining}
+        handleCancelIdleBreak={handleCancelIdleBreak}
+        handleStartIdleBreak={handleStartIdleBreak}
+        handleResumeWork={handleResumeWork}
+        handleReturnIdle={handleReturnIdle}
+      />
     );
   }
-
-  const currentExercise = exercises[currentIndex];
 
   return (
     <Card className="mx-auto w-full max-w-lg border-white/10 bg-white/5 text-white shadow-2xl backdrop-blur-xl">
@@ -393,12 +75,11 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
           <CardTitle className="mt-1 text-xl font-bold text-white">{currentExercise.name}</CardTitle>
         </div>
         <div className="text-right">
-          <span className="block font-mono text-2xl font-bold text-purple-300">{formatSeconds(secondsRemaining)}</span>
+          <span className="block font-mono text-2xl font-bold text-purple-300">{formatDuration(secondsRemaining)}</span>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* SVG/Image illustration */}
         {currentExercise.image ? (
           <div className="relative flex h-48 w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/30 p-2">
             {!imageLoaded && (

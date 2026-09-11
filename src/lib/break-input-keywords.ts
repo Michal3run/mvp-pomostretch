@@ -1,0 +1,66 @@
+/**
+ * Mapping of body area tags to their recognizable Polish and English keywords/stems.
+ *
+ * Keys align with the database body_areas taxonomy and rule-engine categories.
+ */
+export const BODY_AREA_KEYWORD_MAP: Record<string, readonly string[]> = {
+  eyes: ["oczy", "ocz", "wzrok", "eye"],
+  neck: ["kark", "szyj", "neck"],
+  shoulders: ["bark", "ramion", "shoulder"],
+  lower_back: [
+    "plecy",
+    "lędźw",
+    "ledzw",
+    "krzyż",
+    "krzyz",
+    "dół pleców",
+    "dol plecow",
+    "kręgosłup",
+    "kregoslup",
+    "back",
+    "lumbar",
+  ],
+  glutes_hips: [
+    "dupa",
+    "dupy",
+    "dupie",
+    "dupę",
+    "dupe",
+    "tyłek",
+    "tylek",
+    "tylka",
+    "tyłk",
+    "poślad",
+    "poslad",
+    "biodr",
+    "gruszkowat",
+    "kulszow",
+    "rwa",
+    "siedzen",
+    "butt",
+    "glute",
+    "hip",
+    "piriformis",
+  ],
+  wrists_hands: [
+    "nadgarst",
+    "dłoń",
+    "dlon",
+    "palc",
+    "ręk",
+    "rece",
+    "przedrami",
+    "cieśn",
+    "ciesn",
+    "myszk",
+    "klawiatur",
+    "wrist",
+    "hand",
+    "finger",
+    "forearm",
+  ],
+  random: ["zaskocz", "losow", "miks", "dowoln", "random"],
+  general: ["ogóln", "wszystko", "general"],
+} as const;
+
+export type BodyAreaTag = keyof typeof BODY_AREA_KEYWORD_MAP;
