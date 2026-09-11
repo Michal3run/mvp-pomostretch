@@ -74,14 +74,57 @@ export const POST: APIRoute = async (context) => {
   if (
     textLower.includes("plecy") ||
     textLower.includes("lędźw") ||
+    textLower.includes("ledzw") ||
+    textLower.includes("krzyż") ||
+    textLower.includes("krzyz") ||
+    textLower.includes("dół pleców") ||
+    textLower.includes("dol plecow") ||
     textLower.includes("kręgosłup") ||
     textLower.includes("back")
   ) {
     tagSet.add("lower_back");
   }
   if (
-    textLower.includes("ogóln") ||
+    textLower.includes("dupa") ||
+    textLower.includes("dupy") ||
+    textLower.includes("tyłek") ||
+    textLower.includes("poślad") ||
+    textLower.includes("poslad") ||
+    textLower.includes("biodr") ||
+    textLower.includes("gruszkowat") ||
+    textLower.includes("kulszow") ||
+    textLower.includes("rwa") ||
+    textLower.includes("butt") ||
+    textLower.includes("glute") ||
+    textLower.includes("hip")
+  ) {
+    tagSet.add("glutes_hips");
+  }
+  if (
+    textLower.includes("nadgarst") ||
+    textLower.includes("dłoń") ||
+    textLower.includes("dlon") ||
+    textLower.includes("palc") ||
+    textLower.includes("ręk") ||
+    textLower.includes("rece") ||
+    textLower.includes("przedrami") ||
+    textLower.includes("cieśn") ||
+    textLower.includes("ciesn") ||
+    textLower.includes("myszk") ||
+    textLower.includes("klawiatur") ||
+    textLower.includes("wrist") ||
+    textLower.includes("hand")
+  ) {
+    tagSet.add("wrists_hands");
+  }
+  if (
     textLower.includes("zaskocz") ||
+    textLower.includes("random")
+  ) {
+    tagSet.add("random");
+  }
+  if (
+    textLower.includes("ogóln") ||
     textLower.includes("wszystko") ||
     textLower.includes("general")
   ) {

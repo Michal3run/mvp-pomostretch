@@ -34,7 +34,7 @@ A clean repository containing only the actual MVP source code, tests, and standa
 | Phase                    | What it delivers        | Key risk                              |
 | ------------------------ | ----------------------- | ------------------------------------- |
 | 1. Remove Leftover Files | Clean project structure | Accidentally deleting required files  |
-| 2. Codebase Updates      | Updated and linted code | Dependency updates could break things |
+| 2. Codebase Updates (Deferred) | Postponed to avoid conflicts with concurrent AI sessions | N/A |
 
 **Estimated effort:** ~15 minutes
 

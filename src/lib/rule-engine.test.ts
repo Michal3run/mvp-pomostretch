@@ -9,9 +9,22 @@ const mockCatalog: Exercise[] = [
   { id: "4", name: "Chin tuck", description: "Chin tuck", duration_seconds: 30, body_areas: ["neck"] },
   { id: "5", name: "General stretch", description: "General stretch", duration_seconds: 90, body_areas: ["general"] },
   { id: "6", name: "Deep breath", description: "Deep breath", duration_seconds: 40, body_areas: ["general"] },
+  { id: "7", name: "Glute squeeze", description: "Glute squeeze", duration_seconds: 50, body_areas: ["glutes_hips"] },
+  { id: "8", name: "Wrist stretch", description: "Wrist stretch", duration_seconds: 35, body_areas: ["wrists_hands"] },
 ];
 
 describe("selectExercises Rule Engine", () => {
+  it("filters exercises matching glutes_hips tag", () => {
+    const result = selectExercises({ tags: ["glutes_hips"], catalog: mockCatalog });
+    expect(result.length).toBe(1);
+    expect(result[0].body_areas).toContain("glutes_hips");
+  });
+
+  it("filters exercises matching wrists_hands tag", () => {
+    const result = selectExercises({ tags: ["wrists_hands"], catalog: mockCatalog });
+    expect(result.length).toBe(1);
+    expect(result[0].body_areas).toContain("wrists_hands");
+  });
   it("returns empty array for empty catalog", () => {
     const result = selectExercises({ tags: ["neck"], catalog: [] });
     expect(result).toEqual([]);

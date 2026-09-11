@@ -70,42 +70,9 @@ Delete scripts and markdown files not part of the core MVP, and remove temporary
 
 ---
 
-## Phase 2: Update Dependencies and Code Formatting
+## Phase 2: Update Dependencies and Code Formatting (Deferred)
 
-### Overview
-
-Ensure dependencies are up to date and codebase formatting is clean.
-
-### Changes Required:
-
-#### 1. Update Dependencies
-
-**File**: `package.json`
-
-**Intent**: Update to the latest compatible minor/patch dependency versions.
-
-**Contract**: Run `npm update` and verify `package-lock.json` changes.
-
-#### 2. Format and Lint Codebase
-
-**File**: All source files
-
-**Intent**: Fix any formatting or linting issues in the codebase.
-
-**Contract**: Run `npm run format` and `npm run lint`. Fix any errors if they arise.
-
-### Success Criteria:
-
-#### Automated Verification:
-
-- `npm run lint` passes without errors.
-- `npm run build` completes successfully.
-- Unit tests pass: `npm test`.
-- Playwright E2E suite passes: `npm run test:e2e`.
-
-#### Manual Verification:
-
-- Application starts successfully with `npm run dev`.
+> **Status**: Deferred. Postponed to avoid merge conflicts and race conditions with concurrent active AI sessions modifying source files. Dependencies and formatting will be updated in a dedicated maintenance pass after all active feature branches land.
 
 ## Testing Strategy
 
@@ -119,8 +86,8 @@ Ensure dependencies are up to date and codebase formatting is clean.
 
 ### Manual Testing Steps:
 
-1. Start application and ensure homepage loads.
-2. Verify no runtime errors in the console.
+1. Verify root directory is clean of development scripts and prompt files.
+2. Verify application builds and starts normally.
 
 ## Progress
 
@@ -130,22 +97,9 @@ Ensure dependencies are up to date and codebase formatting is clean.
 
 #### Automated
 
-- [x] 1.1 All listed files and directories no longer exist: verified via `powershell -Command "Test-Path create-roadmap-issues.ps1, update-issues-body.ps1, update-roadmap-issues.ps1, GITHUB_ISSUES_PROMPT.md, GITHUB_ISSUES_PROMPT_NO_CLI.md, mvp-submit-checklist.md, eslint.log, ci-logs, playwright-report, test-results"` returns False for each item.
+- [x] 1.1 All listed files and directories no longer exist: verified via `powershell -Command "Test-Path create-roadmap-issues.ps1, update-issues-body.ps1, update-roadmap-issues.ps1, GITHUB_ISSUES_PROMPT.md, GITHUB_ISSUES_PROMPT_NO_CLI.md, mvp-submit-checklist.md, eslint.log, ci-logs, playwright-report, test-results"` returns False for each item. — 1ee33f3
 
 #### Manual
 
-- [x] 1.2 Verify `git status` shows deleted tracked files, and filesystem check confirms removal of gitignored/untracked items (`eslint.log`, `ci-logs/`, `playwright-report/`, `test-results/`).
-- [x] 1.3 Verify MVP submission readiness items before finalizing checklist deletion: GitHub Secrets confirmed, CI pipeline green, production deployment active, Supabase migrations applied, and core auth/timer flow verified.
-
-### Phase 2: Update Dependencies and Code Formatting
-
-#### Automated
-
-- [ ] 2.1 `npm run lint` passes without errors.
-- [ ] 2.2 `npm run build` completes successfully.
-- [ ] 2.3 Unit tests pass: `npm test`.
-- [ ] 2.4 Playwright E2E suite passes: `npm run test:e2e`.
-
-#### Manual
-
-- [ ] 2.5 Application starts successfully with `npm run dev`.
+- [x] 1.2 Verify `git status` shows deleted tracked files, and filesystem check confirms removal of gitignored/untracked items (`eslint.log`, `ci-logs/`, `playwright-report/`, `test-results/`). — 1ee33f3
+- [x] 1.3 Verify MVP submission readiness items before finalizing checklist deletion: GitHub Secrets confirmed, CI pipeline green, production deployment active, Supabase migrations applied, and core auth/timer flow verified. — 1ee33f3
