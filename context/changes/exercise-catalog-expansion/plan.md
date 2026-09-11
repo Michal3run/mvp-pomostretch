@@ -83,8 +83,8 @@
 
 ### Faza 2: Redesign ekranu wyboru strefy (src/pages/break-input.astro)
 
-- [x] Zastąpić obecny 4-przyciskowy grid nowym responsywnym układem **6 kafelków**:
-- [x] Poprawić ergonomię wizualną kafelków: subtelne ikony/emotikony lub czytelne podtytuły, równe wysokości, focus ringi, obsługa klawiatury (dostępność WCAG).
+- [x] Zastąpić obecny 4-przyciskowy grid nowym responsywnym układem **6 kafelków**: — 691db2f
+- [x] Poprawić ergonomię wizualną kafelków: subtelne ikony/emotikony lub czytelne podtytuły, równe wysokości, focus ringi, obsługa klawiatury (dostępność WCAG). — 691db2f
 
 ### Faza 3: Generowanie 38 grafik wektorowych SVG
 
