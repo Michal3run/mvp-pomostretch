@@ -22,35 +22,67 @@ const error = url.searchParams.get("error");
       {error && <div class="bg-destructive/15 text-destructive rounded-md p-3 text-center text-sm">{error}</div>}
 
       <form method="POST" action="/api/break-input" class="space-y-6">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <Button
             type="submit"
             name="quickPick"
             value="Tylko oczy"
             variant="outline"
-            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Tylko oczy</Button
+            className="flex h-24 flex-col items-center justify-center gap-2 border-white/20 bg-white/5 text-sm hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white/50"
           >
+            <span class="text-2xl">👁️</span>
+            <span>Oczy i wzrok</span>
+          </Button>
           <Button
             type="submit"
             name="quickPick"
             value="Tylko kark"
             variant="outline"
-            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Tylko kark</Button
+            className="flex h-24 flex-col items-center justify-center gap-2 border-white/20 bg-white/5 text-sm hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white/50"
           >
+            <span class="text-2xl">💆</span>
+            <span>Kark i szyja</span>
+          </Button>
           <Button
             type="submit"
             name="quickPick"
-            value="Ogólne"
+            value="Lędźwie i plecy"
             variant="outline"
-            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Ogólne</Button
+            className="flex h-24 flex-col items-center justify-center gap-2 border-white/20 bg-white/5 text-sm hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white/50"
           >
+            <span class="text-2xl">🧘</span>
+            <span>Lędźwie i plecy</span>
+          </Button>
+          <Button
+            type="submit"
+            name="quickPick"
+            value="Pośladki i biodra"
+            variant="outline"
+            className="flex h-24 flex-col items-center justify-center gap-2 border-white/20 bg-white/5 text-sm hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white/50"
+          >
+            <span class="text-2xl">🚶</span>
+            <span>Pośladki i biodra</span>
+          </Button>
+          <Button
+            type="submit"
+            name="quickPick"
+            value="Dłonie i nadgarstki"
+            variant="outline"
+            className="flex h-24 flex-col items-center justify-center gap-2 border-white/20 bg-white/5 text-sm hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white/50"
+          >
+            <span class="text-2xl">🖐️</span>
+            <span>Dłonie i nadgarstki</span>
+          </Button>
           <Button
             type="submit"
             name="quickPick"
             value="Zaskocz mnie"
             variant="outline"
-            className="h-16 border-white/20 bg-white/5 text-lg hover:bg-white/20 hover:text-white">Zaskocz mnie</Button
+            className="flex h-24 flex-col items-center justify-center gap-2 border-white/20 bg-white/5 text-sm hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white/50"
           >
+            <span class="text-2xl">🎲</span>
+            <span>Zaskocz mnie</span>
+          </Button>
         </div>
 
         <div class="relative flex items-center py-2">

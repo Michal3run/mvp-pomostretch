@@ -78,13 +78,13 @@
 
 ### Faza 1: Rozszerzenie taksonomii i parsowania języka naturalnego (NLP)
 
-- [ ] Zaktualizować `src/pages/api/break-input.ts`:
-- [ ] Dodać unit testy w `src/lib/rule-engine.test.ts` weryfikujące:
+- [x] Zaktualizować `src/pages/api/break-input.ts` — 89ded69
+- [x] Dodać unit testy w `src/lib/rule-engine.test.ts` weryfikujące — 89ded69
 
 ### Faza 2: Redesign ekranu wyboru strefy (src/pages/break-input.astro)
 
-- [ ] Zastąpić obecny 4-przyciskowy grid nowym responsywnym układem **6 kafelków**:
-- [ ] Poprawić ergonomię wizualną kafelków: subtelne ikony/emotikony lub czytelne podtytuły, równe wysokości, focus ringi, obsługa klawiatury (dostępność WCAG).
+- [x] Zastąpić obecny 4-przyciskowy grid nowym responsywnym układem **6 kafelków**:
+- [x] Poprawić ergonomię wizualną kafelków: subtelne ikony/emotikony lub czytelne podtytuły, równe wysokości, focus ringi, obsługa klawiatury (dostępność WCAG).
 
 ### Faza 3: Generowanie 38 grafik wektorowych SVG
 
