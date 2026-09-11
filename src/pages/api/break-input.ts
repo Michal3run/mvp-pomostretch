@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 export const prerender = false;
 
 import { z } from "zod";
+import { parseBreakInputTags } from "@/lib/break-input-parser";
 
 const formSchema = z
   .object({
@@ -36,14 +37,15 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/break-input?error=${encodeURIComponent(parseResult.error.issues[0].message)}`);
   }
 
-  const quickPick = parseResult.data.quickPick;
+  const rawQuickPick = parseResult.data.quickPick;
+  const trimmedQuickPick = rawQuickPick?.trim();
+  const quickPick = trimmedQuickPick && trimmedQuickPick.length > 0 ? trimmedQuickPick : null;
   const rawFreeText = parseResult.data.freeText;
   const trimmedText = rawFreeText?.trim();
   const freeText = trimmedText && trimmedText.length > 0 ? trimmedText : null;
 
   let kind: "quick_pick" | "free_text" = "quick_pick";
   let value = "";
-  const tagSet = new Set<string>();
 
   const textToAnalyze = quickPick ?? freeText ?? "";
   if (quickPick) {
@@ -54,89 +56,7 @@ export const POST: APIRoute = async (context) => {
     value = freeText;
   }
 
-  const textLower = textToAnalyze.toLowerCase();
-
-  // Map Polish and English keywords to database body_areas ('eyes', 'neck', 'shoulders', 'lower_back', 'general')
-  if (
-    textLower.includes("oczy") ||
-    textLower.includes("ocz") ||
-    textLower.includes("wzrok") ||
-    textLower.includes("eye")
-  ) {
-    tagSet.add("eyes");
-  }
-  if (textLower.includes("kark") || textLower.includes("szyj") || textLower.includes("neck")) {
-    tagSet.add("neck");
-  }
-  if (textLower.includes("bark") || textLower.includes("ramion") || textLower.includes("shoulder")) {
-    tagSet.add("shoulders");
-  }
-  if (
-    textLower.includes("plecy") ||
-    textLower.includes("lędźw") ||
-    textLower.includes("ledzw") ||
-    textLower.includes("krzyż") ||
-    textLower.includes("krzyz") ||
-    textLower.includes("dół pleców") ||
-    textLower.includes("dol plecow") ||
-    textLower.includes("kręgosłup") ||
-    textLower.includes("back")
-  ) {
-    tagSet.add("lower_back");
-  }
-  if (
-    textLower.includes("dupa") ||
-    textLower.includes("dupy") ||
-    textLower.includes("tyłek") ||
-    textLower.includes("poślad") ||
-    textLower.includes("poslad") ||
-    textLower.includes("biodr") ||
-    textLower.includes("gruszkowat") ||
-    textLower.includes("kulszow") ||
-    textLower.includes("rwa") ||
-    textLower.includes("butt") ||
-    textLower.includes("glute") ||
-    textLower.includes("hip")
-  ) {
-    tagSet.add("glutes_hips");
-  }
-  if (
-    textLower.includes("nadgarst") ||
-    textLower.includes("dłoń") ||
-    textLower.includes("dlon") ||
-    textLower.includes("palc") ||
-    textLower.includes("ręk") ||
-    textLower.includes("rece") ||
-    textLower.includes("przedrami") ||
-    textLower.includes("cieśn") ||
-    textLower.includes("ciesn") ||
-    textLower.includes("myszk") ||
-    textLower.includes("klawiatur") ||
-    textLower.includes("wrist") ||
-    textLower.includes("hand")
-  ) {
-    tagSet.add("wrists_hands");
-  }
-  if (
-    textLower.includes("zaskocz") ||
-    textLower.includes("random")
-  ) {
-    tagSet.add("random");
-  }
-  if (
-    textLower.includes("ogóln") ||
-    textLower.includes("wszystko") ||
-    textLower.includes("general")
-  ) {
-    tagSet.add("general");
-  }
-
-  let tags = Array.from(tagSet);
-
-  // FR-012: Fallback to "general" tag if no known keywords matched
-  if (tags.length === 0) {
-    tags = ["general"];
-  }
+  const tags = parseBreakInputTags(textToAnalyze);
 
   const cookieValue = JSON.stringify({ kind, value, tags });
 
