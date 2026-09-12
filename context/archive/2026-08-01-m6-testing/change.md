@@ -1,6 +1,6 @@
 ---
 change_id: m6-testing
-status: implemented
+status: archived
 created: 2026-08-01
 owner: solo
 type: cross-cutting
@@ -25,3 +25,4 @@ related_risks: [R-01, R-02, R-03, R-04, R-05, R-13]
 
 3. **CI Pipeline Integration**:
    - Running test suite on pull requests and main branch deployments.
+
