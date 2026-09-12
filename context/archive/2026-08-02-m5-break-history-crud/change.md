@@ -1,6 +1,6 @@
 ---
 change_id: m5-break-history-crud
-status: implemented
+status: archived
 created: 2026-08-02
 owner: solo
 type: feature
@@ -40,3 +40,4 @@ To satisfy domain data management requirements:
 
 3. **Exercise Sequence Integration**:
    - `src/components/ExerciseSequence.tsx`: Updated `finishSequence` to POST complete break session payload including exercise IDs, completed/skipped metrics, and timestamps.
+
