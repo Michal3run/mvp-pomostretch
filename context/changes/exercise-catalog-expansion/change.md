@@ -2,7 +2,7 @@
 change_id: exercise-catalog-expansion
 status: impl_reviewed
 created: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 owner: solo
 type: feature
 blocks_certification: false
