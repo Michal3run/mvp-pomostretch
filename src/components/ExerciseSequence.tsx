@@ -48,8 +48,6 @@ export default function ExerciseSequence({ breakInput, catalog }: ExerciseSequen
     );
   }
 
-
-
   if (status === "completed") {
     return (
       <SequenceCompletedCard

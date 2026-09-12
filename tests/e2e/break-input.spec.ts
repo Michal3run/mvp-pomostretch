@@ -13,7 +13,11 @@ test.describe("Break Input Form", () => {
     await page.fill('input[name="confirmPassword"]', testPassword);
     await page.click('button[type="submit"]');
 
-    await page.waitForURL((url) => url.pathname !== "/auth/signup", { timeout: 15000 }).catch(() => { /* no-op */ });
+    await page
+      .waitForURL((url) => url.pathname !== "/auth/signup", { timeout: 15000 })
+      .catch(() => {
+        /* no-op */
+      });
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");

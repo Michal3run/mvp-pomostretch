@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 120 40 Q 150 40, 150 75 L 150 95 Q 150 105, 140 110 L 115 115 Q 102 117, 102 130 L 102 180"/>
+    <line x1="72" y1="180" x2="140" y2="180"/>
+    <line x1="72" y1="180" x2="72" y2="210"/>
+    <line x1="140" y1="180" x2="140" y2="210"/>
+    <path d="M 180 160 L 150 115"/>
+    <line x1="150" y1="115" x2="140" y2="115"/>
+  </g>
+  <g fill="none" stroke="#4FB8A8" stroke-width="3" stroke-linecap="round">
+    <line x1="155" y1="115" x2="135" y2="115"/>
+    <polygon points="135,115 143,109 143,121" fill="#4FB8A8"/>
+  </g>
+</svg>

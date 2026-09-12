@@ -87,13 +87,13 @@
 
 ### Faza 3: Generowanie 38 grafik wektorowych SVG
 
-- [ ] Przygotować 38 spójnych estetycznie wektorów SVG w katalogu `public/images/`:
-- [ ] Zweryfikować, że każdy plik jest poprawnym XML/SVG i nie przekracza 1.5 KB.
+- [x] Przygotować 38 spójnych estetycznie wektorów SVG w katalogu `public/images/`:
+- [x] Zweryfikować, że każdy plik jest poprawnym XML/SVG i nie przekracza 1.5 KB.
 
 ### Faza 4: Migracja SQL powiększająca bazę do 73 ćwiczeń
 
-- [ ] Utworzyć plik migracji `supabase/migrations/20260910220000_expand_exercise_catalog_x2.sql`:
-- [ ] Zaktualizować `src/lib/exercise-catalog.ts` (fallback offline), dodając reprezentantów nowych stref.
+- [x] Utworzyć plik migracji `supabase/migrations/20260910220000_expand_exercise_catalog_x2.sql`:
+- [x] Zaktualizować `src/lib/exercise-catalog.ts` (fallback offline), dodając reprezentantów nowych stref.
 
 ### Faza 5: Aktualizacja E2E i weryfikacja
 
@@ -102,4 +102,4 @@
 - [x] Uruchomić weryfikację końcową:
   - `npm run lint`
   - `npm test`
-  - `npx playwright test`
+  - `npx playwright test` — daa1a48

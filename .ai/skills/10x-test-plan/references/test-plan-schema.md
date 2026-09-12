@@ -71,10 +71,10 @@ terms, not test names. The Source column cites the _evidence that surfaced
 this risk_ — never a specific file as "where the failure lives" (that is
 research's job, see §1 principle #3).
 
-| #   | Risk (failure scenario)     | Impact | Likelihood | Source (evidence — not anchor) |
+| # | Risk (failure scenario) | Impact | Likelihood | Source (evidence — not anchor) |
 | --- | --------------------------- | ------ | ---------- | ------------------------------ | ------------ | ----------------------- | -------------- | -------------------------------------- |
-| 1   | <one-line failure scenario> | High   | High       | <PRD §...                      | roadmap §... | archive/<slice>/plan.md | interview Q<n> | hot-spot dir `<path>` (N commits/30d)> |
-| ... | ...                         | ...    | ...        | ...                            |
+| 1 | <one-line failure scenario> | High | High | <PRD §... | roadmap §... | archive/<slice>/plan.md | interview Q<n> | hot-spot dir `<path>` (N commits/30d)> |
+| ... | ... | ... | ... | ... |
 ```
 
 5–7 rows. Every row cites at least one source.
