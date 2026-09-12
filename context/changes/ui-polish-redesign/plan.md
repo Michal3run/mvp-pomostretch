@@ -198,9 +198,9 @@ Wdrożenie wygaszania nawigacji podczas aktywnej sesji (Zen Mode) oraz dopracowa
 
 #### Automated
 
-- [ ] 3.1 Testy jednostkowe przechodzą: npm test
+- [x] 3.1 Testy jednostkowe przechodzą: npm test — cf84699
 - [ ] 3.2 Testy E2E przechodzą: npx playwright test tests/e2e/us-01.spec.ts tests/e2e/break-input.spec.ts
-- [ ] 3.3 Pełny build i linting przechodzą: npm run lint && npm run build
+- [x] 3.3 Pełny build i linting przechodzą: npm run lint && npm run build — cf84699
 
 #### Manual
 
