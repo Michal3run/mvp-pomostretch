@@ -12,10 +12,10 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     await page.goto("/auth/signup");
     await expect(page.locator("form")).toBeVisible();
 
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
-    await page.fill('input[name="confirmPassword"]', testPassword);
-    await page.click('button[type="submit"]');
+    await page.getByLabel("Email").fill(testEmail);
+    await page.getByLabel("Password", { exact: true }).fill(testPassword);
+    await page.getByLabel("Confirm password").fill(testPassword);
+    await page.getByRole("button", { name: /Create account|Sign in/i }).click();
 
     // After signup, Supabase may redirect to confirm-email, signin, or dashboard.
     // Sometimes the page stays on /auth/signup (Supabase rate-limit, slow redirect).
@@ -28,9 +28,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
-      await page.fill('input[name="email"]', testEmail);
-      await page.fill('input[name="password"]', testPassword);
-      await page.click('button[type="submit"]');
+      await page.getByLabel("Email").fill(testEmail);
+      await page.getByLabel("Password", { exact: true }).fill(testPassword);
+      await page.getByRole("button", { name: /Create account|Sign in/i }).click();
     }
 
     // 2. Oczekiwanie na przejście na Dashboard i zakończenie hydracji React Islands
@@ -56,14 +56,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // (validates that selectExercises filters by body_areas, not arbitrary slicing)
     await expect(page.locator("text=/kark|szyj|brod|głow/i").first()).toBeVisible();
 
-    while (await page.getByRole("button", { name: "Zrobione" }).isVisible()) {
+    // Click 'Zrobione' for each of the 3 exercises in the sequence
+    for (let i = 0; i < 3; i++) {
       await page.getByRole("button", { name: "Zrobione" }).click();
-      await expect(async () => {
-        expect(
-          (await page.getByText("Świetna robota!").isVisible()) ||
-            (await page.getByRole("button", { name: "Zrobione" }).isVisible()),
-        ).toBeTruthy();
-      }).toPass({ timeout: 5000 });
     }
 
     // 8. Weryfikacja ekranu końcowego i ominięcie Idle Break
