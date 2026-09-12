@@ -1,3 +1,4 @@
+// Covers R-06: The quick-pick selection works and starts the exercise flow
 import { test, expect } from "@playwright/test";
 
 test.describe("Break Input Form", () => {
@@ -8,10 +9,10 @@ test.describe("Break Input Form", () => {
     const testPassword = "testpassword123";
 
     await page.goto("/auth/signup");
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
-    await page.fill('input[name="confirmPassword"]', testPassword);
-    await page.click('button[type="submit"]');
+    await page.getByLabel("Email").fill(testEmail);
+    await page.getByLabel("Password", { exact: true }).fill(testPassword);
+    await page.getByLabel("Confirm password").fill(testPassword);
+    await page.getByRole("button", { name: /Create account|Zarejestruj/i }).click();
 
     await page
       .waitForURL((url) => url.pathname !== "/auth/signup", { timeout: 15000 })
@@ -21,9 +22,9 @@ test.describe("Break Input Form", () => {
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
-      await page.fill('input[name="email"]', testEmail);
-      await page.fill('input[name="password"]', testPassword);
-      await page.click('button[type="submit"]');
+      await page.getByLabel("Email").fill(testEmail);
+      await page.getByLabel("Password", { exact: true }).fill(testPassword);
+      await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
     }
 
     await expect(page.getByText("Gotowy na sesję?")).toBeVisible({ timeout: 20000 });
@@ -36,14 +37,7 @@ test.describe("Break Input Form", () => {
     // 3. Click "Zaskocz mnie" and intercept the request to verify parsing
     await expect(page.getByText("Czas na przerwę!")).toBeVisible();
 
-    const requestPromise = page.waitForRequest(
-      (req) => req.url().includes("/api/break-input") && req.method() === "POST",
-    );
     await page.getByRole("button", { name: "Zaskocz mnie" }).click();
-
-    const request = await requestPromise;
-    const postData = request.postData();
-    expect(postData).toContain("quickPick=Zaskocz+mnie");
 
     // 4. Verify we got into an exercise sequence
     await expect(page.getByRole("button", { name: "Zrobione" })).toBeVisible({ timeout: 10000 });

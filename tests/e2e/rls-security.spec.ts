@@ -1,3 +1,4 @@
+// Covers R-05: A break_session row created by user A cannot be read/deleted by user B
 import { test, expect, request } from "@playwright/test";
 import type { APIRequestContext, BrowserContext, Page } from "@playwright/test";
 import crypto from "node:crypto";
@@ -26,10 +27,10 @@ async function createAuthenticatedContext(
   // --- Signup via real browser form ---
   await page.goto("/auth/signup");
   await expect(page.locator("form")).toBeVisible();
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.fill('input[name="confirmPassword"]', password);
-  await page.click('button[type="submit"]');
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByLabel("Confirm password").fill(password);
+  await page.getByRole("button", { name: /Create account|Zarejestruj/i }).click();
 
   // After signup Supabase redirects to confirm-email, signin, or dashboard.
   // Also handle staying on /auth/signup when the server-side redirect failed
@@ -44,9 +45,9 @@ async function createAuthenticatedContext(
   if (!page.url().includes("/dashboard")) {
     await page.goto("/auth/signin");
     await expect(page.locator("form")).toBeVisible();
-    await page.fill('input[name="email"]', email);
-    await page.fill('input[name="password"]', password);
-    await page.click('button[type="submit"]');
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
   }
 
@@ -85,9 +86,8 @@ interface ErrorResponse {
 }
 
 test.describe.serial("RLS: Multi-tenant session isolation", () => {
-  const suffix = Date.now();
-  const userAEmail = `rls_a_${suffix}@example.com`;
-  const userBEmail = `rls_b_${suffix}@example.com`;
+  let userAEmail: string;
+  let userBEmail: string;
   const sharedPassword = "TestPassword123!";
 
   let apiA: APIRequestContext | undefined;
@@ -98,6 +98,12 @@ test.describe.serial("RLS: Multi-tenant session isolation", () => {
   let userASessionId: string | undefined;
 
   const baseURL = "http://127.0.0.1:4321";
+
+  test.beforeAll(() => {
+    const suffix = Date.now();
+    userAEmail = `rls_a_${suffix}@example.com`;
+    userBEmail = `rls_b_${suffix}@example.com`;
+  });
 
   test.afterAll(async () => {
     await apiA?.dispose();
