@@ -84,3 +84,7 @@
 - [x] 2.2 `ExerciseSequence.tsx` ma poniżej 160 linii kodu: `wc -l src/components/ExerciseSequence.tsx`
 - [x] 2.3 Pełny zestaw testów `npm test` przechodzi na zielono bez regresji
 - [x] 2.4 Linter przechodzi bez błędów: `npm run lint`
+
+### Addendum
+
+- [x] Wydzielenie `break-input-parser.ts` i `break-input-keywords.ts`

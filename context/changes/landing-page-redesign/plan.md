@@ -189,7 +189,7 @@ Add a polished footer, refine mobile spacing, and ensure clean contrast across t
 
 #### Manual
 
-- [x] 2.2 3-step workflow and 4-card feature grid display cleanly across viewports
+- [x] 2.3 3-step workflow and 4-card feature grid display cleanly across viewports
 
 ### Phase 3: Footer, Responsive Polish & Verification
 

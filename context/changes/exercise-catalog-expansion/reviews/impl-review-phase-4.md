@@ -47,7 +47,7 @@
   - `Rozciąganie mięśnia gruszkowatego w krześle` has name containing `gruszkowat`, not `biodr` or `poślad`.
   - `Gimnastyka ścięgien palców` has name containing `palców`, not `dłoń` or `nadgarstk`.
   - `Pozycja czwórki siedząc` has name without `biodr`/`poślad` and tags `general`.
-  These legacy exercises remain under their old categories. This is non-breaking because the 38 newly seeded exercises provide full coverage (12 for `glutes_hips`, 8 for `wrists_hands`), but these legacy records remain in `general`/`lower_back`.
+    These legacy exercises remain under their old categories. This is non-breaking because the 38 newly seeded exercises provide full coverage (12 for `glutes_hips`, 8 for `wrists_hands`), but these legacy records remain in `general`/`lower_back`.
 - **Fix**: Optionally expand the UPDATE query or add a follow-up patch if legacy rows should also be retagged.
 - **Decision**: ACCEPTED AS IS (38 new exercises provide complete coverage; legacy rows remain functional).
 

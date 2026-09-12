@@ -35,7 +35,7 @@
   - `tests/e2e/break-input.spec.ts`
   - `src/components/ExerciseSequence.tsx` (whitespace removal)
   - `.10x/skills/10x-test-plan/references/test-plan-schema.md`
-  Per repository guidelines and Lesson L2/L4, changes across unrelated features (such as `registration-flow-cleanup` and test schema edits) should not be co-committed with SVG asset generation.
+    Per repository guidelines and Lesson L2/L4, changes across unrelated features (such as `registration-flow-cleanup` and test schema edits) should not be co-committed with SVG asset generation.
 - **Fix**: Acknowledge the bundled changes to avoid rewriting git history on `main`, but enforce strict staging (`git add <specific-files>`) on future commits.
 - **Decision**: FIXED (Acknowledged, keep branch history intact, enforce commit scope discipline going forward).
 

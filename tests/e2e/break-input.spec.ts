@@ -33,9 +33,17 @@ test.describe("Break Input Form", () => {
     await expect(page.getByText("Czas skupienia")).toBeVisible();
     await page.getByRole("button", { name: "Zakończ" }).click();
 
-    // 3. Click "Zaskocz mnie"
+    // 3. Click "Zaskocz mnie" and intercept the request to verify parsing
     await expect(page.getByText("Czas na przerwę!")).toBeVisible();
+
+    const requestPromise = page.waitForRequest(
+      (req) => req.url().includes("/api/break-input") && req.method() === "POST",
+    );
     await page.getByRole("button", { name: "Zaskocz mnie" }).click();
+
+    const request = await requestPromise;
+    const postData = request.postData();
+    expect(postData).toContain("quickPick=Zaskocz+mnie");
 
     // 4. Verify we got into an exercise sequence
     await expect(page.getByRole("button", { name: "Zrobione" })).toBeVisible({ timeout: 10000 });

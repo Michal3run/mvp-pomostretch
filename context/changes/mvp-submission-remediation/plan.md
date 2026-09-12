@@ -210,7 +210,8 @@ Fixes from plan review that deviated from the original plan:
 
 #### Manual
 
-- [ ] 1.4 Manual verification that quick-picks in UI serve corresponding exercises
+- [ ] 1.4 Launch dev server, complete a Pomodoro, select "Tylko kark", and verify that neck exercises appear
+- [ ] 1.5 Select "Tylko oczy" in a subsequent run and verify eye exercises appear
 
 ### Phase 2: RLS Security Test Restoration & E2E Assertion Hardening
 

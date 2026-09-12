@@ -1,8 +1,8 @@
 ---
 change_id: mvp-submission-remediation
-status: planned
+status: impl_reviewed
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-09-12
 owner: solo
 type: fix
 blocks_certification: true

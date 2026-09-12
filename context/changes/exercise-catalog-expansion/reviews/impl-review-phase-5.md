@@ -10,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension           | Verdict           |
-| ------------------- | ----------------- |
-| Plan Adherence      | PASS              |
-| Scope Discipline    | PASS              |
-| Safety & Quality    | PASS              |
-| Architecture        | PASS              |
-| Pattern Consistency | PASS              |
-| Success Criteria    | PASS              |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | PASS    |
+| Scope Discipline    | PASS    |
+| Safety & Quality    | PASS    |
+| Architecture        | PASS    |
+| Pattern Consistency | PASS    |
+| Success Criteria    | PASS    |
 
 ## Findings
 
@@ -29,4 +29,4 @@
 - **Location**: tests/e2e/break-input.spec.ts:40
 - **Detail**: The E2E test clicks "Zaskocz mnie" and verifies that an exercise sequence starts. While this verifies the user flow, it doesn't strictly intercept the request to guarantee that the tag 'random' was correctly evaluated on the backend.
 - **Fix**: Add a `page.waitForRequest` intercept to ensure the request payload carries the correct value or tag.
-- **Decision**: PENDING
+- **Decision**: FIXED (Added page.waitForRequest intercept)

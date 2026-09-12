@@ -23,7 +23,7 @@ const formSchema = z
 
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) {
-    return context.redirect("/auth/signin");
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
 
   const form = await context.request.formData();
