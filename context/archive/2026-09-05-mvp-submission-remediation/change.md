@@ -32,4 +32,3 @@ During final pre-submission audit against the official 10xDevs evaluator criteri
 2. **RLS Security Test Restoration**: Restore `tests/e2e/rls-security.spec.ts` as a reliable Playwright API integration test without flakiness.
 3. **E2E Test Hardening**: Add assertions to `tests/e2e/us-01.spec.ts` verifying that exercises rendered after selecting "Tylko kark" actually have the `neck` body area.
 4. **Documentation Alignment**: Replace `README.md` with PomoStretch documentation, fix project name in `package.json`, and correct phantom paths in `mvp-submit-checklist.md`.
-

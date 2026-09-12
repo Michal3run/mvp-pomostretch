@@ -25,4 +25,3 @@ related_prd_sections:
 
 3. **RLS Security E2E Test**:
    - `tests/e2e/rls-security.spec.ts` verifies multi-tenant data isolation, ensuring user A cannot view or delete user B's break session records.
-

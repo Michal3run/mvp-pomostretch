@@ -40,4 +40,3 @@ To satisfy domain data management requirements:
 
 3. **Exercise Sequence Integration**:
    - `src/components/ExerciseSequence.tsx`: Updated `finishSequence` to POST complete break session payload including exercise IDs, completed/skipped metrics, and timestamps.
-

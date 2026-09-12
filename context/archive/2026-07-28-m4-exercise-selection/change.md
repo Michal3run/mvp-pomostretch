@@ -28,4 +28,3 @@ related_frs: [FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, FR-020, FR-021, FR
    - Fetch exercise catalog from Supabase.
    - Present sequence card with countdown timer per exercise, illustration/image, description, and "Done" / "Skip" buttons.
    - Clear cookie and offer "Resume Work" link upon sequence completion.
-

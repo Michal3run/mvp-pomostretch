@@ -52,4 +52,3 @@ Przed finalnym oddaniem projektu MVP, audyt kodu ujawnił dwa kluczowe długi ar
 - `npm run lint` bez błędów.
 - Komponent `ExerciseSequence.tsx` nie przekracza 160 linii.
 - Logika timerów i formatowania czasu pokryta w 100% testami jednostkowymi.
-

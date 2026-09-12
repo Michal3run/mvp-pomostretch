@@ -148,8 +148,6 @@ Align all repository metadata, project descriptions, and submission checklists w
 
 - Valid JSON format.
 
-
-
 ### Success Criteria:
 
 #### Automated Verification:

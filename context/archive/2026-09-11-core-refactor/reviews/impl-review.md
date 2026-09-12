@@ -10,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension           | Verdict           |
-| ------------------- | ----------------- |
-| Plan Adherence      | PASS              |
-| Scope Discipline    | WARNING           |
-| Safety & Quality    | FAIL              |
-| Architecture        | PASS              |
-| Pattern Consistency | PASS              |
-| Success Criteria    | PASS              |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | PASS    |
+| Scope Discipline    | WARNING |
+| Safety & Quality    | FAIL    |
+| Architecture        | PASS    |
+| Pattern Consistency | PASS    |
+| Success Criteria    | PASS    |
 
 ## Findings
 
