@@ -114,6 +114,18 @@
   background-image: linear-gradient(to bottom, #0a0e1a, #0f1529, #0a0e1a);
 }
 
+@utility zen-fade {
+  transition: opacity 300ms ease;
+}
+
+body.zen-active .zen-fade {
+  opacity: 0.15;
+}
+
+body.zen-active .zen-fade:hover {
+  opacity: 1;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

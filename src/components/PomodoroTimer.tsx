@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getStoredTimer, saveStoredTimer, clearStoredTimer } from "@/lib/timer-storage";
 import type { TimerState } from "@/types";
-import { Play, Square, Plus, X } from "lucide-react";
+import { Play, FastForward, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const DEFAULT_DURATION = 25 * 60 * 1000; // 25 minutes
@@ -66,6 +66,8 @@ export default function PomodoroTimer() {
   useEffect(() => {
     if (status !== "active") return;
 
+    document.body.classList.add("zen-active");
+
     const tick = () => {
       calculateTime();
     };
@@ -80,6 +82,7 @@ export default function PomodoroTimer() {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
+      document.body.classList.remove("zen-active");
       clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
@@ -175,11 +178,23 @@ export default function PomodoroTimer() {
               <Plus size={18} />
               +5 min
             </Button>
-            <Button onClick={manualEnd} size="lg" className="flex-1 gap-2">
-              <Square size={18} fill="currentColor" />
-              Zakończ
+            <Button onClick={manualEnd} size="lg" className="flex-1 gap-2" aria-label="Zakończ i przejdź do przerwy">
+              <FastForward size={18} fill="currentColor" />
+              Do przerwy
             </Button>
           </div>
+          <Button
+            onClick={() => {
+              if (window.confirm("Czy na pewno chcesz porzucić tę sesję bez zapisywania?")) {
+                skipAndStartNew();
+              }
+            }}
+            variant="ghost"
+            size="sm"
+            className="mt-4 text-xs opacity-50 hover:opacity-100"
+          >
+            Porzuć sesję
+          </Button>
         </div>
       )}
 
