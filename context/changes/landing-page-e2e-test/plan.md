@@ -43,5 +43,6 @@
 
 #### Automated
 
-- [x] 1.1 Implement E2E test for the landing page (tests/e2e/landing-page.spec.ts)
+- [x] 1.1 Implement E2E test for the landing page (tests/e2e/landing-page.spec.ts) — 14177a6
+
 
