@@ -23,7 +23,10 @@ const formSchema = z
 
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const form = await context.request.formData();
@@ -68,11 +71,5 @@ export const POST: APIRoute = async (context) => {
     sameSite: "lax",
   });
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: "/exercise-sequence",
-      "Set-Cookie": `pomostretch.break_input=${encodeURIComponent(cookieValue)}; Path=/; Max-Age=300; HttpOnly; SameSite=Lax`,
-    },
-  });
+  return context.redirect("/exercise-sequence");
 };

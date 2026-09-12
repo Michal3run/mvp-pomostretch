@@ -148,13 +148,7 @@ Align all repository metadata, project descriptions, and submission checklists w
 
 - Valid JSON format.
 
-#### 3. MVP Submission Checklist
 
-**File**: `mvp-submit-checklist.md`
-**Intent**: Fix path references (`10xdevs-notes` -> `context/foundation/`), confirm truthful status of RLS tests, and add production database migration verification.
-**Contract**:
-
-- Accurately references `context/foundation/prd.md`, `test-plan.md`, `roadmap.md`.
 
 ### Success Criteria:
 
@@ -165,7 +159,7 @@ Align all repository metadata, project descriptions, and submission checklists w
 
 #### Manual Verification:
 
-- Review `README.md` and `mvp-submit-checklist.md` for clarity and factual accuracy.
+- Review `README.md` for clarity and factual accuracy.
 
 ---
 
@@ -234,4 +228,4 @@ Fixes from plan review that deviated from the original plan:
 
 #### Manual
 
-- [x] 3.3 Verify README.md and mvp-submit-checklist.md reflect exact repository layout and no phantom paths
+- [x] 3.3 Verify README.md reflects exact repository layout and no phantom paths
