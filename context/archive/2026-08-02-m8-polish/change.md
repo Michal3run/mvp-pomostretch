@@ -1,6 +1,6 @@
 ---
 change_id: m8-polish
-status: completed
+status: archived
 created: 2026-08-02
 owner: solo
 type: polish
@@ -25,3 +25,4 @@ related_prd_sections:
 
 3. **RLS Security E2E Test**:
    - `tests/e2e/rls-security.spec.ts` verifies multi-tenant data isolation, ensuring user A cannot view or delete user B's break session records.
+
