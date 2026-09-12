@@ -1,8 +1,9 @@
 ---
 change_id: registration-flow-cleanup
-status: done
+status: archived
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-12
+archived_at: 2026-09-12T20:20:32Z
 owner: solo
 type: fix
 blocks_certification: false
@@ -55,3 +56,4 @@ This change was implemented directly (commit `544579c`) without a prior change d
 | `src/pages/auth/confirm-email.astro` | **Deleted**                                                         |
 | `src/pages/auth/success.astro`       | **Created** — clean success message, no email verification mentions |
 | `src/pages/api/auth/signup.ts`       | Redirect target changed: `/auth/confirm-email` → `/auth/success`    |
+
