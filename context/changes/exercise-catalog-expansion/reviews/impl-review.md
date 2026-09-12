@@ -58,7 +58,7 @@
 - **Location**: src/pages/api/break-input.ts:63
 - **Detail**: Redundant cookie setting. The cookie is set via `context.cookies.set()` and then again via a raw `Set-Cookie` header in a manually constructed Response. The manual response also bypasses Astro's standard `context.redirect()`.
 - **Fix**: Remove the manual `Response` return and rely solely on `context.redirect("/exercise-sequence")`.
-- **Decision**: PENDING
+- **Decision**: FIXED
 
 ### F4 — Missing unit test for lower_back
 
