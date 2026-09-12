@@ -20,4 +20,3 @@ test_plan_risks: []
 - Created `exercise` table with seed data for 4 body-areas (eyes, neck, shoulders, lower_back).
 - Created `break_session` table with RLS policies to restrict operations to the authenticated user via `auth.uid() = user_id`.
 - This is a horizontal enabler unblocking M4 (exercise selection) and M5 (break history CRUD).
-

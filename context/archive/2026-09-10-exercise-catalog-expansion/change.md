@@ -209,4 +209,3 @@ Każde z 38 nowych ćwiczeń otrzyma dedykowany plik SVG w katalogu `public/imag
 4. **Testy regresji**:
    - `npm run lint` i `npm test` przechodzą na zielono.
    - Test E2E `tests/e2e/us-01.spec.ts` przechodzi bez zakłóceń.
-

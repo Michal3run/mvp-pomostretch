@@ -10,4 +10,3 @@ archived_at: 2026-09-12T20:20:32Z
 ## Notes
 
 Implements the M3 module: the break input screen where the user selects what hurts (quick picks or free text). The submission is POSTed to `/api/break-input`, tags are derived via a keyword matcher, and the state is stored in a signed cookie `pomostretch.break_input` before redirecting to `/exercise-sequence`. The user can also skip the break.
-

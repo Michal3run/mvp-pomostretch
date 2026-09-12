@@ -25,6 +25,7 @@ Grounding: 3/3 paths ✓, brief↔plan ✓
 ## Findings
 
 ### F1 — Progress mismatch with Success Criteria
+
 - **Severity**: ❌ CRITICAL
 - **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped
 - **Dimension**: Plan Completeness

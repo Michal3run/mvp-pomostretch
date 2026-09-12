@@ -11,7 +11,13 @@ const mockCatalog: Exercise[] = [
   { id: "6", name: "Deep breath", description: "Deep breath", duration_seconds: 40, body_areas: ["general"] },
   { id: "7", name: "Glute squeeze", description: "Glute squeeze", duration_seconds: 50, body_areas: ["glutes_hips"] },
   { id: "8", name: "Wrist stretch", description: "Wrist stretch", duration_seconds: 35, body_areas: ["wrists_hands"] },
-  { id: "9", name: "Lower back stretch", description: "Lower back stretch", duration_seconds: 40, body_areas: ["lower_back"] },
+  {
+    id: "9",
+    name: "Lower back stretch",
+    description: "Lower back stretch",
+    duration_seconds: 40,
+    body_areas: ["lower_back"],
+  },
 ];
 
 describe("selectExercises Rule Engine", () => {
