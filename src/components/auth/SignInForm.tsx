@@ -4,6 +4,7 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { translateAuthError } from "@/lib/auth-errors";
 
 interface Props {
   serverError?: string | null;
@@ -25,12 +26,12 @@ export default function SignInForm({ serverError }: Props) {
     const targetPassword = rawPassword || password;
 
     if (!targetEmail) {
-      next.email = "Email is required";
+      next.email = "Adres e-mail jest wymagany";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
-      next.email = "Enter a valid email address";
+      next.email = "Wprowadź poprawny adres e-mail";
     }
     if (!targetPassword) {
-      next.password = "Password is required";
+      next.password = "Hasło jest wymagane";
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -60,27 +61,27 @@ export default function SignInForm({ serverError }: Props) {
       <FormField
         id="email"
         type="email"
-        label="Email"
+        label="E-mail"
         value={email}
         onChange={(v) => {
           setEmail(v);
           clearError("email");
         }}
-        placeholder="you@example.com"
+        placeholder="ty@przyklad.pl"
         error={errors.email}
         icon={<Mail className="size-4" />}
       />
 
       <FormField
         id="password"
-        label="Password"
+        label="Hasło"
         type={showPassword ? "text" : "password"}
         value={password}
         onChange={(v) => {
           setPassword(v);
           clearError("password");
         }}
-        placeholder="Your password"
+        placeholder="Twoje hasło"
         error={errors.password}
         icon={<Lock className="size-4" />}
         endContent={
@@ -93,10 +94,10 @@ export default function SignInForm({ serverError }: Props) {
         }
       />
 
-      <ServerError message={serverError} />
+      <ServerError message={translateAuthError(serverError)} />
 
-      <SubmitButton pendingText="Signing in..." icon={<LogIn className="size-4" />}>
-        Sign in
+      <SubmitButton pendingText="Logowanie..." icon={<LogIn className="size-4" />}>
+        Zaloguj się
       </SubmitButton>
     </form>
   );
