@@ -68,7 +68,7 @@
 - **Location**: src/lib/rule-engine.test.ts
 - **Detail**: Unit tests were added for `glutes_hips`, `wrists_hands`, and `random`, but there is no test for the `lower_back` tag as required by the plan's domain additions.
 - **Fix**: Add a test case for `lower_back` in `src/lib/rule-engine.test.ts`.
-- **Decision**: PENDING
+- **Decision**: FIXED
 
 ### F5 — NLP matching logic extracted to separate files
 
@@ -78,4 +78,4 @@
 - **Location**: src/pages/api/break-input.ts
 - **Detail**: The NLP matching logic is not located in this file as planned. It was extracted to `src/lib/break-input-keywords.ts` and `src/lib/break-input-parser.ts`.
 - **Fix**: Accept the extraction as a positive architectural choice (no code change needed).
-- **Decision**: PENDING
+- **Decision**: ACCEPTED
