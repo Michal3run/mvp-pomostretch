@@ -1,9 +1,10 @@
 ---
 change_id: core-refactor
 title: Core Refactor (Rule Engine Fallback Pipeline & ExerciseSequence Custom Hook)
-status: impl_reviewed
+status: archived
 created: 2026-09-11
 updated: 2026-09-12
+archived_at: 2026-09-12T20:20:32Z
 owner: solo
 type: refactoring
 blocks_certification: false
@@ -51,3 +52,4 @@ Przed finalnym oddaniem projektu MVP, audyt kodu ujawnił dwa kluczowe długi ar
 - `npm run lint` bez błędów.
 - Komponent `ExerciseSequence.tsx` nie przekracza 160 linii.
 - Logika timerów i formatowania czasu pokryta w 100% testami jednostkowymi.
+
