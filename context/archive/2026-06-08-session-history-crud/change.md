@@ -1,6 +1,6 @@
 ---
 change_id: session-history-crud
-status: proposed
+status: archived
 created: 2026-06-08
 owner: solo
 type: pivot
@@ -168,3 +168,4 @@ This fits inside the remaining MVP budget (PRD frontmatter `mvp_weeks: 3`, `afte
 1. **Pagination cursor format** — opaque base64 of `(created_at, id)` is overkill for an MVP; first version returns all rows up to a hardcoded limit (e.g. 50) and adds cursor pagination only if a real user reports they need it. Owner: solo.
 2. **Should `note` accept Markdown?** No in MVP; plain text only, displayed as-is. Re-evaluate post-cert. Owner: solo.
 3. **GDPR "delete-all-my-data" affordance** — `DELETE /api/sessions` (no id, clears all rows for the user) is listed in the API table above but not strictly required for cert. Ship it if there's time; defer otherwise. Owner: solo.
+
