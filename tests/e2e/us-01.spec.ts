@@ -12,10 +12,10 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     await page.goto("/auth/signup");
     await expect(page.locator("form")).toBeVisible();
 
-    await page.getByLabel("Email").fill(testEmail);
-    await page.getByLabel("Password", { exact: true }).fill(testPassword);
-    await page.getByLabel("Confirm password").fill(testPassword);
-    await page.getByRole("button", { name: /Create account|Sign in/i }).click();
+    await page.getByLabel(/e-?mail/i).fill(testEmail);
+    await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
+    await page.getByLabel(/potwierdź hasło|^confirm password$/i).fill(testPassword);
+    await page.getByRole("button", { name: /Zarejestruj|Create account/i }).click();
 
     // After signup, Supabase may redirect to confirm-email, signin, or dashboard.
     // Sometimes the page stays on /auth/signup (Supabase rate-limit, slow redirect).
@@ -28,9 +28,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
-      await page.getByLabel("Email").fill(testEmail);
-      await page.getByLabel("Password", { exact: true }).fill(testPassword);
-      await page.getByRole("button", { name: /Create account|Sign in/i }).click();
+      await page.getByLabel(/e-?mail/i).fill(testEmail);
+      await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
+      await page.getByRole("button", { name: /Zaloguj|Sign in/i }).click();
     }
 
     // 2. Oczekiwanie na przejście na Dashboard i zakończenie hydracji React Islands
@@ -43,7 +43,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     await expect(page.getByText("Czas skupienia")).toBeVisible();
 
     // 5. Wykorzystanie Manual End, by pominąć 25 minut
-    await page.getByRole("button", { name: "Zakończ" }).click();
+    await page.getByRole("button", { name: /Zakończ|Do przerwy/ }).click();
 
     // 6. Przejście do wyboru przerwy
     await expect(page.getByText("Czas na przerwę!")).toBeVisible();
@@ -56,8 +56,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // (validates that selectExercises filters by body_areas, not arbitrary slicing)
     await expect(page.locator("text=/kark|szyj|brod|głow/i").first()).toBeVisible();
 
-    // Click 'Zrobione' for each of the 3 exercises in the sequence
+    // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {
+      await expect(page.getByText(new RegExp(`Ćwiczenie ${i + 1} z 3`))).toBeVisible();
       await page.getByRole("button", { name: "Zrobione" }).click();
     }
 

@@ -1,4 +1,4 @@
-// Covers R-06: The quick-pick selection works and starts the exercise flow
+// Covers R-04: Quick-pick selection flow returns exercises and starts sequence
 import { test, expect } from "@playwright/test";
 
 test.describe("Break Input Form", () => {
@@ -9,9 +9,9 @@ test.describe("Break Input Form", () => {
     const testPassword = "testpassword123";
 
     await page.goto("/auth/signup");
-    await page.getByLabel("Email").fill(testEmail);
-    await page.getByLabel("Password", { exact: true }).fill(testPassword);
-    await page.getByLabel("Confirm password").fill(testPassword);
+    await page.getByLabel(/e-?mail/i).fill(testEmail);
+    await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
+    await page.getByLabel(/potwierdź hasło|^confirm password$/i).fill(testPassword);
     await page.getByRole("button", { name: /Create account|Zarejestruj/i }).click();
 
     await page
@@ -22,8 +22,8 @@ test.describe("Break Input Form", () => {
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
-      await page.getByLabel("Email").fill(testEmail);
-      await page.getByLabel("Password", { exact: true }).fill(testPassword);
+      await page.getByLabel(/e-?mail/i).fill(testEmail);
+      await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
       await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
     }
 
@@ -32,9 +32,9 @@ test.describe("Break Input Form", () => {
     // 2. Start session and end it to get to break-input
     await page.getByRole("button", { name: "Rozpocznij nową sesję" }).click();
     await expect(page.getByText("Czas skupienia")).toBeVisible();
-    await page.getByRole("button", { name: "Zakończ" }).click();
+    await page.getByRole("button", { name: /Zakończ|Do przerwy/ }).click();
 
-    // 3. Click "Zaskocz mnie" and intercept the request to verify parsing
+    // 3. Click "Zaskocz mnie" and verify transition to exercise sequence
     await expect(page.getByText("Czas na przerwę!")).toBeVisible();
 
     await page.getByRole("button", { name: "Zaskocz mnie" }).click();

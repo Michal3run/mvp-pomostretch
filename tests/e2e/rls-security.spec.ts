@@ -27,9 +27,9 @@ async function createAuthenticatedContext(
   // --- Signup via real browser form ---
   await page.goto("/auth/signup");
   await expect(page.locator("form")).toBeVisible();
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByLabel("Confirm password").fill(password);
+  await page.getByLabel(/e-?mail/i).fill(email);
+  await page.getByLabel(/^hasło$|^password$/i).fill(password);
+  await page.getByLabel(/potwierdź hasło|^confirm password$/i).fill(password);
   await page.getByRole("button", { name: /Create account|Zarejestruj/i }).click();
 
   // After signup Supabase redirects to confirm-email, signin, or dashboard.
@@ -45,8 +45,8 @@ async function createAuthenticatedContext(
   if (!page.url().includes("/dashboard")) {
     await page.goto("/auth/signin");
     await expect(page.locator("form")).toBeVisible();
-    await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByLabel(/e-?mail/i).fill(email);
+    await page.getByLabel(/^hasło$|^password$/i).fill(password);
     await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
   }
