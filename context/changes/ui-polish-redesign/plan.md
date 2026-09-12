@@ -186,13 +186,13 @@ Wdrożenie wygaszania nawigacji podczas aktywnej sesji (Zen Mode) oraz dopracowa
 
 #### Automated
 
-- [x] 2.1 Linter i formatowanie przechodzą bez błędów: npm run lint
-- [x] 2.2 Kompilacja projektu Astro przechodzi pomyślnie: npm run build
+- [x] 2.1 Linter i formatowanie przechodzą bez błędów: npm run lint — 1abcb9c
+- [x] 2.2 Kompilacja projektu Astro przechodzi pomyślnie: npm run build — 1abcb9c
 
 #### Manual
 
-- [x] 2.3 Spójny Topbar na szczycie dashboardu z zintegrowanym InfoButton bez nakładania się elementów
-- [x] 2.4 Kliknięcie w InfoButton otwiera modal z informacjami o aplikacji
+- [x] 2.3 Spójny Topbar na szczycie dashboardu z zintegrowanym InfoButton bez nakładania się elementów — 1abcb9c
+- [x] 2.4 Kliknięcie w InfoButton otwiera modal z informacjami o aplikacji — 1abcb9c
 
 ### Phase 3: Zen Mode w Dashboardzie i semantyka przycisków Timera
 
