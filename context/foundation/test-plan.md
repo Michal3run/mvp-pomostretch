@@ -67,6 +67,7 @@ Test-type vocabulary:
 | R-12 | Password storage leaks plaintext (logs, error message, network response). NFR-3.                                                                                                                                                         | NFR-3 password opacity                                 | Low (verifying Supabase Auth, not our own crypto) | Manual review of network/logs at submission; one assertion-style integration test that POST /api/auth/signup response body does not contain the password substring | TBD                                                | 4     |
 | R-13 | DELETE on a `break_session` returns success but the row remains in DB (silent data-integrity bug).                                                                                                                                       | `session-history-crud` change                          | Low                                               | Integration (DELETE then GET, expect 404)                                                                                                                          | TBD                                                | 4     |
 
+| R-14 | Unauthenticated visitor opens landing page (/) but hero content or CTA links fail to render, blocking entry into the auth/product flow | landing-page-e2e-test | Med | E2E | TBD | 1 |
 ## Minimum-viable test set for certification
 
 The course requires "at least one test, verifying functionality from the user's perspective, addressing a risk in test-plan". To certify with the lowest-risk margin, the **first test to land** should be one of:
@@ -99,3 +100,4 @@ When the stack is selected, this section is replaced by a real `## Tooling` bloc
 ### History
 
 - `2026-06-08` — initial draft (13 risks). No tests implemented yet — see `## Test-stack decision (deferred)`.
+
