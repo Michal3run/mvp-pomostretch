@@ -11,6 +11,7 @@ const mockCatalog: Exercise[] = [
   { id: "6", name: "Deep breath", description: "Deep breath", duration_seconds: 40, body_areas: ["general"] },
   { id: "7", name: "Glute squeeze", description: "Glute squeeze", duration_seconds: 50, body_areas: ["glutes_hips"] },
   { id: "8", name: "Wrist stretch", description: "Wrist stretch", duration_seconds: 35, body_areas: ["wrists_hands"] },
+  { id: "9", name: "Lower back stretch", description: "Lower back stretch", duration_seconds: 40, body_areas: ["lower_back"] },
 ];
 
 describe("selectExercises Rule Engine", () => {
@@ -24,6 +25,12 @@ describe("selectExercises Rule Engine", () => {
     const result = selectExercises({ tags: ["wrists_hands"], catalog: mockCatalog });
     expect(result.length).toBe(1);
     expect(result[0].body_areas).toContain("wrists_hands");
+  });
+
+  it("filters exercises matching lower_back tag", () => {
+    const result = selectExercises({ tags: ["lower_back"], catalog: mockCatalog });
+    expect(result.length).toBe(1);
+    expect(result[0].body_areas).toContain("lower_back");
   });
   it("returns empty array for empty catalog", () => {
     const result = selectExercises({ tags: ["neck"], catalog: [] });
