@@ -41,4 +41,5 @@ Existing E2E tests (us-01.spec.ts, break-input.spec.ts, rls-security.spec.ts) vi
 
 #### Automated
 
-- [ ] 1.1 Refactor E2E tests for 10x compliance
+- [x] 1.1 Refactor E2E tests for 10x compliance — 762e0e2
+
