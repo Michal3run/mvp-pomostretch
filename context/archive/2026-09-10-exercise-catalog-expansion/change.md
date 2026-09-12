@@ -1,8 +1,9 @@
 ---
 change_id: exercise-catalog-expansion
-status: impl_reviewed
+status: archived
 created: 2026-09-10
 updated: 2026-09-12
+archived_at: 2026-09-12T20:20:32Z
 owner: solo
 type: feature
 blocks_certification: false
@@ -208,3 +209,4 @@ Każde z 38 nowych ćwiczeń otrzyma dedykowany plik SVG w katalogu `public/imag
 4. **Testy regresji**:
    - `npm run lint` i `npm test` przechodzą na zielono.
    - Test E2E `tests/e2e/us-01.spec.ts` przechodzi bez zakłóceń.
+
