@@ -173,26 +173,26 @@ Wdrożenie wygaszania nawigacji podczas aktywnej sesji (Zen Mode) oraz dopracowa
 
 #### Automated
 
-- [x] 1.1 Testy jednostkowe tłumacza przechodzą pomyślnie: npx vitest run src/lib/auth-errors.test.ts
-- [x] 1.2 Cały zestaw testów jednostkowych przechodzi: npm test
-- [x] 1.3 Linter i sprawdzanie typów bez błędów: npm run lint
+- [x] 1.1 Testy jednostkowe tłumacza przechodzą pomyślnie: npx vitest run src/lib/auth-errors.test.ts — 297a487
+- [x] 1.2 Cały zestaw testów jednostkowych przechodzi: npm test — 297a487
+- [x] 1.3 Linter i sprawdzanie typów bez błędów: npm run lint — 297a487
 
 #### Manual
 
-- [x] 1.4 Odwiedzenie /auth/signin oraz /auth/signup – wszystkie teksty i walidacje w języku polskim
-- [x] 1.5 Błędne logowanie wyświetla czytelny polski komunikat błędu zamiast angielskiego
+- [x] 1.4 Odwiedzenie /auth/signin oraz /auth/signup – wszystkie teksty i walidacje w języku polskim — 297a487
+- [x] 1.5 Błędne logowanie wyświetla czytelny polski komunikat błędu zamiast angielskiego — 297a487
 
 ### Phase 2: Refaktoryzacja Dashboardu i integracja InfoButton z Topbar
 
 #### Automated
 
-- [ ] 2.1 Linter i formatowanie przechodzą bez błędów: npm run lint
-- [ ] 2.2 Kompilacja projektu Astro przechodzi pomyślnie: npm run build
+- [x] 2.1 Linter i formatowanie przechodzą bez błędów: npm run lint
+- [x] 2.2 Kompilacja projektu Astro przechodzi pomyślnie: npm run build
 
 #### Manual
 
-- [ ] 2.3 Spójny Topbar na szczycie dashboardu z zintegrowanym InfoButton bez nakładania się elementów
-- [ ] 2.4 Kliknięcie w InfoButton otwiera modal z informacjami o aplikacji
+- [x] 2.3 Spójny Topbar na szczycie dashboardu z zintegrowanym InfoButton bez nakładania się elementów
+- [x] 2.4 Kliknięcie w InfoButton otwiera modal z informacjami o aplikacji
 
 ### Phase 3: Zen Mode w Dashboardzie i semantyka przycisków Timera
 
