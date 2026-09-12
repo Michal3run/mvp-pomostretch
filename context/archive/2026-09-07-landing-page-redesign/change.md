@@ -1,8 +1,9 @@
 ---
 change_id: landing-page-redesign
-status: impl_reviewed
+status: archived
 created: 2026-09-07
 updated: 2026-09-12
+archived_at: 2026-09-12T20:20:32Z
 owner: solo
 type: feature
 blocks_certification: false
@@ -48,3 +49,4 @@ This creates a jarring disconnect for course evaluators and real users. PomoStre
 4. **Component Architecture**:
    - Refactor `src/components/Welcome.astro` into `src/components/LandingHero.astro` and `src/components/LandingFeatures.astro` (or clean `Welcome.astro` redesign).
    - Read `Astro.locals.user` to tailor navigation and CTAs automatically.
+
