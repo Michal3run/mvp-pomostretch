@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="128" cy="90" rx="35" ry="45"/>
+    <line x1="110" y1="130" x2="110" y2="200"/>
+    <line x1="146" y1="130" x2="146" y2="200"/>
+    <path d="M 60 180 Q 90 140, 115 130"/>
+    <path d="M 196 180 Q 166 140, 141 130"/>
+    <!-- Clasped hands -->
+    <path d="M 115 125 L 141 125"/>
+    <path d="M 115 130 L 141 130"/>
+    <path d="M 115 135 L 141 135"/>
+  </g>
+  <g fill="#4FB8A8">
+    <circle cx="118" cy="120" r="4"/>
+    <circle cx="138" cy="120" r="4"/>
+  </g>
+</svg>

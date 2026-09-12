@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="60" y1="200" x2="80" y2="140"/>
+    <rect x="75" y="90" width="30" height="40" rx="8" transform="rotate(-20 90 130)"/>
+    <line x1="75" y1="90" x2="70" y2="70" transform="rotate(-20 90 130)"/>
+    <line x1="85" y1="90" x2="80" y2="65" transform="rotate(-20 90 130)"/>
+    <line x1="95" y1="90" x2="90" y2="70" transform="rotate(-20 90 130)"/>
+    <line x1="196" y1="200" x2="176" y2="140"/>
+    <rect x="151" y="90" width="30" height="40" rx="8" transform="rotate(20 166 130)"/>
+    <line x1="156" y1="90" x2="151" y2="70" transform="rotate(20 166 130)"/>
+    <line x1="166" y1="90" x2="161" y2="65" transform="rotate(20 166 130)"/>
+    <line x1="176" y1="90" x2="171" y2="70" transform="rotate(20 166 130)"/>
+  </g>
+  <g fill="none" stroke="#4FB8A8" stroke-width="3" stroke-linecap="round">
+    <path d="M 40 100 Q 30 110, 40 120"/>
+    <path d="M 50 80 Q 40 90, 50 100"/>
+    <path d="M 120 100 Q 130 110, 120 120"/>
+    <path d="M 216 100 Q 226 110, 216 120"/>
+    <path d="M 206 80 Q 216 90, 206 100"/>
+    <path d="M 136 100 Q 126 110, 136 120"/>
+  </g>
+</svg>

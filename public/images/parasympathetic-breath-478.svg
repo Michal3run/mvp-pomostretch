@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#FAFAF7"/>
+  <g fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="40" y="50" width="80" height="30" rx="4"/>
+    <rect x="40" y="110" width="140" height="30" rx="4"/>
+    <rect x="40" y="170" width="160" height="30" rx="4"/>
+  </g>
+  <g fill="#4FB8A8">
+    <rect x="40" y="50" width="80" height="30" rx="4" opacity="0.3"/>
+    <rect x="40" y="110" width="140" height="30" rx="4" opacity="0.5"/>
+    <rect x="40" y="170" width="160" height="30" rx="4" opacity="0.8"/>
+  </g>
+  <g fill="#2D3748" font-family="Verdana" font-size="14" font-weight="bold">
+    <text x="50" y="70">4s IN</text>
+    <text x="50" y="130">7s HOLD</text>
+    <text x="50" y="190">8s OUT</text>
+  </g>
+</svg>
