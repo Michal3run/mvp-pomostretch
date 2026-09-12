@@ -88,7 +88,7 @@ export function useExerciseSequence({ breakInput, catalog }: UseExerciseSequence
   const isCompletedHandledRef = useRef(false);
 
   const finishSequence = useCallback(
-    (finalSelectedExercises: Exercise[]) => {
+    (finalSelectedExercises: Exercise[], finalCompleted: number, finalSkipped: number) => {
       if (isCompletedHandledRef.current) return;
       isCompletedHandledRef.current = true;
 
@@ -103,8 +103,8 @@ export function useExerciseSequence({ breakInput, catalog }: UseExerciseSequence
           input_value: breakInput.value || "Przerwa",
           derived_tags: breakInput.tags.length > 0 ? breakInput.tags : ["general"],
           selected_exercise_ids: ids,
-          completed_count: completedCount,
-          skipped_count: skippedCount,
+          completed_count: finalCompleted,
+          skipped_count: finalSkipped,
           ended_at: new Date().toISOString(),
         }),
       }).catch(() => {
@@ -113,7 +113,7 @@ export function useExerciseSequence({ breakInput, catalog }: UseExerciseSequence
 
       setStatus("completed");
     },
-    [breakInput, completedCount, skippedCount],
+    [breakInput],
   );
 
   const advanceNext = useCallback(
@@ -129,10 +129,12 @@ export function useExerciseSequence({ breakInput, catalog }: UseExerciseSequence
         setCurrentIndex(nextIdx);
         setSecondsRemaining(exercises[nextIdx]?.duration_seconds ?? 0);
       } else {
-        finishSequence(exercises);
+        const finalCompleted = actionStatus === "done" ? completedCount + 1 : completedCount;
+        const finalSkipped = actionStatus === "skipped" ? skippedCount + 1 : skippedCount;
+        finishSequence(exercises, finalCompleted, finalSkipped);
       }
     },
-    [currentIndex, exercises, finishSequence],
+    [currentIndex, exercises, completedCount, skippedCount, finishSequence],
   );
 
   // Active exercise countdown timer

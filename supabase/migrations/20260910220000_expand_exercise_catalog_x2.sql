@@ -1,9 +1,9 @@
 -- Migration: Expand exercise catalog and add SVG images
 -- Zaktualizować istniejące ćwiczenia nadgarstków z ARRAY['general'] na ARRAY['wrists_hands', 'general']
-UPDATE public.exercise SET body_areas = ARRAY['wrists_hands', 'general'] WHERE 'general' = ANY(body_areas) AND (name ILIKE '%dłoń%' OR name ILIKE '%nadgarstk%');
+UPDATE public.exercise SET body_areas = ARRAY(SELECT DISTINCT unnest(body_areas || ARRAY['wrists_hands', 'general'])) WHERE 'general' = ANY(body_areas) AND (name ILIKE '%dłoń%' OR name ILIKE '%nadgarstk%');
 
 -- Zaktualizować ćwiczenia pośladkowe/biodrowe na ARRAY['glutes_hips', 'lower_back']
-UPDATE public.exercise SET body_areas = ARRAY['glutes_hips', 'lower_back'] WHERE 'lower_back' = ANY(body_areas) AND (name ILIKE '%biodr%' OR name ILIKE '%poślad%');
+UPDATE public.exercise SET body_areas = ARRAY(SELECT DISTINCT unnest(body_areas || ARRAY['glutes_hips', 'lower_back'])) WHERE 'lower_back' = ANY(body_areas) AND (name ILIKE '%biodr%' OR name ILIKE '%poślad%');
 
 ALTER TABLE public.exercise ADD COLUMN IF NOT EXISTS image text;
 

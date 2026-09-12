@@ -1,8 +1,8 @@
 ---
 change_id: landing-page-redesign
-status: planned
+status: impl_reviewed
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-09-12
 owner: solo
 type: feature
 blocks_certification: false
