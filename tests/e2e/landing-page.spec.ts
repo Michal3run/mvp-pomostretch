@@ -10,7 +10,7 @@ test.describe("Landing Page (Unauthenticated)", () => {
     await expect(page).toHaveTitle(/PomoStretch/i);
 
     // Assert main heading is visible
-    const heading = page.getByRole("heading", { level: 1, name: /Skup sie na kodzie/i });
+    const heading = page.getByRole('heading', { level: 1, name: /Skup się na kodzie/i });
     await expect(heading).toBeVisible();
 
     // Assert main CTA is visible
