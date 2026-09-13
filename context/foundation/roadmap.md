@@ -1,8 +1,9 @@
 ---
 project: PomoStretch
 version: 1
-status: draft
+status: locked
 created: 2026-07-10
+updated: 2026-09-13
 context_type: greenfield
 owner: solo
 timeline_budget:
@@ -113,7 +114,7 @@ Six milestones, ordered by dependency and risk:
 | **M5** | Break History CRUD                 | Vertical          | Certification    | ✅ Complete      |
 | **M6** | Testing & Certification            | Cross-cutting     | Production-ready | ✅ Complete      |
 | **M7** | UAT & Feedback Polish (Post-MVP)   | Vertical (done)   | Production-ready | ✅ Complete      |
-| **M8** | M8 Polish (Post-MVP)               | Vertical          | Production-ready | ⏳ In Progress   |
+| **M8** | M8 Polish (Post-MVP)               | Vertical          | Production-ready | ✅ Complete      |
 
 **Total estimated effort**: 27-35 hours (milestone-level coding) + **5-7 hours integration buffer** (handoff friction, cross-milestone debugging, refactoring) = **32-42 hours realistic total** (within 3-week after-hours budget of ~36-45h at 12-15h/week).
 
