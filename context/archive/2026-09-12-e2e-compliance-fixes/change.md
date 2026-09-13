@@ -1,10 +1,10 @@
 ---
 change_id: e2e-compliance-fixes
 title: Refactor existing E2E tests for 10x compliance
-status: impl_reviewed
+status: archived
 created: 2026-09-12
-updated: 2026-09-12
-archived_at: null
+updated: 2026-09-13
+archived_at: 2026-09-13T19:14:00Z
 ---
 
 ## Notes
