@@ -1,10 +1,10 @@
 ---
 change_id: landing-page-e2e-test
 title: Add landing page e2e test
-status: impl_reviewed
+status: archived
 created: 2026-09-12
 updated: 2026-09-13
-archived_at: null
+archived_at: 2026-09-13T19:14:00Z
 ---
 
 ## Notes
