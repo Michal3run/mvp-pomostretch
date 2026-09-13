@@ -1,9 +1,9 @@
 ---
 change_id: ui-polish-redesign
 title: Ujednolicenie języka polskiego, Zen Mode w Dashboardzie i semantyka Timera
-status: implementing
+status: implemented
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-13
 archived_at: null
 ---
 

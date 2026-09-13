@@ -199,11 +199,11 @@ Wdrożenie wygaszania nawigacji podczas aktywnej sesji (Zen Mode) oraz dopracowa
 #### Automated
 
 - [x] 3.1 Testy jednostkowe przechodzą: npm test — cf84699
-- [ ] 3.2 Testy E2E przechodzą: npx playwright test tests/e2e/us-01.spec.ts tests/e2e/break-input.spec.ts
+- [x] 3.2 Testy E2E przechodzą: npx playwright test tests/e2e/us-01.spec.ts tests/e2e/break-input.spec.ts — afa5ebf
 - [x] 3.3 Pełny build i linting przechodzą: npm run lint && npm run build — cf84699
 
 #### Manual
 
-- [ ] 3.4 Topbar łagodnie wygasza się w trakcie aktywnej sesji (Zen Mode) i wraca po najechaniu myszką
-- [ ] 3.5 Przycisk Porzuć sesję wymaga potwierdzenia i resetuje sesję bez przekierowania do przerwy
-- [ ] 3.6 Przycisk Do przerwy natychmiast przenosi do wyboru ćwiczeń rozciągających
+- [x] 3.4 Topbar łagodnie wygasza się w trakcie aktywnej sesji (Zen Mode) i wraca po najechaniu myszką — afa5ebf
+- [x] 3.5 Przycisk Porzuć sesję wymaga potwierdzenia i resetuje sesję bez przekierowania do przerwy — afa5ebf
+- [x] 3.6 Przycisk Do przerwy natychmiast przenosi do wyboru ćwiczeń rozciągających — afa5ebf
