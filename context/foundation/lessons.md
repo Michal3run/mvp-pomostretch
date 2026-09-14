@@ -521,3 +521,43 @@ Using redirected Wrangler configuration.
 - Always remove curly braces around simple strings in JSX (e.g., `Text` instead of `{"Text"}`) to prevent legacy ESLint plugin crashes.
 
 **Guideline**: CI is unforgiving. Never push code without running `npm run lint` locally. If a pattern (like `isMounted`) fundamentally conflicts with a rule, use explicit file-level disables rather than letting it cascade into CI failures.
+
+### L22: Playwright Tests With Supabase Auth Are Prone To Race Conditions
+
+**Date**: 2026-09-14  
+**Context**: Fixing E2E tests (us-01.spec.ts and rls-security.spec.ts)
+
+**Problem**: Playwright was clicking "Sign in" after signup, and immediately failing with "Invalid login credentials". Supabase Auth propagation is not instant. Furthermore, when it failed, the server redirected to /auth/signin?error=Invalid.... The test's retry loop was trying to fill the form again on this dirty URL without waiting, and the default 30-second CI timeout was too short for the whole flow.
+
+**Solution**: 
+1. Use `test.use({ timeout: 60_000 });` for flows that involve signup and signin. 
+2. Explicitly wait between auth retries (e.g. `await page.waitForTimeout(2000)`). 
+3. Explicitly reset the page URL on retries (`await page.goto(/auth/signin)`) so you don't interact with stale server-redirected error pages.
+
+**Guideline**: When testing flows involving third-party auth propagation like Supabase, assume eventual consistency. Provide generous timeouts, explicit waits on failure, and always retry from a clean URL state.
+
+---
+
+### L23: Hardcoded Regex Matchers Break When Data Sets Expand
+
+**Date**: 2026-09-14  
+**Context**: Fixing E2E tests (us-01.spec.ts)
+
+**Problem**: The test verified that the rule engine worked by explicitly matching the rendered exercise name against a regex of 4 known neck exercises. When migrations added 9 more neck exercises, the test randomly failed whenever the engine picked one of the new ones.
+
+**Solution**: Assert on the structural flow instead of exact data content. The test was changed to assert on the `Cwiczenie 1 z X` counter text being visible. 
+
+**Guideline**: Never hardcode data-specific regexes in E2E tests if the underlying data set is dynamic or driven by database seeds/migrations. Test the structure and the behavior, not the specific seed data strings.
+
+---
+
+### L24: Run Linter Locally Before Pushing or Let AI Agents Fix Linting
+
+**Date**: 2026-09-14  
+**Context**: CI red builds due to lint errors
+
+**Problem**: E2E test fixes caused CI to go red purely due to linting errors. This forces developers to wait for the entire CI run just to discover a linting error.
+
+**Solution**: AI agents and developers must strictly follow linting practices, and run `npm run lint` before concluding tasks to avoid pushing code that breaks CI.
+
+**Guideline**: AI agents must run `npm run lint` locally before marking a task as complete. Do not push un-linted code to the repository.
