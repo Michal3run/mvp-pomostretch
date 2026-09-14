@@ -36,10 +36,14 @@ async function createAuthenticatedContext(
   // Also handle staying on /auth/signup when the server-side redirect failed
   // (e.g. the signup succeeded but page didn't navigate — we still try signin).
   await page
-    .waitForURL((url) => url.pathname !== "/auth/signup", { timeout: 15_000 })
+    .waitForURL((url) => url.pathname !== "/auth/signup" || url.searchParams.has("error"), { timeout: 15_000 })
     .catch(() => {
-      // If still on signup page, that's okay — we'll try signin next
+      // If still on signup page without an error, that's okay — we'll try signin next
     });
+
+  if (page.url().includes("error=")) {
+    throw new Error(`Signup failed with error URL: ${page.url()}`);
+  }
 
   // --- Signin (if not already on dashboard) ---
   if (!page.url().includes("/dashboard")) {
