@@ -45,7 +45,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
         await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
       }).toPass({
         intervals: [1000, 2000, 5000],
-        timeout: 20000
+        timeout: 20000,
       });
     }
 
