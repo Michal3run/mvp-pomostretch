@@ -57,9 +57,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // Neck catalog exercises: "Skłony głowy" (neck-1), "Cofanie brody" (neck-2).
     // Use getByRole("heading") to scope to the CardTitle and avoid matching
     // Astro island serialized props rendered in <code>/<astro-island> elements.
-    await expect(
-      page.getByRole("heading", { name: /Skłony głowy|Cofanie brody/i }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Skłony głowy|Cofanie brody/i })).toBeVisible();
 
     // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {
