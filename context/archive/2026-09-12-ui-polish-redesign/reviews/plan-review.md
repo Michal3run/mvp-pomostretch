@@ -33,6 +33,7 @@ _None._
 **Plan ref:** Phase 3, step 2 — `Porzuć sesję` uses `window.confirm(...)`.
 
 `window.confirm` is synchronous and works in browsers, but:
+
 - Playwright blocks native dialogs in headless mode by default. The E2E test for the abandon button will hang or silently pass the confirm without user interaction unless you add a `page.on('dialog', d => d.accept())` handler.
 - If you intend to add an E2E test for this flow in Phase 3.2, it **must** include a dialog listener, or the test will time-out.
 
@@ -91,12 +92,12 @@ Verify this locally with a quick `npm run build` before committing Phase 3.
 
 ## Risks Assessment
 
-| Risk | Likelihood | Severity | Mitigation |
-|---|---|---|---|
-| `window.confirm` blocked in headless E2E | Medium | Medium | Add `page.on('dialog')` or swap to shadcn `AlertDialog` |
-| Unknown Supabase error reaches UI in English (fallback fires) | Low | Low | Generic Polish fallback already handles it |
-| `@utility` CSS syntax ambiguity (Tailwind 4) | Low | Low | Write raw CSS inside the at-rule, test locally |
-| E2E regression: button rename "Zakończ" → "Do przerwy" | Low (mitigated by plan) | High | Phase 3.3 regex update handles both names |
+| Risk                                                          | Likelihood              | Severity | Mitigation                                              |
+| ------------------------------------------------------------- | ----------------------- | -------- | ------------------------------------------------------- |
+| `window.confirm` blocked in headless E2E                      | Medium                  | Medium   | Add `page.on('dialog')` or swap to shadcn `AlertDialog` |
+| Unknown Supabase error reaches UI in English (fallback fires) | Low                     | Low      | Generic Polish fallback already handles it              |
+| `@utility` CSS syntax ambiguity (Tailwind 4)                  | Low                     | Low      | Write raw CSS inside the at-rule, test locally          |
+| E2E regression: button rename "Zakończ" → "Do przerwy"        | Low (mitigated by plan) | High     | Phase 3.3 regex update handles both names               |
 
 ---
 
@@ -111,17 +112,17 @@ Verify this locally with a quick `npm run build` before committing Phase 3.
 
 ## Files to Touch (summary)
 
-| File | Phase |
-|---|---|
-| `src/lib/auth-errors.ts` (new) | 1 |
-| `src/lib/auth-errors.test.ts` (new) | 1 |
-| `src/components/auth/SignInForm.tsx` | 1 |
-| `src/components/auth/SignUpForm.tsx` | 1 |
-| `src/pages/auth/signin.astro` | 1 |
-| `src/pages/auth/signup.astro` | 1 |
-| `src/components/Topbar.astro` | 2 |
-| `src/pages/dashboard.astro` | 2 |
-| `src/styles/global.css` | 3 |
-| `src/components/PomodoroTimer.tsx` | 3 |
-| `tests/e2e/us-01.spec.ts` | 3 |
-| `tests/e2e/break-input.spec.ts` | 3 |
+| File                                 | Phase |
+| ------------------------------------ | ----- |
+| `src/lib/auth-errors.ts` (new)       | 1     |
+| `src/lib/auth-errors.test.ts` (new)  | 1     |
+| `src/components/auth/SignInForm.tsx` | 1     |
+| `src/components/auth/SignUpForm.tsx` | 1     |
+| `src/pages/auth/signin.astro`        | 1     |
+| `src/pages/auth/signup.astro`        | 1     |
+| `src/components/Topbar.astro`        | 2     |
+| `src/pages/dashboard.astro`          | 2     |
+| `src/styles/global.css`              | 3     |
+| `src/components/PomodoroTimer.tsx`   | 3     |
+| `tests/e2e/us-01.spec.ts`            | 3     |
+| `tests/e2e/break-input.spec.ts`      | 3     |

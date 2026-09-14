@@ -10,5 +10,3 @@ archived_at: 2026-09-13T19:14:00Z
 ## Notes
 
 Add an E2E test directly visiting the landing page (/) to ensure 100% regression coverage before certification.
-
-

@@ -22,15 +22,15 @@ created: 2026-09-13
 
 ## 3. Configuration Best Practices
 
-| Config | Present? |
-| --- | --- |
-| `.gitignore` | Yes |
-| `.env.example` | Yes |
-| `.editorconfig` | No |
-| `eslint.config.js` | Yes |
-| `.prettierrc.json` | Yes |
-| `AGENTS.md` | Yes |
-| `README.md` | Yes |
+| Config             | Present? |
+| ------------------ | -------- |
+| `.gitignore`       | Yes      |
+| `.env.example`     | Yes      |
+| `.editorconfig`    | No       |
+| `eslint.config.js` | Yes      |
+| `.prettierrc.json` | Yes      |
+| `AGENTS.md`        | Yes      |
+| `README.md`        | Yes      |
 
 ## 4. Verification Verdict
 

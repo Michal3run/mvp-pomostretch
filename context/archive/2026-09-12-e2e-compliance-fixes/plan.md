@@ -1,7 +1,9 @@
 # Implementation Plan: E2E Compliance Fixes
 
 ## Current State Analysis
+
 Existing E2E tests (us-01.spec.ts, break-input.spec.ts, rls-security.spec.ts) violate several /10x-e2e rules:
+
 1. They use brittle CSS locators.
 2. break-input.spec.ts hallucinates by asserting network payload instead of UI outcome.
 3. break-input.spec.ts and rls-security.spec.ts are missing // Covers R-XX risk mapping headers.
@@ -9,6 +11,7 @@ Existing E2E tests (us-01.spec.ts, break-input.spec.ts, rls-security.spec.ts) vi
 5. us-01.spec.ts uses an unstable while loop with isVisible() checking.
 
 ## Proposed Solution
+
 - Refactor all CSS locators to use getByRole or getByLabel.
 - Update break-input.spec.ts to assert that the exercise sequence renders properly instead of intercepting POST requests. Add risk mapping (R-06).
 - Update rls-security.spec.ts to map to its risk (R-05). Move suffix generation to test.beforeAll to ensure it's evaluated on retry but shared across serial tests.
@@ -17,6 +20,7 @@ Existing E2E tests (us-01.spec.ts, break-input.spec.ts, rls-security.spec.ts) vi
 ## Phase 1: Refactor Selectors & Flakiness
 
 ### Changes
+
 - **tests/e2e/us-01.spec.ts**:
   - Replace page.fill('input[name="email"]') with page.getByLabel(/email/i).fill().
   - Replace page.click('button[type="submit"]') with page.getByRole('button', { name: /Zaloguj|Zarejestruj/i }).click().
@@ -31,15 +35,15 @@ Existing E2E tests (us-01.spec.ts, break-input.spec.ts, rls-security.spec.ts) vi
   - Replace CSS selectors for login/signup.
 
 #### Automated Verification
+
 - npx playwright test tests/e2e/
 
 ## Progress
 
-> Convention: - [ ] pending, - [x] done. Append  — <commit sha> when a step lands. Do not rename step titles.
+> Convention: - [ ] pending, - [x] done. Append ï¿½ <commit sha> when a step lands. Do not rename step titles.
 
 ### Phase 1: Refactor Selectors & Flakiness
 
 #### Automated
 
-- [x] 1.1 Refactor E2E tests for 10x compliance — 762e0e2
-
+- [x] 1.1 Refactor E2E tests for 10x compliance ï¿½ 762e0e2
