@@ -78,9 +78,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     // Verify that the exercise card heading shows a neck-related exercise name
     // (validates that selectExercises filters by body_areas, not arbitrary slicing).
-    // Use data-slot="card-title" to scope to the CardTitle and avoid matching
+    // Use an exact regex to scope to the visible CardTitle and avoid matching
     // Astro island serialized props rendered in <code>/<astro-island> elements.
-    await expect(page.locator('div[data-slot="card-title"]', { hasText: /Skłony głowy|Cofanie brody|Rozciąganie boku szyi|Rozciąganie szyi w skos/i })).toBeVisible();
+    await expect(page.getByText(/^(Skłony głowy|Cofanie brody|Rozciąganie boku szyi|Rozciąganie szyi w skos)$/i)).toBeVisible();
 
     // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {
