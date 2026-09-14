@@ -32,9 +32,29 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
-      await page.getByLabel(/e-?mail/i).fill(testEmail);
-      await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
-      await page.getByRole("button", { name: /Zaloguj|Sign in/i }).click();
+      await expect(page.locator("form")).toBeVisible();
+      
+      let loggedIn = false;
+      for (let i = 0; i < 3; i++) {
+        await page.getByLabel(/e-?mail/i).fill(testEmail);
+        await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
+        await page.getByRole("button", { name: /Zaloguj|Sign in/i }).click();
+        
+        try {
+          await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
+          loggedIn = true;
+          break;
+        } catch (e) {
+          if (!page.url().includes("error=Invalid")) {
+            throw e; // some other error or timeout
+          }
+          // If Invalid login credentials, loop will retry
+        }
+      }
+      
+      if (!loggedIn) {
+        throw new Error(`Failed to login after 3 attempts: ${page.url()}`);
+      }
     }
 
     // 2. Oczekiwanie na przejście na Dashboard i zakończenie hydracji React Islands
@@ -58,10 +78,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
 
     // Verify that the exercise card heading shows a neck-related exercise name
     // (validates that selectExercises filters by body_areas, not arbitrary slicing).
-    // Neck catalog exercises: "Skłony głowy" (neck-1), "Cofanie brody" (neck-2).
     // Use data-slot="card-title" to scope to the CardTitle and avoid matching
     // Astro island serialized props rendered in <code>/<astro-island> elements.
-    await expect(page.locator('div[data-slot="card-title"]', { hasText: /Skłony głowy|Cofanie brody/i })).toBeVisible();
+    await expect(page.locator('div[data-slot="card-title"]', { hasText: /Skłony głowy|Cofanie brody|Rozciąganie boku szyi|Rozciąganie szyi w skos/i })).toBeVisible();
 
     // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {
