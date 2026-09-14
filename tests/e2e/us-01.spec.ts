@@ -52,9 +52,14 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // 7. Sekwencja ćwiczeń - sprawdź, że ćwiczenie dotyczy karku (rule engine działa)
     await expect(page.getByRole("button", { name: "Zrobione" })).toBeVisible({ timeout: 10000 });
 
-    // Verify that at least one exercise card shows neck-related content
-    // (validates that selectExercises filters by body_areas, not arbitrary slicing)
-    await expect(page.locator("text=/kark|szyj|brod|głow/i").first()).toBeVisible();
+    // Verify that the exercise card heading shows a neck-related exercise name
+    // (validates that selectExercises filters by body_areas, not arbitrary slicing).
+    // Neck catalog exercises: "Skłony głowy" (neck-1), "Cofanie brody" (neck-2).
+    // Use getByRole("heading") to scope to the CardTitle and avoid matching
+    // Astro island serialized props rendered in <code>/<astro-island> elements.
+    await expect(
+      page.getByRole("heading", { name: /Skłony głowy|Cofanie brody/i }),
+    ).toBeVisible();
 
     // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {
