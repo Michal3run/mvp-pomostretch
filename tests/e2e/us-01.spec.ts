@@ -20,14 +20,10 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     await page.getByLabel(/potwierdź hasło|^confirm password$/i).fill(testPassword);
     await page.getByRole("button", { name: /Zarejestruj|Create account/i }).click();
 
-    // After signup, Supabase may redirect to confirm-email, signin, or dashboard.
-    // Sometimes the page stays on /auth/signup (Supabase rate-limit, slow redirect).
-    // We wait for navigation but don't hard-fail — always try signin as fallback.
-    await page
-      .waitForURL((url) => url.pathname !== "/auth/signup" || url.searchParams.has("error"), { timeout: 15000 })
-      .catch(() => {
-        // Still on signup page without an error — that's okay, we'll try signin next
-      });
+    // After signup, wait for navigation away from /auth/signup
+    await page.waitForURL((url) => url.pathname !== "/auth/signup" || url.searchParams.has("error"), {
+      timeout: 15000,
+    });
 
     if (page.url().includes("error=")) {
       throw new Error(`Signup failed with error URL: ${page.url()}`);
@@ -42,10 +38,15 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
         await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
         await page.getByRole("button", { name: /Zaloguj|Sign in/i }).click();
 
-        await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
+        // Wait for redirect to complete (either /dashboard on success or /auth/signin?error= on failure)
+        await page.waitForURL((url) => url.pathname === "/dashboard" || url.searchParams.has("error"), {
+          timeout: 10000,
+        });
+
+        await expect(page).toHaveURL(/\/dashboard/, { timeout: 1000 });
       }).toPass({
-        intervals: [1000, 2000, 5000],
-        timeout: 20000,
+        intervals: [1000, 2000, 3000],
+        timeout: 30000,
       });
     }
 
