@@ -47,24 +47,30 @@ async function createAuthenticatedContext(
 
   // --- Signin (if not already on dashboard) ---
   if (!page.url().includes("/dashboard")) {
-    await page.goto("/auth/signin");
-    await expect(page.locator("form")).toBeVisible();
-
     let loggedIn = false;
     for (let i = 0; i < 3; i++) {
+      // Navigate to a clean signin page on each attempt (the error page's
+      // ?error= query params are stale state from the previous redirect).
+      await page.goto("/auth/signin");
+      await expect(page.locator("form")).toBeVisible();
+
       await page.getByLabel(/e-?mail/i).fill(email);
       await page.getByLabel(/^hasło$|^password$/i).fill(password);
       await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
 
       try {
-        await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
+        await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
         loggedIn = true;
         break;
-      } catch (e) {
+      } catch {
         if (!page.url().includes("error=Invalid")) {
-          throw e; // some other error or timeout
+          throw new Error(`Signin failed with unexpected URL: ${page.url()}`);
         }
-        // If Invalid login credentials, loop will retry
+        // Supabase auth may need time to propagate the newly created user —
+        // wait before retrying (waitForResponse / waitForURL are the correct
+        // wait-for-state patterns; this wait is tied to an external system's
+        // eventual consistency, not a DOM state).
+        await page.waitForTimeout(2_000);
       }
     }
 
@@ -108,6 +114,8 @@ interface ErrorResponse {
 }
 
 test.describe.serial("RLS: Multi-tenant session isolation", () => {
+  // signup → signin (with retry) → API calls can exceed 30s in CI
+  test.use({ timeout: 60_000 });
   let userAEmail: string;
   let userBEmail: string;
   const sharedPassword = "TestPassword123!";
