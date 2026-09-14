@@ -40,12 +40,12 @@ All three phases are **fully implemented and verified**. The automated gates pas
 
 ## Automated verification (run: 2026-09-12)
 
-| Check | Result |
-|---|---|
-| `npx vitest run src/lib/auth-errors.test.ts` | ✅ 3/3 passed |
-| `npm test` (all unit tests) | ✅ 27/27 passed |
-| `npm run lint` | ✅ 0 errors, 0 warnings |
-| `npm run build` | ✅ Complete (46s, only `node_modules` warnings) |
+| Check                                        | Result                                          |
+| -------------------------------------------- | ----------------------------------------------- |
+| `npx vitest run src/lib/auth-errors.test.ts` | ✅ 3/3 passed                                   |
+| `npm test` (all unit tests)                  | ✅ 27/27 passed                                 |
+| `npm run lint`                               | ✅ 0 errors, 0 warnings                         |
+| `npm run build`                              | ✅ Complete (46s, only `node_modules` warnings) |
 
 > Note: `npm run build` emits Rollup `@__PURE__` comment warnings from `node_modules/zod` and an esbuild CSS warning about `[file:line]` class — both are pre-existing, unrelated to this change.
 
@@ -53,11 +53,11 @@ All three phases are **fully implemented and verified**. The automated gates pas
 
 ## Remaining manual checks
 
-| # | Check | Status |
-|---|---|---|
-| 3.4 | Topbar łagodnie wygasza się podczas aktywnej sesji Zen Mode i wraca po hover | ⬜ pending |
+| #   | Check                                                                            | Status     |
+| --- | -------------------------------------------------------------------------------- | ---------- |
+| 3.4 | Topbar łagodnie wygasza się podczas aktywnej sesji Zen Mode i wraca po hover     | ⬜ pending |
 | 3.5 | Przycisk "Porzuć sesję" wymaga potwierdzenia i resetuje timer bez przekierowania | ⬜ pending |
-| 3.6 | Przycisk "Do przerwy" natychmiast przenosi do `/break-input` | ⬜ pending |
+| 3.6 | Przycisk "Do przerwy" natychmiast przenosi do `/break-input`                     | ⬜ pending |
 
 Run `npm run dev` and visit `/dashboard` to verify these manually.
 
@@ -65,12 +65,12 @@ Run `npm run dev` and visit `/dashboard` to verify these manually.
 
 ## Notes from plan-review addressed
 
-| Issue | Resolution |
-|---|---|
+| Issue                                    | Resolution                                                                                                                                                                                                               |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `window.confirm` blocked in headless E2E | The "Porzuć sesję" path is NOT covered by the updated E2E tests (3.2); only the "Do przerwy" path is tested. If a future task adds an abandonment E2E, add `page.on('dialog', d => d.accept())` before the button click. |
-| `@utility` Tailwind 4 raw CSS syntax | Implemented correctly using raw CSS values, not Tailwind class names. |
-| `client:load` on InfoButton in Topbar | Confirmed: `<InfoButton client:load />` in `Topbar.astro`. |
-| "Email rate limit exceeded" mapping | Not added (nice-to-have, fallback covers it generically). |
+| `@utility` Tailwind 4 raw CSS syntax     | Implemented correctly using raw CSS values, not Tailwind class names.                                                                                                                                                    |
+| `client:load` on InfoButton in Topbar    | Confirmed: `<InfoButton client:load />` in `Topbar.astro`.                                                                                                                                                               |
+| "Email rate limit exceeded" mapping      | Not added (nice-to-have, fallback covers it generically).                                                                                                                                                                |
 
 ---
 

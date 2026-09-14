@@ -33,13 +33,13 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
       await expect(page.locator("form")).toBeVisible();
-      
+
       let loggedIn = false;
       for (let i = 0; i < 3; i++) {
         await page.getByLabel(/e-?mail/i).fill(testEmail);
         await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
         await page.getByRole("button", { name: /Zaloguj|Sign in/i }).click();
-        
+
         try {
           await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
           loggedIn = true;
@@ -51,7 +51,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
           // If Invalid login credentials, loop will retry
         }
       }
-      
+
       if (!loggedIn) {
         throw new Error(`Failed to login after 3 attempts: ${page.url()}`);
       }
@@ -80,7 +80,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // (validates that selectExercises filters by body_areas, not arbitrary slicing).
     // Use an exact regex to scope to the visible CardTitle and avoid matching
     // Astro island serialized props rendered in <code>/<astro-island> elements.
-    await expect(page.getByText(/^(Skłony głowy|Cofanie brody|Rozciąganie boku szyi|Rozciąganie szyi w skos)$/i)).toBeVisible();
+    await expect(
+      page.getByText(/^(Skłony głowy|Cofanie brody|Rozciąganie boku szyi|Rozciąganie szyi w skos)$/i),
+    ).toBeVisible();
 
     // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {

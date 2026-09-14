@@ -49,13 +49,13 @@ async function createAuthenticatedContext(
   if (!page.url().includes("/dashboard")) {
     await page.goto("/auth/signin");
     await expect(page.locator("form")).toBeVisible();
-    
+
     let loggedIn = false;
     for (let i = 0; i < 3; i++) {
       await page.getByLabel(/e-?mail/i).fill(email);
       await page.getByLabel(/^hasło$|^password$/i).fill(password);
       await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
-      
+
       try {
         await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
         loggedIn = true;
@@ -67,7 +67,7 @@ async function createAuthenticatedContext(
         // If Invalid login credentials, loop will retry
       }
     }
-    
+
     if (!loggedIn) {
       throw new Error(`Failed to login after 3 attempts: ${page.url()}`);
     }
