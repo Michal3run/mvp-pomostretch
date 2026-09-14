@@ -58,7 +58,7 @@ async function createAuthenticatedContext(
       await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
     }).toPass({
       intervals: [1000, 2000, 5000],
-      timeout: 20000
+      timeout: 20000,
     });
   }
 
