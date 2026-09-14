@@ -20,24 +20,34 @@ export default function SignUpForm({ serverError }: Props) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
-  function validate() {
+  function validate(formData?: FormData) {
     const next: typeof errors = {};
+    const emailEntry = formData?.get("email");
+    const rawEmail = typeof emailEntry === "string" ? emailEntry : "";
+    const passwordEntry = formData?.get("password");
+    const rawPassword = typeof passwordEntry === "string" ? passwordEntry : "";
+    const confirmPasswordEntry = formData?.get("confirmPassword");
+    const rawConfirmPassword = typeof confirmPasswordEntry === "string" ? confirmPasswordEntry : "";
 
-    if (!email.trim()) {
+    const targetEmail = rawEmail.trim() || email.trim();
+    const targetPassword = rawPassword || password;
+    const targetConfirmPassword = rawConfirmPassword || confirmPassword;
+
+    if (!targetEmail) {
       next.email = "Adres e-mail jest wymagany";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
       next.email = "Wprowadź poprawny adres e-mail";
     }
 
-    if (!password) {
+    if (!targetPassword) {
       next.password = "Hasło jest wymagane";
-    } else if (password.length < MIN_PASSWORD_LENGTH) {
+    } else if (targetPassword.length < MIN_PASSWORD_LENGTH) {
       next.password = `Hasło musi mieć co najmniej ${MIN_PASSWORD_LENGTH} znaków`;
     }
 
-    if (!confirmPassword) {
+    if (!targetConfirmPassword) {
       next.confirmPassword = "Potwierdź swoje hasło";
-    } else if (password !== confirmPassword) {
+    } else if (targetPassword !== targetConfirmPassword) {
       next.confirmPassword = "Hasła nie są identyczne";
     }
 
@@ -50,7 +60,22 @@ export default function SignUpForm({ serverError }: Props) {
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
+    const data = new FormData(e.currentTarget);
+    const emailVal = ((data.get("email") as string) || "").trim();
+    const passVal = (data.get("password") as string) || "";
+    const confirmPassVal = (data.get("confirmPassword") as string) || "";
+
+    // If form data has valid values, allow native form POST submission
+    if (
+      emailVal &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal) &&
+      passVal.length >= MIN_PASSWORD_LENGTH &&
+      passVal === confirmPassVal
+    ) {
+      return;
+    }
+
+    if (!validate(data)) {
       e.preventDefault();
     }
   }

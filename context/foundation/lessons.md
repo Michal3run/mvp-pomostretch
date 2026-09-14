@@ -522,19 +522,22 @@ Using redirected Wrangler configuration.
 
 **Guideline**: CI is unforgiving. Never push code without running `npm run lint` locally. If a pattern (like `isMounted`) fundamentally conflicts with a rule, use explicit file-level disables rather than letting it cascade into CI failures.
 
-### L22: Playwright Tests With Supabase Auth Are Prone To Race Conditions
+### L22: Playwright Tests With Supabase Auth and React Island Hydration
 
 **Date**: 2026-09-14  
-**Context**: Fixing E2E tests (us-01.spec.ts and rls-security.spec.ts)
+**Context**: Fixing E2E tests (us-01.spec.ts, rls-security.spec.ts, break-input.spec.ts)
 
-**Problem**: Playwright was clicking "Sign in" after signup, and immediately failing with "Invalid login credentials". Supabase Auth propagation is not instant. Furthermore, when it failed, the server redirected to `/auth/signin?error=Invalid...`. The test's retry loop was trying to fill the form again on this dirty URL without waiting, and the default 30-second CI timeout was too short for the whole flow.
+**Problem**: Playwright was failing with "Invalid login credentials" during signin after signup. Multiple compounding issues caused this flakiness:
+1. In React islands with Astro SSR (`SignUpForm`), Playwright filled the inputs before React hydrated or attached event listeners. On submission, React's `validate()` inspected unhydrated state (`""`), failed client-side validation, and called `e.preventDefault()`, silently aborting the POST request. The test swallowed the resulting navigation timeout with `.catch(() => {})` and proceeded to signin with a non-existent account.
+2. When Supabase has propagation delay for new users, the signin attempt redirects to `/auth/signin?error=Invalid%20login%20credentials`. Asserting `expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 })` caused Playwright to idle for 5000ms on every failed attempt, causing `toPass({ timeout: 20000 })` to run out of time before completing retries.
 
 **Solution**: 
-1. Use `test.setTimeout(60_000)` inside the test body (or `test.describe.configure({ timeout: 60_000 })` at suite level). `test.use({ timeout: 60_000 })` doesn't change test execution timeout correctly.
-2. Use Playwright's `await expect(async () => { ... }).toPass()` wrapper for the signin block instead of manual `for` loops and `page.waitForTimeout` (which violates our own anti-pattern rules). 
-3. Explicitly reset the page URL on retries (`await page.goto("/auth/signin")`) inside the `toPass` block so you don't interact with stale server-redirected error pages.
+1. Support `new FormData(e.currentTarget)` in form `validate` and `handleSubmit` (in both `SignInForm` and `SignUpForm`) so valid inputs in the DOM are not blocked by unhydrated React state.
+2. In E2E tests, never silently swallow signup navigation timeouts with `.catch(() => {})` — assert navigation away from `/auth/signup` strictly.
+3. In `expect(...).toPass()` signin retry blocks, use fast failure: wait for navigation to resolve via `page.waitForURL((url) => url.pathname === "/dashboard" || url.searchParams.has("error"))`, followed by `expect(page).toHaveURL(/\/dashboard/, { timeout: 1000 })`. If the server redirects with an error, the attempt fails immediately (<1s) rather than idling for 5s, allowing `toPass` to rapidly retry with a clean `page.goto("/auth/signin")`.
+4. Use `test.setTimeout(60_000)` (or `test.describe.configure({ timeout: 60_000 })`) and generous retry windows (`timeout: 30_000` in `toPass`).
 
-**Guideline**: When testing flows involving third-party auth propagation like Supabase, assume eventual consistency. Provide generous timeouts via `test.setTimeout()`, and use `expect.toPass()` to retry actions instead of `page.waitForTimeout`. Always retry from a clean URL state.
+**Guideline**: When testing SSR apps with React islands, ensure forms accept DOM `FormData` on submit to avoid hydration race conditions. In E2E retry loops, fail fast on server error redirects so `toPass` can retry without stalling on timeout thresholds. Never swallow navigation timeouts during prerequisite steps like signup.
 
 ---
 

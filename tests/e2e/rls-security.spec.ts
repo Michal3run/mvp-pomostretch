@@ -32,14 +32,10 @@ async function createAuthenticatedContext(
   await page.getByLabel(/potwierdź hasło|^confirm password$/i).fill(password);
   await page.getByRole("button", { name: /Create account|Zarejestruj/i }).click();
 
-  // After signup Supabase redirects to confirm-email, signin, or dashboard.
-  // Also handle staying on /auth/signup when the server-side redirect failed
-  // (e.g. the signup succeeded but page didn't navigate — we still try signin).
-  await page
-    .waitForURL((url) => url.pathname !== "/auth/signup" || url.searchParams.has("error"), { timeout: 15_000 })
-    .catch(() => {
-      // If still on signup page without an error, that's okay — we'll try signin next
-    });
+  // After signup, wait for navigation away from /auth/signup
+  await page.waitForURL((url) => url.pathname !== "/auth/signup" || url.searchParams.has("error"), {
+    timeout: 15_000,
+  });
 
   if (page.url().includes("error=")) {
     throw new Error(`Signup failed with error URL: ${page.url()}`);
@@ -55,10 +51,15 @@ async function createAuthenticatedContext(
       await page.getByLabel(/^hasło$|^password$/i).fill(password);
       await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
 
-      await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
+      // Wait for redirect to complete (either /dashboard on success or /auth/signin?error= on failure)
+      await page.waitForURL((url) => url.pathname === "/dashboard" || url.searchParams.has("error"), {
+        timeout: 10_000,
+      });
+
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 1000 });
     }).toPass({
-      intervals: [1000, 2000, 5000],
-      timeout: 20000,
+      intervals: [1000, 2000, 3000],
+      timeout: 30_000,
     });
   }
 
