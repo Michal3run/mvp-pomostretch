@@ -9,6 +9,7 @@ PomoStretch is an Astro 6 SSR app (React 19 islands, Tailwind 4, Supabase auth, 
 - Every new Supabase table needs RLS enabled with granular per-operation, per-role policies. Name migrations `YYYYMMDDHHmmss_short_description.sql` in `supabase/migrations/`.
 - Gate new protected pages by adding their path to `PROTECTED_ROUTES` in `@src/middleware.ts` — auth is enforced there, not per-page.
 - API routes (`src/pages/api/**`) must include their own `context.locals.user` auth check returning 401 JSON. Do not rely on `PROTECTED_ROUTES` middleware for API auth.
+- **AI Agents must always run `npm run lint` locally** before concluding tasks and pushing code, to ensure formatting or type strictness issues do not break the CI pipeline.
 
 ## Project structure
 
