@@ -4,8 +4,8 @@ import { test, expect } from "@playwright/test";
 test.describe("US-01: Happy Path Pomodoro cycle", () => {
   // Full Pomodoro cycle (signup → signin → timer → break → exercises → return)
   // can exceed 30s in CI with slow Supabase auth propagation.
-  test.use({ timeout: 60_000 });
   test("Completes a full cycle", async ({ page }) => {
+    test.setTimeout(60_000);
     // 1. Rejestracja nowego użytkownika do testu E2E.
     // suffix is generated here (not at module scope) so retries get fresh emails.
     const suffix = Date.now();
@@ -34,8 +34,7 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     }
 
     if (!page.url().includes("/dashboard")) {
-      let loggedIn = false;
-      for (let i = 0; i < 3; i++) {
+      await expect(async () => {
         await page.goto("/auth/signin");
         await expect(page.locator("form")).toBeVisible();
 
@@ -43,22 +42,11 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
         await page.getByLabel(/^hasło$|^password$/i).fill(testPassword);
         await page.getByRole("button", { name: /Zaloguj|Sign in/i }).click();
 
-        try {
-          await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
-          loggedIn = true;
-          break;
-        } catch {
-          if (!page.url().includes("error=Invalid")) {
-            throw new Error(`Signin failed with unexpected URL: ${page.url()}`);
-          }
-          // Supabase user propagation delay — wait before retrying
-          await page.waitForTimeout(2_000);
-        }
-      }
-
-      if (!loggedIn) {
-        throw new Error(`Failed to login after 3 attempts: ${page.url()}`);
-      }
+        await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
+      }).toPass({
+        intervals: [1000, 2000, 5000],
+        timeout: 20000
+      });
     }
 
     // 2. Oczekiwanie na przejście na Dashboard i zakończenie hydracji React Islands

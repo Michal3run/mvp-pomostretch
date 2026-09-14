@@ -47,10 +47,7 @@ async function createAuthenticatedContext(
 
   // --- Signin (if not already on dashboard) ---
   if (!page.url().includes("/dashboard")) {
-    let loggedIn = false;
-    for (let i = 0; i < 3; i++) {
-      // Navigate to a clean signin page on each attempt (the error page's
-      // ?error= query params are stale state from the previous redirect).
+    await expect(async () => {
       await page.goto("/auth/signin");
       await expect(page.locator("form")).toBeVisible();
 
@@ -58,25 +55,11 @@ async function createAuthenticatedContext(
       await page.getByLabel(/^hasło$|^password$/i).fill(password);
       await page.getByRole("button", { name: /Sign in|Zaloguj/i }).click();
 
-      try {
-        await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
-        loggedIn = true;
-        break;
-      } catch {
-        if (!page.url().includes("error=Invalid")) {
-          throw new Error(`Signin failed with unexpected URL: ${page.url()}`);
-        }
-        // Supabase auth may need time to propagate the newly created user —
-        // wait before retrying (waitForResponse / waitForURL are the correct
-        // wait-for-state patterns; this wait is tied to an external system's
-        // eventual consistency, not a DOM state).
-        await page.waitForTimeout(2_000);
-      }
-    }
-
-    if (!loggedIn) {
-      throw new Error(`Failed to login after 3 attempts: ${page.url()}`);
-    }
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
+    }).toPass({
+      intervals: [1000, 2000, 5000],
+      timeout: 20000
+    });
   }
 
   // --- Extract cookies from browser and create APIRequestContext ---
@@ -115,7 +98,7 @@ interface ErrorResponse {
 
 test.describe.serial("RLS: Multi-tenant session isolation", () => {
   // signup → signin (with retry) → API calls can exceed 30s in CI
-  test.use({ timeout: 60_000 });
+  test.describe.configure({ timeout: 60_000 });
   let userAEmail: string;
   let userBEmail: string;
   const sharedPassword = "TestPassword123!";

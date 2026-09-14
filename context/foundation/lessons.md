@@ -527,14 +527,14 @@ Using redirected Wrangler configuration.
 **Date**: 2026-09-14  
 **Context**: Fixing E2E tests (us-01.spec.ts and rls-security.spec.ts)
 
-**Problem**: Playwright was clicking "Sign in" after signup, and immediately failing with "Invalid login credentials". Supabase Auth propagation is not instant. Furthermore, when it failed, the server redirected to /auth/signin?error=Invalid.... The test's retry loop was trying to fill the form again on this dirty URL without waiting, and the default 30-second CI timeout was too short for the whole flow.
+**Problem**: Playwright was clicking "Sign in" after signup, and immediately failing with "Invalid login credentials". Supabase Auth propagation is not instant. Furthermore, when it failed, the server redirected to `/auth/signin?error=Invalid...`. The test's retry loop was trying to fill the form again on this dirty URL without waiting, and the default 30-second CI timeout was too short for the whole flow.
 
 **Solution**: 
-1. Use `test.use({ timeout: 60_000 });` for flows that involve signup and signin. 
-2. Explicitly wait between auth retries (e.g. `await page.waitForTimeout(2000)`). 
-3. Explicitly reset the page URL on retries (`await page.goto(/auth/signin)`) so you don't interact with stale server-redirected error pages.
+1. Use `test.setTimeout(60_000)` inside the test body (or `test.describe.configure({ timeout: 60_000 })` at suite level). `test.use({ timeout: 60_000 })` doesn't change test execution timeout correctly.
+2. Use Playwright's `await expect(async () => { ... }).toPass()` wrapper for the signin block instead of manual `for` loops and `page.waitForTimeout` (which violates our own anti-pattern rules). 
+3. Explicitly reset the page URL on retries (`await page.goto("/auth/signin")`) inside the `toPass` block so you don't interact with stale server-redirected error pages.
 
-**Guideline**: When testing flows involving third-party auth propagation like Supabase, assume eventual consistency. Provide generous timeouts, explicit waits on failure, and always retry from a clean URL state.
+**Guideline**: When testing flows involving third-party auth propagation like Supabase, assume eventual consistency. Provide generous timeouts via `test.setTimeout()`, and use `expect.toPass()` to retry actions instead of `page.waitForTimeout`. Always retry from a clean URL state.
 
 ---
 
