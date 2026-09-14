@@ -21,10 +21,14 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // Sometimes the page stays on /auth/signup (Supabase rate-limit, slow redirect).
     // We wait for navigation but don't hard-fail — always try signin as fallback.
     await page
-      .waitForURL((url) => url.pathname !== "/auth/signup", { timeout: 15000 })
+      .waitForURL((url) => url.pathname !== "/auth/signup" || url.searchParams.has("error"), { timeout: 15000 })
       .catch(() => {
-        // Still on signup page — that's okay, we'll try signin next
+        // Still on signup page without an error — that's okay, we'll try signin next
       });
+
+    if (page.url().includes("error=")) {
+      throw new Error(`Signup failed with error URL: ${page.url()}`);
+    }
 
     if (!page.url().includes("/dashboard")) {
       await page.goto("/auth/signin");
@@ -55,9 +59,9 @@ test.describe("US-01: Happy Path Pomodoro cycle", () => {
     // Verify that the exercise card heading shows a neck-related exercise name
     // (validates that selectExercises filters by body_areas, not arbitrary slicing).
     // Neck catalog exercises: "Skłony głowy" (neck-1), "Cofanie brody" (neck-2).
-    // Use getByRole("heading") to scope to the CardTitle and avoid matching
+    // Use data-slot="card-title" to scope to the CardTitle and avoid matching
     // Astro island serialized props rendered in <code>/<astro-island> elements.
-    await expect(page.getByRole("heading", { name: /Skłony głowy|Cofanie brody/i })).toBeVisible();
+    await expect(page.locator('div[data-slot="card-title"]', { hasText: /Skłony głowy|Cofanie brody/i })).toBeVisible();
 
     // Click 'Zrobione' for each of the 3 exercises in the sequence, verifying state transition
     for (let i = 0; i < 3; i++) {
