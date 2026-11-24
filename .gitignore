@@ -71,3 +71,6 @@ pnpm-debug.log*
 # macOS-specific files
 
 # jetbrains setting folder
+
+# AI course skills & prompts (local-only)
+.ai/
